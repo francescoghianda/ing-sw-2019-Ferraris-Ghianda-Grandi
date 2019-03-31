@@ -7,7 +7,7 @@ public class ActionsGroup
 
 	private ArrayList<Action> actions;
 
-	public ActionsGroup(...Action actions)
+	public ActionsGroup(Action... actions)
 	{
 
 	}

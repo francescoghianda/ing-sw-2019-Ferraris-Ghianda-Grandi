@@ -14,11 +14,6 @@ public class FireAction extends Action
 
 	}
 
-	public void exec(Player player)
-	{
-
-	}
-
 	public Action getInstance()
 	{
 		return instance;

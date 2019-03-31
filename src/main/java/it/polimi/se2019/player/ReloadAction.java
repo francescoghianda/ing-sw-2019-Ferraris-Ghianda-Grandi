@@ -16,11 +16,6 @@ public class ReloadAction extends Action
 
 	}
 
-	public void exec(Player player)
-	{
-
-	}
-
 	public Action getInstance()
 	{
 		return instance;

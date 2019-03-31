@@ -15,11 +15,6 @@ public class GrabAction extends Action
 
 	}
 
-	public void exec(Player player)
-	{
-
-	}
-
 	public Action getInstance()
 	{
 		return instance;

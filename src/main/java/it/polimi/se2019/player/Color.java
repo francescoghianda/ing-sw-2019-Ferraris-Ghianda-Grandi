@@ -7,7 +7,7 @@ public enum Color
 
 	private java.awt.Color color;
 
-	public Color()
+	Color()
 	{
 
 	}
