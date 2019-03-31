@@ -1,5 +1,7 @@
 package it.polimi.se2019.map;
 
+import it.polimi.se2019.card.Grabbable;
+
 public class Block
 {
 

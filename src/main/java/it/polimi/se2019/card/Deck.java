@@ -1,5 +1,7 @@
 package it.polimi.se2019.card;
 
+import java.util.ArrayList;
+
 public class Deck
 {
 

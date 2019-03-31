@@ -1,5 +1,10 @@
 package it.polimi.se2019.map;
 
+import it.polimi.se2019.player.Color;
+import it.polimi.se2019.player.Player;
+
+import java.util.ArrayList;
+
 public class Room
 {
 

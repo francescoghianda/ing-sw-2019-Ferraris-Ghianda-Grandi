@@ -1,13 +1,17 @@
 package it.polimi.se2019.player;
 
-import jdk.nashorn.internal.ir.Block;
-import card;
+import it.polimi.se2019.card.WeaponCard;
+import it.polimi.se2019.map.Block;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 
 public class Player
 {
 
 	private Color color;
-	private HashMap<Player, int> receivedDamage;
+	private HashMap<Player, Integer> receivedDamage;
 	private int skulls;
 	private int redAmmo;
 	private int blueAmmo;
@@ -33,7 +37,7 @@ public class Player
 	}
 
 
-	public int getReceivedDamage(void Player player)
+	public int getReceivedDamage(Player player)
 	{
 		return 0;
 	}
