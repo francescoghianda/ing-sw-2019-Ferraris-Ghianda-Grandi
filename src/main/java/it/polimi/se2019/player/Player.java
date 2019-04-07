@@ -16,7 +16,7 @@ public class Player
 	private ArrayList<WeaponCard> weapons;
 	private ArrayList<PowerUpCard> powerUps;
 	private Block block;
-	private Gameboard gameboard;
+	private GameBoard gameboard;
 
 	public Player()
 	{
@@ -27,30 +27,37 @@ public class Player
 	{
 
 	}
+
 	public void addPowerUpCard (PowerUpCard powerUpCard)
 	{
 
 	}
+
 	public Color getColor()
 	{
 		return null;
 	}
+
 	public boolean isStartingPlayer()
 	{
 		return false;
 	}
+
 	private void hit(Player player, WeaponCard weapon)
 	{
 
 	}
+
 	private void grab()
 	{
 
 	}
+
 	private void move(int direction)
 	{
 
 	}
+
 	private void execAction(ActionsGroup actionsGroup)
 	{
 

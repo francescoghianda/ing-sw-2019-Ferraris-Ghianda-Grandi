@@ -12,6 +12,11 @@ public class Deck
 
 	}
 
+	public void addCard(Card card)
+	{
+
+	}
+
 	public Card getFirstCard()
 	{
 		return null;
