@@ -3,15 +3,15 @@ package it.polimi.se2019.player;
 import it.polimi.se2019.card.PowerUpCard;
 import it.polimi.se2019.card.WeaponCard;
 import it.polimi.se2019.map.Block;
+import it.polimi.se2019.utils.constants.GameColor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class Player
 {
 
-	private Color color;
+	private GameColor color;
 	private boolean startingPlayer;
 	private ArrayList<WeaponCard> weapons;
 	private ArrayList<PowerUpCard> powerUps;
@@ -33,7 +33,7 @@ public class Player
 
 	}
 
-	public Color getColor()
+	public GameColor getColor()
 	{
 		return null;
 	}

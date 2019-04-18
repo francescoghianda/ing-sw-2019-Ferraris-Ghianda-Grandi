@@ -1,35 +1,40 @@
 package it.polimi.se2019.map;
 
-import it.polimi.se2019.player.Color;
-import it.polimi.se2019.player.Player;
+import it.polimi.se2019.utils.constants.GameColor;
 
 import java.util.ArrayList;
 
 public class Room
 {
 
-	private Color color;
-	private ArrayList<Player> players;
-	private  ArrayList<Block> blocks;
+	private final GameColor color;
+	private ArrayList<Block> blocks;
 
-	public Room()
+	public Room(GameColor color)
 	{
-
+		this.blocks = new ArrayList<>();
+		this.color = color;
 	}
 
-	public Color getColor()
+	public void addBlock(Block block)
 	{
-		return null;
+		this.blocks.add(block);
 	}
 
-	public ArrayList<Player> getPlayers()
+
+	public GameColor getColor()
 	{
-		return null;
+		return this.color;
 	}
 
 	public ArrayList<Block> getBlocks()
 	{
-		return null;
+		return this.blocks;
+	}
+
+	public Block getBlockAt(int index)
+	{
+		return blocks.get(index);
 	}
 
 }
