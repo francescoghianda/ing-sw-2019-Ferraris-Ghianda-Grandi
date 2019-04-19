@@ -1,0 +1,44 @@
+package it.polimi.se2019.network.socket.message;
+
+import it.polimi.se2019.network.socket.server.ClientConnection;
+
+import java.io.Serializable;
+
+public class NetworkMessageServer<T> extends NetworkMessage<T> implements Serializable
+{
+    private MessageExecutor<NetworkMessageServer<T>> executor;
+    private ClientConnection clientConnection;
+
+    public NetworkMessageServer setParam(T param)
+    {
+        this.param = param;
+        return this;
+    }
+
+    public NetworkMessageServer<T> setExecutor(MessageExecutor<NetworkMessageServer<T>> executor)
+    {
+        this.executor = executor;
+        return this;
+    }
+
+    public MessageExecutor<NetworkMessageServer<T>> getExecutor()
+    {
+        return this.executor;
+    }
+
+    public NetworkMessageServer<T> setClientConnection(ClientConnection connection)
+    {
+        this.clientConnection = connection;
+        return this;
+    }
+
+    public ClientConnection getClientConnection()
+    {
+        return this.clientConnection;
+    }
+
+    public void execute()
+    {
+        getExecutor().execute(this);
+    }
+}
