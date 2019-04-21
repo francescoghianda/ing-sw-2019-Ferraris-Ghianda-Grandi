@@ -1,7 +1,5 @@
 package it.polimi.se2019.network.socket.server;
 
-import it.polimi.se2019.network.socket.message.NetworkMessageClient;
-import it.polimi.se2019.network.socket.message.NetworkMessageServer;
 import it.polimi.se2019.player.Player;
 
 import java.io.*;

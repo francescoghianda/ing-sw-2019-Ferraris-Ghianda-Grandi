@@ -1,6 +1,5 @@
 package it.polimi.se2019.network.socket.server;
 
-import it.polimi.se2019.network.socket.message.NetworkMessageClient;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.IOException;

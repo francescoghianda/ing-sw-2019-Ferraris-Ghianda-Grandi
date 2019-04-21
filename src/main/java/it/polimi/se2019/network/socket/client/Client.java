@@ -1,6 +1,7 @@
 package it.polimi.se2019.network.socket.client;
 
 import it.polimi.se2019.network.socket.message.NetworkMessageClient;
+import it.polimi.se2019.network.socket.message.NetworkMessageServer;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.IOException;
@@ -90,11 +91,11 @@ public class Client implements Runnable
         return true;
     }
 
-    public void writeToServer(String msg)
+    public void writeToServer(NetworkMessageServer<?> message)
     {
         try
         {
-            oos.writeObject(msg);
+            oos.writeObject(message);
             oos.flush();
         }
         catch (IOException e)

@@ -6,13 +6,19 @@ import java.io.Serializable;
 
 public class NetworkMessageClient<T> extends NetworkMessage<T> implements Serializable
 {
-    private MessageExecutor<NetworkMessageClient<T>> executor;
+    private final MessageExecutor<NetworkMessageClient<T>> executor;
     private Client client;
 
-    public NetworkMessageClient setParam(T param)
+    public NetworkMessageClient(MessageExecutor<NetworkMessageClient<T>> executor)
     {
-        this.param = param;
-        return this;
+        this.executor = executor;
+    }
+
+    public NetworkMessageClient<T> setParam(T param)
+    {
+        NetworkMessageClient<T> nmc = this.clone();
+        nmc.param = param;
+        return nmc;
     }
 
     public NetworkMessageClient<T> setClient(Client client)
@@ -26,12 +32,6 @@ public class NetworkMessageClient<T> extends NetworkMessage<T> implements Serial
         return this.client;
     }
 
-    public NetworkMessageClient<T> setExecutor(MessageExecutor<NetworkMessageClient<T>> executor)
-    {
-        this.executor = executor;
-        return this;
-    }
-
     public MessageExecutor<NetworkMessageClient<T>> getExecutor()
     {
         return this.executor;
@@ -40,5 +40,11 @@ public class NetworkMessageClient<T> extends NetworkMessage<T> implements Serial
     public void execute()
     {
         getExecutor().execute(this);
+    }
+
+    @Override
+    public NetworkMessageClient<T> clone()
+    {
+        return new NetworkMessageClient<>(executor);
     }
 }

@@ -1,7 +1,9 @@
 package it.polimi.se2019.network.socket.message;
 
 
-public interface MessageExecutor<T extends NetworkMessage>
+import java.io.Serializable;
+
+public interface MessageExecutor<T extends NetworkMessage> extends Serializable
 {
     void execute(T message);
 }
