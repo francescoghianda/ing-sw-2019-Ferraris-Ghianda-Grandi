@@ -1,23 +1,24 @@
 package it.polimi.se2019.player;
 
-public class MoveAction extends Action
+import it.polimi.se2019.map.Block;
+
+public class MoveAction implements Action
 {
+	private final Block dest;
 
-	private MoveAction instance = new MoveAction();
-
-	public MoveAction()
+	public MoveAction(Block dest)
 	{
-
+		this.dest = dest;
 	}
 
-	public void exec(Player player)
+	public boolean execute(Player player)
 	{
-
-	}
-
-	public Action getInstance()
-	{
-		return instance;
+		if(player.getBlock().isConnected(dest))
+		{
+			player.setBlock(dest);
+			return true;
+		}
+		return false;
 	}
 
 }

@@ -1,24 +1,17 @@
 package it.polimi.se2019.player;
 
 
-public class ReloadAction extends Action
+public class ReloadAction implements Action
 {
-
-	private ReloadAction instance = new ReloadAction();
 
 	public ReloadAction()
 	{
 
 	}
 
-	public void exec(Player player)
+	public boolean execute(Player player)
 	{
-
-	}
-
-	public Action getInstance()
-	{
-		return instance;
+		return false;
 	}
 
 }

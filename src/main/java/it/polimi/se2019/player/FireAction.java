@@ -1,22 +1,23 @@
 package it.polimi.se2019.player;
 
-public class FireAction extends Action
+import it.polimi.se2019.card.WeaponCard;
+
+public class FireAction implements Action
 {
-	private FireAction instance = new FireAction();
+	private final Player playerToHit;
+	private final WeaponCard weapon;
 
-	public FireAction()
+	public FireAction(Player playerToHit, WeaponCard weapon)
 	{
-
+		this.playerToHit = playerToHit;
+		this.weapon = weapon;
 	}
 
-	public void exec(Player player)
+	@Override
+	public boolean execute(Player player)
 	{
 
-	}
-
-	public Action getInstance()
-	{
-		return instance;
+		return false;
 	}
 
 }

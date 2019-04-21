@@ -2,6 +2,8 @@ package it.polimi.se2019.utils.logging;
 
 import it.polimi.se2019.utils.constants.AnsiColor;
 
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -9,6 +11,7 @@ public class Logger
 {
     private static Logger logger = new Logger();
 
+    private SimpleDateFormat sdf;
     private boolean showTime = true;
     private ArrayList<LoggerOutputStream> outputs = new ArrayList<>();
     private LoggerFormatter formatter;
@@ -17,8 +20,34 @@ public class Logger
 
     private Logger()
     {
-        addOutput(new LoggerOutputStream(System.out, true));
-        setFormatter(message -> (message.isPrintColor() ? message.getLevel().getPrintColor() : "")+getTime()+" "+message+(message.isPrintColor() ? AnsiColor.RESET : ""));
+        try
+        {
+            sdf = new SimpleDateFormat("ddMMyy_HHmmss");
+            addOutput(new LoggerOutputStream(System.out, true));
+            File logFile = new File(getLogFileName());
+            boolean addFileOutput = true;
+            if(!logFile.getParentFile().exists())addFileOutput = logFile.getParentFile().mkdirs();
+            if(addFileOutput)addOutput(new LoggerOutputStream(new FileOutputStream(logFile), false));
+            setFormatter(getDefaultFormatter());
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private String getLogFileName()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("log/log");
+        builder.append(sdf.format(Calendar.getInstance().getTime()));
+        builder.append(".txt");
+        return builder.toString();
+    }
+
+    public LoggerFormatter getDefaultFormatter()
+    {
+        return  message -> (message.isPrintColor() ? message.getLevel().getPrintColor() : "")+getTime()+" "+message+(message.isPrintColor() ? AnsiColor.RESET : "");
     }
 
     public static Logger getInstance()
@@ -100,6 +129,13 @@ public class Logger
     public static void warning(String msg)
     {
         logger.log(LogMessage.pack(Level.WARNING, msg));
+    }
+
+    public static void exception(Exception e)
+    {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        logger.log(LogMessage.pack(Level.ERROR, sw.toString()));
     }
 
     public interface LoggerFormatter

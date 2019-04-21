@@ -9,11 +9,18 @@ public class Room
 
 	private final GameColor color;
 	private ArrayList<Block> blocks;
+	private final Map map;
 
-	public Room(GameColor color)
+	public Room(GameColor color, Map map)
 	{
 		this.blocks = new ArrayList<>();
 		this.color = color;
+		this.map = map;
+	}
+
+	public Map getMap()
+	{
+		return this.map;
 	}
 
 	public void addBlock(Block block)
@@ -37,4 +44,10 @@ public class Room
 		return blocks.get(index);
 	}
 
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(!(obj instanceof Room)) return false;
+		return this.color.equals(((Room)obj).getColor());
+	}
 }

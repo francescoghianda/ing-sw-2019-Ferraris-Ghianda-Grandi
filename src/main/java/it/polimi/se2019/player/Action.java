@@ -1,15 +1,6 @@
 package it.polimi.se2019.player;
 
-public abstract class Action
+public interface Action
 {
-
-	public Action()
-	{
-
-	}
-
-	public abstract void exec(Player player);
-	
-	public abstract Action getInstance();
-
+	boolean execute(Player player);
 }

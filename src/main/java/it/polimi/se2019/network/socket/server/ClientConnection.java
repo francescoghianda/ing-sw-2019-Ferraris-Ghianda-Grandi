@@ -4,6 +4,7 @@ import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
+import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.*;
 import java.net.Socket;
@@ -33,7 +34,7 @@ public class ClientConnection implements Runnable, NetworkServer
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            Logger.exception(e);
         }
     }
 
@@ -58,7 +59,7 @@ public class ClientConnection implements Runnable, NetworkServer
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            Logger.exception(e);
         }
     }
 
@@ -73,7 +74,7 @@ public class ClientConnection implements Runnable, NetworkServer
             }
             catch (ClassNotFoundException | NullPointerException | IOException e)
             {
-                e.printStackTrace();
+                Logger.exception(e);
             }
         }
     }
@@ -90,7 +91,7 @@ public class ClientConnection implements Runnable, NetworkServer
         {
             running = false;
             connected = false;
-            e.printStackTrace();
+            Logger.exception(e);
         }
     }
 
@@ -99,6 +100,18 @@ public class ClientConnection implements Runnable, NetworkServer
         for (ClientConnection clientConnection : server.getClients())
         {
             if(clientConnection.isConnected() && !clientConnection.equals(this))
+            {
+                clientConnection.sendMessageToClient(message);
+            }
+        }
+    }
+
+    @Override
+    public synchronized void sendBroadcastMessage(NetworkMessageClient<?> message)
+    {
+        for (ClientConnection clientConnection : server.getClients())
+        {
+            if(clientConnection.isConnected())
             {
                 clientConnection.sendMessageToClient(message);
             }

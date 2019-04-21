@@ -18,44 +18,53 @@ public class Player
 	private Block block;
 	private GameBoard gameboard;
 
-	public Player()
+	public Player(GameColor color)
 	{
-
+		weapons = new ArrayList<>();
+		powerUps = new ArrayList<>();
+		this.color = color;
 	}
 
 	public void addWeaponCard (WeaponCard weaponCard)
 	{
-
+		if(weapons.size() < 3)
+		{
+			weapons.add(weaponCard);
+		}
 	}
 
 	public void addPowerUpCard (PowerUpCard powerUpCard)
 	{
-
+		if(powerUps.size() < 3)
+		{
+			powerUps.add(powerUpCard);
+		}
 	}
 
 	public GameColor getColor()
 	{
-		return null;
+		return color;
 	}
 
 	public boolean isStartingPlayer()
 	{
+		return startingPlayer;
+	}
+
+	public Block getBlock()
+	{
+		return this.block;
+	}
+
+
+	public void setBlock(Block block)
+	{
+		this.block = block;
+	}
+
+	private boolean pathPossible(int currX, int currY, int destX, int destY)
+	{
 		return false;
-	}
-
-	private void hit(Player player, WeaponCard weapon)
-	{
-
-	}
-
-	private void grab()
-	{
-
-	}
-
-	private void move(int direction)
-	{
-
 	}
 
 	private void execAction(ActionsGroup actionsGroup)

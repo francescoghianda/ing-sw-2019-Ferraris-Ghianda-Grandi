@@ -103,6 +103,55 @@ public class Block
 		cards[index] = card;
 	}
 
+	public Block getBottomBlock()
+	{
+		if(y >= 2)return null;
+		return room.getMap().getMapMatrix()[y+1][x];
+	}
+
+	public Block getUpperBlock()
+	{
+		if(y <= 0)return null;
+		return room.getMap().getMapMatrix()[y-1][x];
+	}
+
+	public Block getRightBlock()
+	{
+		if(x >= 3)return null;
+		return room.getMap().getMapMatrix()[y][x+1];
+	}
+
+	public Block getLeftBlock()
+	{
+		if(x <= 0)return null;
+		return room.getMap().getMapMatrix()[y][x-1];
+	}
+
+	public boolean isNear(Block block)
+	{
+		if(block.getX() == x)
+		{
+			return block.getY() == y + 1 || block.getY() == y - 1;
+		}
+		else if(block.getY() == y)
+		{
+			return block.getX() == x + 1 || block.getX() == x - 1;
+		}
+
+		return false;
+	}
+
+	public boolean isConnected(Block block)
+	{
+		if(!this.isNear(block))return false;
+		if(room.equals(block.room))return true;
+		for(Block door : doors)
+		{
+			if(door.equals(block))return true;
+		}
+		return false;
+	}
+
 	@Override
 	public String toString()
 	{

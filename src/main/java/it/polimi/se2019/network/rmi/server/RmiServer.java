@@ -4,6 +4,7 @@ import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
+import it.polimi.se2019.utils.logging.Logger;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -27,8 +28,9 @@ public class RmiServer extends UnicastRemoteObject implements ServerInterface, N
         {
             Naming.rebind("//localhost/Server", this);
         }
-        catch (RemoteException | MalformedURLException e) {
-            e.printStackTrace();
+        catch (RemoteException | MalformedURLException e)
+        {
+            Logger.exception(e);
         }
     }
 
@@ -44,6 +46,7 @@ public class RmiServer extends UnicastRemoteObject implements ServerInterface, N
         clients.add(rmiClient);
     }
 
+    @Override
     public void sendMessageToClient(NetworkMessageClient<?> message)
     {
         try
@@ -52,10 +55,11 @@ public class RmiServer extends UnicastRemoteObject implements ServerInterface, N
         }
         catch (RemoteException e)
         {
-            e.printStackTrace();
+            Logger.exception(e);
         }
     }
 
+    @Override
     public void sendBroadcastMessage(NetworkMessageClient<?> message)
     {
         for(CallbackInterface client : clients)
@@ -66,7 +70,7 @@ public class RmiServer extends UnicastRemoteObject implements ServerInterface, N
             }
             catch (RemoteException e)
             {
-                e.printStackTrace();
+                Logger.exception(e);
             }
         }
     }

@@ -4,10 +4,9 @@ import it.polimi.se2019.network.NetworkClient;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
 import it.polimi.se2019.network.rmi.server.ServerInterface;
+import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -28,7 +27,7 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
         }
         catch (NotBoundException | RemoteException e)
         {
-            e.printStackTrace();
+            Logger.exception(e);
         }
     }
 
@@ -52,7 +51,7 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
         }
         catch (RemoteException e)
         {
-            e.printStackTrace();
+            Logger.exception(e);
         }
     }
 }

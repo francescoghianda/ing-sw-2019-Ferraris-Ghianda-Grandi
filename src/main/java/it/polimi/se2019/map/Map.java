@@ -3,6 +3,9 @@ package it.polimi.se2019.map;
 import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.logging.Logger;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -74,7 +77,7 @@ public class Map
 
 	private Room createRoom(GameColor color)
 	{
-		Room room = new Room(color);
+		Room room = new Room(color, this);
 		map.add(room);
 		return room;
 	}

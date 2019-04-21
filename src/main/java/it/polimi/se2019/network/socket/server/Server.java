@@ -26,6 +26,7 @@ public class Server implements Runnable
         this.gameController = new GameController();
     }
 
+
     public void startServer()
     {
         if(!running)
@@ -41,7 +42,7 @@ public class Server implements Runnable
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                Logger.exception(e);
             }
         }
         else
@@ -67,7 +68,7 @@ public class Server implements Runnable
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            Logger.exception(e);
         }
     }
 
@@ -90,7 +91,7 @@ public class Server implements Runnable
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            Logger.exception(e);
         }
     }
 
