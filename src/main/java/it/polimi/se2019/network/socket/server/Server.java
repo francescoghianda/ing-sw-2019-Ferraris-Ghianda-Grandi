@@ -1,5 +1,7 @@
 package it.polimi.se2019.network.socket.server;
 
+import it.polimi.se2019.controller.GameController;
+import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.IOException;
@@ -14,12 +16,14 @@ public class Server implements Runnable
     private Thread serverThread;
     private boolean running;
     private ArrayList<ClientConnection> clients;
+    private GameController gameController;
 
     public Server(int port)
     {
         this.port = port;
         this.serverThread = new Thread(this);
         this.clients = new ArrayList<>();
+        this.gameController = new GameController();
     }
 
     public void startServer()
@@ -78,7 +82,7 @@ public class Server implements Runnable
             while(running)
             {
                 Logger.info("Waiting for clients...");
-                ClientConnection client = new ClientConnection(serverSocket.accept(), this);
+                ClientConnection client = new ClientConnection(serverSocket.accept(), this, gameController);
                 Logger.info("Client connected!");
                 clients.add(client);
                 client.start();
@@ -101,7 +105,7 @@ public class Server implements Runnable
         {
             if (client.isConnected())
             {
-                client.writeMessage(message);
+                client.sendMessageToClient(message);
             }
         }
     }

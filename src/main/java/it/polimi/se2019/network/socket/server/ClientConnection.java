@@ -1,11 +1,14 @@
 package it.polimi.se2019.network.socket.server;
 
-import it.polimi.se2019.player.Player;
+import it.polimi.se2019.controller.GameController;
+import it.polimi.se2019.network.NetworkServer;
+import it.polimi.se2019.network.message.NetworkMessageClient;
+import it.polimi.se2019.network.message.NetworkMessageServer;
 
 import java.io.*;
 import java.net.Socket;
 
-public class ClientConnection implements Runnable
+public class ClientConnection implements Runnable, NetworkServer
 {
     private Thread userThread;
     private volatile boolean running;
@@ -14,10 +17,12 @@ public class ClientConnection implements Runnable
     private Server server;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
-    private Player player;
+    private final GameController controller;
 
-    ClientConnection(Socket client, Server server)
+    ClientConnection(Socket client, Server server, GameController controller)
     {
+        this.controller = controller;
+
         try
         {
             this.client = client;
@@ -73,7 +78,7 @@ public class ClientConnection implements Runnable
         }
     }
 
-    synchronized void writeMessage(NetworkMessageClient<?> message)
+    public synchronized void sendMessageToClient(NetworkMessageClient<?> message)
     {
         if(!connected)return;
         try
@@ -95,7 +100,7 @@ public class ClientConnection implements Runnable
         {
             if(clientConnection.isConnected() && !clientConnection.equals(this))
             {
-                clientConnection.writeMessage(message);
+                clientConnection.sendMessageToClient(message);
             }
         }
     }
@@ -110,13 +115,8 @@ public class ClientConnection implements Runnable
         return server;
     }
 
-    public Player getPlayer()
+    public GameController getGameCotroller()
     {
-        return player;
-    }
-
-    public void setPlayer(Player player)
-    {
-        this.player = player;
+        return controller;
     }
 }

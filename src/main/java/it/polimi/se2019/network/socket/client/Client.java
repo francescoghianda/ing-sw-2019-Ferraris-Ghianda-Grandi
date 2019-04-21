@@ -1,7 +1,8 @@
 package it.polimi.se2019.network.socket.client;
 
-import it.polimi.se2019.network.socket.message.NetworkMessageClient;
-import it.polimi.se2019.network.socket.message.NetworkMessageServer;
+import it.polimi.se2019.network.NetworkClient;
+import it.polimi.se2019.network.message.NetworkMessageClient;
+import it.polimi.se2019.network.message.NetworkMessageServer;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
-public class Client implements Runnable
+public class Client implements Runnable, NetworkClient
 {
     private Socket socket;
     private static ObjectOutputStream oos;
@@ -91,7 +92,7 @@ public class Client implements Runnable
         return true;
     }
 
-    public void writeToServer(NetworkMessageServer<?> message)
+    public void sendMessageToServer(NetworkMessageServer<?> message)
     {
         try
         {
