@@ -13,13 +13,12 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RmiServer extends UnicastRemoteObject implements ServerInterface, NetworkServer
 {
-    private HashMap<CallbackInterface, ClientData> clients;
-    private GameController gameController;
+    private transient HashMap<CallbackInterface, ClientData> clients;
+    private transient GameController gameController;
 
     public  RmiServer(int port) throws RemoteException
     {
@@ -41,21 +40,21 @@ public class RmiServer extends UnicastRemoteObject implements ServerInterface, N
     }
 
     @Override
-    public void sendMessage(NetworkMessageServer<?> message) throws RemoteException
+    public synchronized void sendMessage(NetworkMessageServer<?> message) throws RemoteException
     {
         Thread threadMessage = new Thread(() -> message.setClientConnection(this).execute());
         threadMessage.start();
     }
 
     @Override
-    public void registerClient(CallbackInterface rmiClient) throws RemoteException
+    public synchronized void registerClient(CallbackInterface clientStub) throws RemoteException
     {
-        clients.put(rmiClient, new ClientData());
-        rmiClient.sendMessage(Messages.LOGIN_REQUEST.setRecipient(rmiClient));
+        clients.put(clientStub, new ClientData());
+        clientStub.sendMessage(Messages.LOGIN_REQUEST.setRecipient(clientStub));
     }
 
     @Override
-    public void sendMessageToClient(NetworkMessageClient<?> message)
+    public synchronized void sendMessageToClient(NetworkMessageClient<?> message)
     {
         try
         {
@@ -68,7 +67,7 @@ public class RmiServer extends UnicastRemoteObject implements ServerInterface, N
     }
 
     @Override
-    public void sendBroadcastMessage(NetworkMessageClient<?> message)
+    public synchronized void sendBroadcastMessage(NetworkMessageClient<?> message)
     {
         for(CallbackInterface client : clients.keySet())
         {

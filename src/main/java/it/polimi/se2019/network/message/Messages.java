@@ -3,6 +3,8 @@ package it.polimi.se2019.network.message;
 import it.polimi.se2019.map.Block;
 import it.polimi.se2019.utils.logging.Logger;
 
+import java.util.Scanner;
+
 public class Messages
 {
     private Messages(){}
@@ -11,13 +13,15 @@ public class Messages
             message ->
             {
                 Logger.info("Chat message: "+message.param);
-                message.getClient().sendMessageToServer(Messages.CHAT_MESSAGE_SERVER.setParam("Callback"));
+                Scanner s = new Scanner(System.in);
+                message.getClient().sendMessageToServer(Messages.CHAT_MESSAGE_SERVER.setParam(s.nextLine()));
             });
 
     public static final NetworkMessageServer<String> CHAT_MESSAGE_SERVER = new NetworkMessageServer<>(message ->
     {
         Logger.warning(message.param);
-        message.getServer().sendMessageToClient(Messages.CHAT_MESSAGE.setParam("Ciao dal server").setRecipient(message.getSender()));
+        Scanner s = new Scanner(System.in);
+        message.getServer().sendMessageToClient(Messages.CHAT_MESSAGE.setParam(s.nextLine()).setRecipient(message.getSender()));
     });
 
     public static final NetworkMessageServer<String> LOGIN_RESPONSE = new NetworkMessageServer<>(message ->
@@ -35,8 +39,6 @@ public class Messages
 
         String username = message.getClient().getUsername();
         NetworkMessageClient stateMessage = message.getClient().getResponseTo(Messages.LOGIN_RESPONSE.setParam(username), message);
-
-        Logger.info("CLIENT OK");
 
         Logger.info((String)stateMessage.param);
     });

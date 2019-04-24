@@ -11,25 +11,30 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
 public class RmiClient implements CallbackInterface, NetworkClient, Serializable
 {
-    private ServerInterface server;
-    private static volatile boolean getIncomeMessage;
-    private static volatile boolean incomeMessageReceived;
-    private static volatile NetworkMessageClient<?> message;
+    private transient ServerInterface server;
+    private transient CallbackInterface stub;
+    private transient volatile boolean getIncomeMessage;
+    private transient volatile boolean incomeMessageReceived;
+    private transient volatile NetworkMessageClient<?> message;
 
-    private static final SerializableObject lock = new SerializableObject();
+    //private transient static final SerializableObject lock = new SerializableObject();
 
     public RmiClient(String serverIp, int port)
     {
+        super();
         try
         {
+            stub = (CallbackInterface) UnicastRemoteObject.exportObject(this, 0);
+
             Registry registry = LocateRegistry.getRegistry(serverIp);
             server = (ServerInterface) registry.lookup("Server");
 
-            server.registerClient(this);
+            server.registerClient(stub);
         }
         catch (NotBoundException | RemoteException e)
         {
@@ -37,8 +42,17 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
         }
     }
 
+    public synchronized void waitCallbacks()
+    {
+        try {
+            this.wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
-    public void sendMessage(NetworkMessageClient<?> message) throws RemoteException
+    public synchronized void sendMessage(NetworkMessageClient<?> message) throws RemoteException
     {
         if(!getIncomeMessage)
         {
@@ -47,13 +61,9 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
         }
         else
         {
-            synchronized (lock)
-            {
-                RmiClient.message = message;
-                incomeMessageReceived = true;
-                lock.notifyAll();
-            }
-
+            this.message = message;
+            incomeMessageReceived = true;
+            this.notifyAll();
         }
     }
 
@@ -63,11 +73,11 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     }
 
     @Override
-    public void sendMessageToServer(NetworkMessageServer<?> message)
+    public synchronized void sendMessageToServer(NetworkMessageServer<?> message)
     {
         try
         {
-            server.sendMessage(message.setSender(this));
+            server.sendMessage(message.setSender(stub));
         }
         catch (RemoteException e)
         {
@@ -83,27 +93,24 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     }
 
     @Override
-    public NetworkMessageClient<?> getResponseTo(NetworkMessageServer<?> messageServer, NetworkMessageClient<?> currMessage)
+    public synchronized NetworkMessageClient<?> getResponseTo(NetworkMessageServer<?> messageServer, NetworkMessageClient<?> currMessage)
     {
-        synchronized (lock)
+        try
         {
-            try
-            {
-                getIncomeMessage = true;
-                sendMessageToServer(messageServer.setSender(currMessage.getRecipient()));
+            getIncomeMessage = true;
+            sendMessageToServer(messageServer.setSender(currMessage.getRecipient()));
 
-                while (!incomeMessageReceived) lock.wait();
+            while (!incomeMessageReceived) this.wait();
 
-                getIncomeMessage = false;
-                incomeMessageReceived = false;
+            getIncomeMessage = false;
+            incomeMessageReceived = false;
 
-                return message;
-            }
-            catch (Exception e)
-            {
-                Logger.exception(e);
-            }
-            return null;
+            return message;
         }
+        catch (Exception e)
+        {
+            Logger.exception(e);
+        }
+        return null;
     }
 }

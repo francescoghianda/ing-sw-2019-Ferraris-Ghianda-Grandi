@@ -22,9 +22,9 @@ public class App
         Logger.info(map.toString());
 
         /*Server server = new Server(7000);
-        server.startServer();
+        server.startServer();*/
 
-        Client client = new Client();
+        /*Client client = new Client();
         client.connect("localhost", 7000);
         client.start();*/
 
@@ -32,7 +32,7 @@ public class App
 
         RmiServer server = new RmiServer(7000);
         server.startServer();
-        RmiClient client = new RmiClient("localhost", 7000);
+        //RmiClient client = new RmiClient("localhost", 7000);
 
         //server.sendMessageToClient(Messages.CHAT_MESSAGE.setParam("Ciao").setRecipient(client));
 
