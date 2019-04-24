@@ -14,21 +14,20 @@ public class Logger
     private SimpleDateFormat sdf;
     private boolean showTime = true;
     private ArrayList<LoggerOutputStream> outputs = new ArrayList<>();
-    private LoggerFormatter formatter;
-    private int minValue;
     private boolean enabled = true;
+
+    private boolean gameMode;
 
     private Logger()
     {
         try
         {
             sdf = new SimpleDateFormat("ddMMyy_HHmmss");
-            addOutput(new LoggerOutputStream(System.out, true));
+            addOutput(new LoggerOutputStream(System.out, getDefaultFormatter(),true));
             File logFile = new File(getLogFileName());
             boolean addFileOutput = true;
             if(!logFile.getParentFile().exists())addFileOutput = logFile.getParentFile().mkdirs();
-            if(addFileOutput)addOutput(new LoggerOutputStream(new FileOutputStream(logFile), false));
-            setFormatter(getDefaultFormatter());
+            if(addFileOutput)addOutput(new LoggerOutputStream(new FileOutputStream(logFile), getDefaultFormatter(), false));
         }
         catch (FileNotFoundException e)
         {
@@ -45,6 +44,21 @@ public class Logger
         return builder.toString();
     }
 
+    public void enableGameMode(boolean gameMode)
+    {
+        this.gameMode = gameMode;
+        if(gameMode)
+        {
+            outputs.get(0).setMinLevel(Level.CLI);
+            outputs.get(0).setFormatter(LogMessage::getMessage);
+        }
+        else
+        {
+            outputs.get(0).setMinLevel(Level.INFO);
+            outputs.get(0).setFormatter(getDefaultFormatter());
+        }
+    }
+
     public LoggerFormatter getDefaultFormatter()
     {
         return  message -> (message.isPrintColor() ? message.getLevel().getPrintColor() : "")+getTime()+" "+message+(message.isPrintColor() ? AnsiColor.RESET : "");
@@ -55,11 +69,6 @@ public class Logger
         return logger;
     }
 
-    public void setFormatter(LoggerFormatter loggerFormatter)
-    {
-        formatter = loggerFormatter;
-    }
-
     public void addOutput(LoggerOutputStream loggerOutputStream)
     {
         outputs.add(loggerOutputStream);
@@ -67,12 +76,12 @@ public class Logger
 
     public void removeOutput(LoggerOutputStream loggerOutputStream)
     {
-        outputs.remove(loggerOutputStream);
+        if(!loggerOutputStream.equals(outputs.get(0)))outputs.remove(loggerOutputStream);
     }
 
     public void setMinLevel(Level level)
     {
-        minValue = level.getValue();
+        outputs.forEach(output -> output.setMinLevel(level));
     }
 
     public void showTime()
@@ -103,7 +112,13 @@ public class Logger
     private void log(LogMessage message)
     {
         if(!enabled)return;
-        for(LoggerOutputStream out : outputs)if(message.getLevel().getValue() >= minValue)out.println(formatter.format(message.setPrintColor(out.supportColor())));
+        for(LoggerOutputStream out : outputs)if(message.getLevel().getValue() >= out.getMinValue())out.println(out.getFormatter().format(message.setPrintColor(out.supportColor())));
+    }
+
+    private void inputLog(LogMessage message)
+    {
+        if(!enabled)return;
+        for(LoggerOutputStream out : outputs)if(message.getLevel().getValue() >= out.getMinValue())out.print(out.getFormatter().format(message.setPrintColor(out.supportColor())));
     }
 
     public static void log(Level level, String message)
@@ -130,6 +145,17 @@ public class Logger
     {
         logger.log(LogMessage.pack(Level.WARNING, msg));
     }
+
+    public static void cli(String msg)
+    {
+        logger.log(LogMessage.pack(Level.CLI, msg));
+    }
+
+    public static void inputCli(String msg)
+    {
+        logger.inputLog(LogMessage.pack(Level.CLI, msg));
+    }
+
 
     public static void exception(Exception e)
     {

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Server implements Runnable
 {
@@ -25,7 +26,6 @@ public class Server implements Runnable
         this.clients = new ArrayList<>();
         this.gameController = new GameController();
     }
-
 
     public void startServer()
     {
@@ -95,7 +95,7 @@ public class Server implements Runnable
         }
     }
 
-    public synchronized ArrayList<ClientConnection> getClients()
+    public synchronized List<ClientConnection> getClients()
     {
         return this.clients;
     }

@@ -4,6 +4,7 @@ import it.polimi.se2019.network.NetworkClient;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
 import it.polimi.se2019.network.rmi.server.ServerInterface;
+import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.Serializable;
@@ -12,7 +13,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Scanner;
 
 public class RmiClient implements CallbackInterface, NetworkClient, Serializable
 {
@@ -22,33 +22,15 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     private transient volatile boolean incomeMessageReceived;
     private transient volatile NetworkMessageClient<?> message;
 
-    //private transient static final SerializableObject lock = new SerializableObject();
+    private final transient UI ui;
 
-    public RmiClient(String serverIp, int port)
+    private transient boolean running;
+
+
+    public RmiClient(UI ui)
     {
         super();
-        try
-        {
-            stub = (CallbackInterface) UnicastRemoteObject.exportObject(this, 0);
-
-            Registry registry = LocateRegistry.getRegistry(serverIp);
-            server = (ServerInterface) registry.lookup("Server");
-
-            server.registerClient(stub);
-        }
-        catch (NotBoundException | RemoteException e)
-        {
-            Logger.exception(e);
-        }
-    }
-
-    public synchronized void waitCallbacks()
-    {
-        try {
-            this.wait();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        this.ui = ui;
     }
 
     @Override
@@ -88,8 +70,7 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     @Override
     public String getUsername()
     {
-        Scanner s = new Scanner(System.in);
-        return s.nextLine();
+        return ui.getUsername();
     }
 
     @Override
@@ -112,5 +93,44 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
             Logger.exception(e);
         }
         return null;
+    }
+
+    @Override
+    public boolean connect(String serverIp, int serverPort)
+    {
+        try
+        {
+            stub = (CallbackInterface) UnicastRemoteObject.exportObject(this, 0);
+
+            Registry registry = LocateRegistry.getRegistry(serverIp);
+            server = (ServerInterface) registry.lookup("Server");
+            server.registerClient(stub);
+            running = true;
+        }
+        catch (NotBoundException | RemoteException e)
+        {
+            Logger.exception(e);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public synchronized void stop()
+    {
+        running = false;
+        this.notifyAll();
+    }
+
+    private synchronized void waitCallbacks()
+    {
+        try
+        {
+            while(running)this.wait();
+        }
+        catch (InterruptedException e)
+        {
+            Logger.exception(e);
+        }
     }
 }

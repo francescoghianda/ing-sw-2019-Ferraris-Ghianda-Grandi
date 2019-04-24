@@ -3,6 +3,7 @@ package it.polimi.se2019.network.socket.client;
 import it.polimi.se2019.network.NetworkClient;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
+import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.IOException;
@@ -20,17 +21,20 @@ public class Client implements Runnable, NetworkClient
     private Thread thread;
     private boolean running;
     private boolean connectedToServer;
+    private UI ui;
 
-    public Client()
+    public Client(UI ui)
     {
+        this.ui = ui;
         thread = new Thread(this);
     }
 
-    public void start()
+    private void start()
     {
         if(!running)thread.start();
     }
 
+    @Override
     public void stop()
     {
         try
@@ -90,6 +94,7 @@ public class Client implements Runnable, NetworkClient
             Logger.exception(e);
             return false;
         }
+        start();
         return true;
     }
 

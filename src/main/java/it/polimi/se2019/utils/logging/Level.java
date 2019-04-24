@@ -4,7 +4,7 @@ import it.polimi.se2019.utils.constants.AnsiColor;
 
 public enum Level
 {
-    INFO(0, AnsiColor.WHITE), DEBUG(1, AnsiColor.GREEN), WARNING(2, AnsiColor.YELLOW), ERROR(3, AnsiColor.RED);
+    INFO(0, AnsiColor.WHITE), DEBUG(1, AnsiColor.GREEN), WARNING(2, AnsiColor.YELLOW), ERROR(3, AnsiColor.RED), CLI(4, AnsiColor.WHITE);
 
     private int value;
     private String printColor;
