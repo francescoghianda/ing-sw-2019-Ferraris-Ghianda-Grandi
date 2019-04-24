@@ -68,6 +68,11 @@ public class Block
 		return doors[side];
 	}
 
+	public Block[] getDoors()
+	{
+		return this.doors;
+	}
+
 	public void setDoor(Block block)
 	{
 		int side;

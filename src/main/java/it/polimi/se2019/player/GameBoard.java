@@ -47,17 +47,17 @@ public class GameBoard
         return 0;
     }
 
-    public void setRedAmmo(int redAmmo)
+    public void addRedAmmo(int redAmmo)
     {
 
     }
 
-    public void setYellowAmmo(int yellowAmmo)
+    public void addYellowAmmo(int yellowAmmo)
     {
 
     }
 
-    public void setBlueAmmo(int blueAmmo)
+    public void addBlueAmmo(int blueAmmo)
     {
 
     }

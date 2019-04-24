@@ -5,9 +5,9 @@ import it.polimi.se2019.player.Player;
 public class PowerUpCard extends Card implements Grabbable
 {
 
-	public PowerUpCard()
+	public PowerUpCard(String name, String description)
 	{
-		
+		super();
 	}
 
 	public void applyTo(Player player)

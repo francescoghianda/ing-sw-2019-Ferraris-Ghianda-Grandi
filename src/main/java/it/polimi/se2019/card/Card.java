@@ -2,29 +2,32 @@ package it.polimi.se2019.card;
 
 public abstract class Card
 {
-
-	private int id;
 	private String name;
 	private String description;
 
-	public Card()
+	protected Card()
 	{
 
 	}
 
-	public int getId()
+	public final void setName(String name)
 	{
-		return 0;
+		this.name = name;
 	}
 
-	public String getName()
+	public final void setDescription(String description)
 	{
-		return "";
+		this.description = description;
 	}
 
-	public String getDescriprion()
+	public final String getName()
 	{
-		return "";
+		return name;
+	}
+
+	public final String getDescriprion()
+	{
+		return description;
 	}
 
 	public abstract String toString();

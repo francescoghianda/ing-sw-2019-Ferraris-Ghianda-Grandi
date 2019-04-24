@@ -11,10 +11,16 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Scanner;
 
 public class RmiClient implements CallbackInterface, NetworkClient, Serializable
 {
     private ServerInterface server;
+    private static volatile boolean getIncomeMessage;
+    private static volatile boolean incomeMessageReceived;
+    private static volatile NetworkMessageClient<?> message;
+
+    private static final SerializableObject lock = new SerializableObject();
 
     public RmiClient(String serverIp, int port)
     {
@@ -34,7 +40,21 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     @Override
     public void sendMessage(NetworkMessageClient<?> message) throws RemoteException
     {
-        message.setClient(this).execute();
+        if(!getIncomeMessage)
+        {
+            Thread threadMessage = new Thread(() -> message.setClient(this).execute());
+            threadMessage.start();
+        }
+        else
+        {
+            synchronized (lock)
+            {
+                RmiClient.message = message;
+                incomeMessageReceived = true;
+                lock.notifyAll();
+            }
+
+        }
     }
 
     public ServerInterface getServer()
@@ -52,6 +72,38 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
         catch (RemoteException e)
         {
             Logger.exception(e);
+        }
+    }
+
+    @Override
+    public String getUsername()
+    {
+        Scanner s = new Scanner(System.in);
+        return s.nextLine();
+    }
+
+    @Override
+    public NetworkMessageClient<?> getResponseTo(NetworkMessageServer<?> messageServer, NetworkMessageClient<?> currMessage)
+    {
+        synchronized (lock)
+        {
+            try
+            {
+                getIncomeMessage = true;
+                sendMessageToServer(messageServer.setSender(currMessage.getRecipient()));
+
+                while (!incomeMessageReceived) lock.wait();
+
+                getIncomeMessage = false;
+                incomeMessageReceived = false;
+
+                return message;
+            }
+            catch (Exception e)
+            {
+                Logger.exception(e);
+            }
+            return null;
         }
     }
 }

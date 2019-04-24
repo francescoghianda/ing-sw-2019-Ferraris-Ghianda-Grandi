@@ -2,8 +2,11 @@ package it.polimi.se2019.network.socket.server;
 
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.NetworkServer;
+import it.polimi.se2019.network.message.Messages;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
+import it.polimi.se2019.network.rmi.client.CallbackInterface;
+import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.*;
@@ -19,6 +22,7 @@ public class ClientConnection implements Runnable, NetworkServer
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
     private final GameController controller;
+    private Player player;
 
     ClientConnection(Socket client, Server server, GameController controller)
     {
@@ -65,6 +69,9 @@ public class ClientConnection implements Runnable, NetworkServer
 
     public void run()
     {
+
+        login();
+
         while(running)
         {
             try
@@ -77,6 +84,12 @@ public class ClientConnection implements Runnable, NetworkServer
                 Logger.exception(e);
             }
         }
+    }
+
+
+    private void login()
+    {
+        sendMessageToClient(Messages.LOGIN_REQUEST);
     }
 
     public synchronized void sendMessageToClient(NetworkMessageClient<?> message)
@@ -116,6 +129,18 @@ public class ClientConnection implements Runnable, NetworkServer
                 clientConnection.sendMessageToClient(message);
             }
         }
+    }
+
+    @Override
+    public Player getPlayer(CallbackInterface client)
+    {
+        return player;
+    }
+
+    @Override
+    public GameController getGameController()
+    {
+        return controller;
     }
 
     boolean isConnected()

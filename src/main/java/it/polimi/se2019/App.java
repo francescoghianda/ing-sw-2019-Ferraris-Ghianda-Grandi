@@ -21,20 +21,20 @@ public class App
 
         Logger.info(map.toString());
 
-        Server server = new Server(7000);
+        /*Server server = new Server(7000);
         server.startServer();
 
         Client client = new Client();
         client.connect("localhost", 7000);
-        client.start();
+        client.start();*/
 
-        server.writeBroadcastMessage(Messages.CHAT_MESSAGE.setParam("Ciao"));
+        //server.writeBroadcastMessage(Messages.CHAT_MESSAGE.setParam("Ciao"));
 
-        /*RmiServer server = new RmiServer(7000);
+        RmiServer server = new RmiServer(7000);
         server.startServer();
         RmiClient client = new RmiClient("localhost", 7000);
 
-        server.sendMessageToClient(Messages.CHAT_MESSAGE.setParam("Ciao").setRecipient(client));*/
+        //server.sendMessageToClient(Messages.CHAT_MESSAGE.setParam("Ciao").setRecipient(client));
 
     }
 }

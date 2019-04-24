@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Client implements Runnable, NetworkClient
 {
@@ -41,7 +42,7 @@ public class Client implements Runnable, NetworkClient
         }
         catch (IOException e)
         {
-            Logger.error(e.getMessage());
+            Logger.exception(e);
         }
     }
 
@@ -64,7 +65,7 @@ public class Client implements Runnable, NetworkClient
         }
         catch (IOException | ClassNotFoundException e)
         {
-            Logger.error(e.getMessage());
+            Logger.exception(e);
             running = false;
         }
     }
@@ -86,7 +87,7 @@ public class Client implements Runnable, NetworkClient
         }
         catch (IOException e)
         {
-            Logger.error(e.getMessage());
+            Logger.exception(e);
             return false;
         }
         return true;
@@ -101,8 +102,31 @@ public class Client implements Runnable, NetworkClient
         }
         catch (IOException e)
         {
-            Logger.error(e.getMessage());
+            Logger.exception(e);
         }
+    }
+
+    @Override
+    public String getUsername()
+    {
+        Scanner s = new Scanner(System.in);
+        return s.nextLine();
+    }
+
+    @Override
+    public NetworkMessageClient<?> getResponseTo(NetworkMessageServer<?> messageServer, NetworkMessageClient<?> currentMessage)
+    {
+        try
+        {
+            sendMessageToServer(messageServer);
+            return (NetworkMessageClient) ois.readObject();
+        }
+        catch (IOException | ClassNotFoundException e)
+        {
+            Logger.exception(e);
+        }
+
+        return null;
     }
 
 }
