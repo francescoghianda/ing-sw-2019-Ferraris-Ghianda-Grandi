@@ -1,6 +1,7 @@
 package it.polimi.se2019.network.socket.server;
 
 import it.polimi.se2019.controller.GameController;
+import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.utils.logging.Logger;
 
@@ -10,24 +11,23 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Server implements Runnable
+public class Server implements NetworkServer, Runnable
 {
-    private int port;
     private ServerSocket serverSocket;
     private Thread serverThread;
     private boolean running;
     private ArrayList<ClientConnection> clients;
     private GameController gameController;
 
-    public Server(int port)
+    public Server(GameController controller)
     {
-        this.port = port;
         this.serverThread = new Thread(this);
         this.clients = new ArrayList<>();
-        this.gameController = new GameController();
+        this.gameController = controller;
     }
 
-    public void startServer()
+    @Override
+    public void startServer(int port)
     {
         if(!running)
         {
@@ -37,8 +37,8 @@ public class Server implements Runnable
             {
                 if(serverSocket == null || serverSocket.isClosed())serverSocket = new ServerSocket(port);
                 serverThread = new Thread(this);
+                Logger.info("Server socket started! (IP: "+InetAddress.getLocalHost().getHostAddress()+", Port: "+port+")");
                 serverThread.start();
-                Logger.info("Server started! (IP: "+InetAddress.getLocalHost().getHostAddress()+", Port: "+port+")");
             }
             catch (IOException e)
             {
@@ -51,7 +51,8 @@ public class Server implements Runnable
         }
     }
 
-    public void stop()
+    @Override
+    public void stopServer()
     {
         try
         {

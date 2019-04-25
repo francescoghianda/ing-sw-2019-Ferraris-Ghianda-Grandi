@@ -11,16 +11,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class Client implements Runnable, NetworkClient
 {
     private Socket socket;
-    private static ObjectOutputStream oos;
-    private static ObjectInputStream ois;
+    private ObjectOutputStream oos;
+    private ObjectInputStream ois;
     private Thread thread;
     private boolean running;
     private boolean connectedToServer;
+    private boolean logged;
     private UI ui;
 
     public Client(UI ui)
@@ -112,10 +112,22 @@ public class Client implements Runnable, NetworkClient
     }
 
     @Override
-    public String getUsername()
+    public String getNickname()
     {
-        Scanner s = new Scanner(System.in);
-        return s.nextLine();
+        return ui.getUsername();
+    }
+
+    @Override
+    public void invalidNickname()
+    {
+
+    }
+
+    @Override
+    public void setLogged(boolean logged)
+    {
+        this.logged = logged;
+        if(logged)ui.logged();
     }
 
     @Override

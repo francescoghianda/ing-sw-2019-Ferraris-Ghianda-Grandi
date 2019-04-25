@@ -42,6 +42,12 @@ public class CLI implements UI
     }
 
     @Override
+    public void logged()
+    {
+        Logger.cli(Strings.LOGGED);
+    }
+
+    @Override
     public void update()
     {
 

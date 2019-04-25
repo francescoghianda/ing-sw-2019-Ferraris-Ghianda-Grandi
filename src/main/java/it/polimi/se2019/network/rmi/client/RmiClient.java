@@ -3,6 +3,7 @@ package it.polimi.se2019.network.rmi.client;
 import it.polimi.se2019.network.NetworkClient;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
+import it.polimi.se2019.network.rmi.server.RmiServer;
 import it.polimi.se2019.network.rmi.server.ServerInterface;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
@@ -21,6 +22,8 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     private transient volatile boolean getIncomeMessage;
     private transient volatile boolean incomeMessageReceived;
     private transient volatile NetworkMessageClient<?> message;
+
+    private boolean logged;
 
     private final transient UI ui;
 
@@ -68,9 +71,22 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     }
 
     @Override
-    public String getUsername()
+    public String getNickname()
     {
         return ui.getUsername();
+    }
+
+    @Override
+    public void invalidNickname()
+    {
+
+    }
+
+    @Override
+    public void setLogged(boolean logged)
+    {
+        this.logged = logged;
+        if(logged)ui.logged();
     }
 
     @Override
@@ -102,8 +118,8 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
         {
             stub = (CallbackInterface) UnicastRemoteObject.exportObject(this, 0);
 
-            Registry registry = LocateRegistry.getRegistry(serverIp);
-            server = (ServerInterface) registry.lookup("Server");
+            Registry serverRegistry = LocateRegistry.getRegistry(serverIp, serverPort);
+            server = (ServerInterface) serverRegistry.lookup(RmiServer.SERVER_NAME);
             server.registerClient(stub);
             running = true;
         }

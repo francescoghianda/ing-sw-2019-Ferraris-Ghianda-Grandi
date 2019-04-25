@@ -1,6 +1,6 @@
 package it.polimi.se2019.network.message;
 
-import it.polimi.se2019.network.NetworkServer;
+import it.polimi.se2019.network.ClientConnectionInterface;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
 
 import java.io.Serializable;
@@ -8,8 +8,7 @@ import java.io.Serializable;
 public class NetworkMessageServer<T> extends NetworkMessage<T> implements Serializable
 {
     private final MessageExecutor<NetworkMessageServer<T>> executor;
-    private NetworkServer clientConnection;
-
+    private ClientConnectionInterface clientConnection;
     private CallbackInterface sender;
 
     public NetworkMessageServer(MessageExecutor<NetworkMessageServer<T>> executor)
@@ -17,6 +16,7 @@ public class NetworkMessageServer<T> extends NetworkMessage<T> implements Serial
         this.executor = executor;
     }
 
+    @Override
     public NetworkMessageServer<T> setParam(T param)
     {
         NetworkMessageServer<T> nms = this.clone();
@@ -41,22 +41,24 @@ public class NetworkMessageServer<T> extends NetworkMessage<T> implements Serial
         return this.executor;
     }
 
-    public NetworkMessageServer<T> setClientConnection(NetworkServer connection)
+    public NetworkMessageServer<T> setClientConnection(ClientConnectionInterface connection)
     {
         this.clientConnection = connection;
         return this;
     }
 
-    public NetworkServer getServer()
+    public ClientConnectionInterface getServer()
     {
         return this.clientConnection;
     }
 
+    @Override
     public void execute()
     {
         getExecutor().execute(this);
     }
 
+    @Override
     public NetworkMessageServer<T> clone()
     {
         NetworkMessageServer<T> cloned = new NetworkMessageServer<>(executor);

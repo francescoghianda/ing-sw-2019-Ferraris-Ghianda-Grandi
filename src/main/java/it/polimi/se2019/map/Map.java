@@ -3,31 +3,32 @@ package it.polimi.se2019.map;
 import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.logging.Logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Map
 {
 	private ArrayList<Room> map;
-
 	private Scanner scanner;
 
-	public Map()
+	private Map()
 	{
 		this.map = new ArrayList<>();
 	}
 
-	public ArrayList<Room> getMap()
+	public List<Room> getMap()
 	{
 		return map;
 	}
 
-	public void initMap()
+	public static Map createMap()
+	{
+		return new Map().initMap();
+	}
+
+	private Map initMap()
 	{
 		int mapNumber = 1 + new Random().nextInt(4);
 		Logger.debug("Map "+mapNumber+" selected");
@@ -42,6 +43,7 @@ public class Map
 		readMap();
 		readDoors();
 		Logger.debug("Map ready!");
+		return this;
 	}
 
 	private void readMap()

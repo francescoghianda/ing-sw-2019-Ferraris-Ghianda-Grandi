@@ -16,6 +16,7 @@ public class NetworkMessageClient<T> extends NetworkMessage<T> implements Serial
         this.executor = executor;
     }
 
+    @Override
     public NetworkMessageClient<T> setParam(T param)
     {
         NetworkMessageClient<T> nmc = this.clone();
@@ -51,6 +52,7 @@ public class NetworkMessageClient<T> extends NetworkMessage<T> implements Serial
         return this.executor;
     }
 
+    @Override
     public void execute()
     {
         getExecutor().execute(this);

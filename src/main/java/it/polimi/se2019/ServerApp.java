@@ -1,21 +1,64 @@
 package it.polimi.se2019;
 
+import it.polimi.se2019.controller.GameController;
+import it.polimi.se2019.network.NetworkServer;
+import it.polimi.se2019.network.rmi.server.RmiServer;
+import it.polimi.se2019.network.socket.server.Server;
+import it.polimi.se2019.ui.cli.FormattedInput;
+import it.polimi.se2019.ui.cli.Option;
+import it.polimi.se2019.ui.cli.Options;
+import it.polimi.se2019.ui.cli.Strings;
+import it.polimi.se2019.utils.logging.Logger;
+
+import java.rmi.RemoteException;
+
 public class ServerApp
 {
+    private static final int SOCKET_MODE = 0;
+    private static final int RMI_MODE = 1;
+    private static final String TITLE = "    _      _                   _ _             ___                      \n" +
+            "   /_\\  __| |_ _ ___ _ _  __ _| (_)_ _  __ _  / __| ___ _ ___ _____ _ _ \n" +
+            "  / _ \\/ _` | '_/ -_) ' \\/ _` | | | ' \\/ _` | \\__ \\/ -_) '_\\ V / -_) '_|\n" +
+            " /_/ \\_\\__,_|_| \\___|_||_\\__,_|_|_|_||_\\__,_| |___/\\___|_|  \\_/\\___|_|  \n" +
+            "                                                                        ";
+    private NetworkServer server;
+
+    public ServerApp()
+    {
+
+    }
 
     public static void main(String[] args)
     {
-        /*Server server = new Server(7000);
-        server.startServer();*/
+        new ServerApp().startServerCli();
+    }
 
-        /*Client client = new Client();
-        client.connect("localhost", 7000);
-        client.start();*/
+    private void startServer(int serverMode, int port)
+    {
+        GameController controller = new GameController();
 
-        //server.writeBroadcastMessage(Messages.CHAT_MESSAGE.setParam("Ciao"));
+        if(serverMode == SOCKET_MODE) server = new Server(controller);
+        else
+         {
+            try
+            {
+                server = new RmiServer(controller);
+            }
+            catch (RemoteException e)
+            {
+                Logger.exception(e);
+            }
+        }
+        server.startServer(port);
+    }
 
-        //RmiServer server = new RmiServer(7000);
-        //server.startServer();
-        //RmiClient client = new RmiClient("localhost", 7000);
+    private void startServerCli()
+    {
+        Logger.getInstance().enableGameMode(true);
+        Logger.cli(TITLE);
+        Option<Integer> serverMode = new Options<Integer>("Scegli la modalità di connessione:", true).addOption("Socket", "S", SOCKET_MODE).addOption("RMI", "R", RMI_MODE).show();
+        int serverPort = Integer.parseInt(new FormattedInput(Strings.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, port -> Integer.parseInt(port) >= 1024 && Integer.parseInt(port) <= 65535).setDefaultResponse(serverMode.getValue() == SOCKET_MODE ? "0" : "1099").show());
+        Logger.getInstance().enableGameMode(false);
+        startServer(serverMode.getValue(), serverPort);
     }
 }

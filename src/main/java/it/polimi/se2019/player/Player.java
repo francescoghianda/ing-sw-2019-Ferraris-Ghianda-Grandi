@@ -3,7 +3,7 @@ package it.polimi.se2019.player;
 import it.polimi.se2019.card.PowerUpCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.map.Block;
-import it.polimi.se2019.network.NetworkServer;
+import it.polimi.se2019.network.ClientConnectionInterface;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
 import it.polimi.se2019.utils.constants.GameColor;
 
@@ -21,17 +21,15 @@ public class Player
 	private GameBoard gameBoard;
 	private ArrayList<Integer> executedAction;
 
-	private final String nickname;
 	private final CallbackInterface callbackInterface;
-	private final NetworkServer server;
+	private final ClientConnectionInterface server;
 
-	public Player(GameColor color, String nickname, CallbackInterface callbackInterface, NetworkServer server)
+	public Player(GameColor color, CallbackInterface callbackInterface, ClientConnectionInterface server)
 	{
 		weapons = new ArrayList<>();
 		powerUps = new ArrayList<>();
 		executedAction = new ArrayList<>();
 		this.color = color;
-		this.nickname = nickname;
 		this.callbackInterface = callbackInterface;
 		this.server = server;
 	}

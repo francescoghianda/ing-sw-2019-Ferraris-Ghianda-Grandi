@@ -6,4 +6,5 @@ public interface UI
     void init();
 
     String getUsername();
+    void logged();
 }

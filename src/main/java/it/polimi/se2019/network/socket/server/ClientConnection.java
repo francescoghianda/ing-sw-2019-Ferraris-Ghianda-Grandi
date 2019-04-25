@@ -1,7 +1,7 @@
 package it.polimi.se2019.network.socket.server;
 
 import it.polimi.se2019.controller.GameController;
-import it.polimi.se2019.network.NetworkServer;
+import it.polimi.se2019.network.ClientConnectionInterface;
 import it.polimi.se2019.network.message.Messages;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
@@ -11,18 +11,22 @@ import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ClientConnection implements Runnable, NetworkServer
+public class ClientConnection implements Runnable, ClientConnectionInterface
 {
     private Thread userThread;
     private volatile boolean running;
     private boolean connected;
+    private boolean logged;
     private Socket client;
     private Server server;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
     private final GameController controller;
     private Player player;
+    private String nickname;
 
     ClientConnection(Socket client, Server server, GameController controller)
     {
@@ -132,9 +136,42 @@ public class ClientConnection implements Runnable, NetworkServer
     }
 
     @Override
+    public void setNickname(String nickname, CallbackInterface client)
+    {
+        this.nickname = nickname;
+    }
+
+    @Override
+    public String getNickname(CallbackInterface client)
+    {
+        return this.nickname;
+    }
+
+    @Override
+    public void setLogged(boolean logged, CallbackInterface client)
+    {
+        this.logged = logged;
+        this.player = controller.createPlayer();
+    }
+
+    @Override
+    public boolean isLogged(CallbackInterface client)
+    {
+        return this.logged;
+    }
+
+    @Override
     public Player getPlayer(CallbackInterface client)
     {
         return player;
+    }
+
+    @Override
+    public List<String> getNicknames()
+    {
+        List<String> nicknames = new ArrayList<>();
+        for(ClientConnection clientConnection : server.getClients())nicknames.add(clientConnection.nickname);
+        return nicknames;
     }
 
     @Override

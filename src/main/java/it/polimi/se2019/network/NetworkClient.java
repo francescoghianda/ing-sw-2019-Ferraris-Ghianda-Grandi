@@ -8,6 +8,8 @@ public interface NetworkClient
     boolean connect(String serverIp, int serverPort);
     void sendMessageToServer(NetworkMessageServer<?> message);
     NetworkMessageClient getResponseTo(NetworkMessageServer<?> messageToServer, NetworkMessageClient<?> currentMessage);
-    String getUsername();
+    String getNickname();
+    void invalidNickname();
+    void setLogged(boolean logged);
     void stop();
 }
