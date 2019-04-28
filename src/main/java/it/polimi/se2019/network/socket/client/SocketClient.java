@@ -12,7 +12,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
-public class Client implements Runnable, NetworkClient
+public class SocketClient implements Runnable, NetworkClient
 {
     private Socket socket;
     private ObjectOutputStream oos;
@@ -23,7 +23,7 @@ public class Client implements Runnable, NetworkClient
     private boolean logged;
     private UI ui;
 
-    public Client(UI ui)
+    public SocketClient(UI ui)
     {
         this.ui = ui;
         thread = new Thread(this);

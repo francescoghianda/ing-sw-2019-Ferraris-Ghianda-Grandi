@@ -1,5 +1,6 @@
 package it.polimi.se2019.player;
 
+import it.polimi.se2019.utils.constants.GameMode;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.lang.reflect.Field;
@@ -8,16 +9,32 @@ import java.util.stream.Collectors;
 
 public class ActionsGroup
 {
-	public static final ActionsGroup RUN = new ActionsGroup(Action.MOVE_ACTION, Action.MOVE_ACTION, Action.MOVE_ACTION);
-	public static final ActionsGroup MOVE_AND_GRAB = new ActionsGroup(Action.MOVE_ACTION, Action.GRAB_ACTION);
-	public static final ActionsGroup FIRE = new ActionsGroup(Action.FIRE_ACTION);
+	public static final ActionsGroup RUN = new ActionsGroup(GameMode.NORMAL, 0, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.MOVE_ACTION);
+	public static final ActionsGroup MOVE_AND_GRAB = new ActionsGroup(GameMode.NORMAL, 0, Action.MOVE_ACTION, Action.GRAB_ACTION);
+	public static final ActionsGroup FIRE = new ActionsGroup(GameMode.NORMAL, 0, Action.FIRE_ACTION);
+
+	public static final ActionsGroup TWO_MOVES_AND_GRAB = new ActionsGroup(GameMode.NORMAL, 3, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.GRAB_ACTION);
+	public static final ActionsGroup MOVE_AND_SHOOT = new ActionsGroup(GameMode.NORMAL, 6, Action.MOVE_ACTION, Action.FIRE_ACTION);
+
+	public static final ActionsGroup MOVE_RELOAD_SHOOT = new ActionsGroup(GameMode.FINAL_FRENZY_BEFORE_FP, 0, Action.MOVE_ACTION, Action.RELOAD_ACTION, Action.FIRE_ACTION);
+	public static final ActionsGroup FOUR_MOVES = new ActionsGroup(GameMode.FINAL_FRENZY_BEFORE_FP, 0, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.MOVE_ACTION);
+	public static final ActionsGroup TWO_MOVES_AND_GRAB_FINAL_FRENZY = new ActionsGroup(GameMode.FINAL_FRENZY_BEFORE_FP, 0, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.GRAB_ACTION);
+
+	public static final ActionsGroup TWO_MOVES_RELOAD_SHOOT = new ActionsGroup(GameMode.FINAL_FRENZY_AFTER_FP, 0, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.RELOAD_ACTION, Action.FIRE_ACTION);
+	public static final ActionsGroup THREE_MOVES_AND_GRAB = new ActionsGroup(GameMode.FINAL_FRENZY_AFTER_FP, 0, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.GRAB_ACTION);
+
 
 	private final ArrayList<Integer> actions;
+	private final GameMode gameMode;
+	private final int damageToActivate;
 
-	public ActionsGroup(Integer... actions)
+	public ActionsGroup(GameMode gameMode, int damageToActivate, Integer... actions)
 	{
 		this.actions = new ArrayList<>();
 		this.actions.addAll(Arrays.asList(actions));
+
+		this.gameMode = gameMode;
+		this.damageToActivate = damageToActivate;
 	}
 
 	public List<Integer> getActions()
@@ -52,7 +69,9 @@ public class ActionsGroup
 
 	public static ActionsGroup[] getPossibleActionGroups(Player player)
 	{
-		Integer[] alreadyExecutedActions = player.getExecutedAction();
+		//TODO filtrare i gruppi in base alla gamemode e al danno
+
+		Integer[] alreadyExecutedActions = player.getExecutedActions();
 
 		ArrayList<ActionsGroup> groups = new ArrayList<>(Arrays.asList(ActionsGroup.clonedValues()));
 
@@ -110,7 +129,7 @@ public class ActionsGroup
 	{
 		Integer[] clonedActions = new Integer[actions.size()];
 		clonedActions = actions.toArray(clonedActions);
-		return new ActionsGroup(clonedActions);
+		return new ActionsGroup(gameMode, damageToActivate, clonedActions);
 	}
 
 	@Override

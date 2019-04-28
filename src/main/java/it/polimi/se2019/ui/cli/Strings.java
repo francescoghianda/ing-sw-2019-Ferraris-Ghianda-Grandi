@@ -2,11 +2,12 @@ package it.polimi.se2019.ui.cli;
 
 public class Strings
 {
-    public static final String TITLE = "    _        _                             _   _               \n" +
-            "   /_\\    __| |  _ _   ___   _ _    __ _  | | (_)  _ _    __ _ \n" +
-            "  / _ \\  / _` | | '_| / -_) | ' \\  / _` | | | | | | ' \\  / _` |\n" +
-            " /_/ \\_\\ \\__,_| |_|   \\___| |_||_| \\__,_| |_| |_| |_||_| \\__,_|\n" +
-            "                                                               ";
+    public static final String TITLE = "     _       _                      _ _             \n" +
+            "    / \\   __| |_ __ ___ _ __   __ _| (_)_ __   __ _ \n" +
+            "   / _ \\ / _` | '__/ _ \\ '_ \\ / _` | | | '_ \\ / _` |\n" +
+            "  / ___ \\ (_| | | |  __/ | | | (_| | | | | | | (_| |\n" +
+            " /_/   \\_\\__,_|_|  \\___|_| |_|\\__,_|_|_|_| |_|\\__,_|\n" +
+            "                                                    ";
 
     public static final String GET_SERVER_IP = "Inserisci l'indirizzo ip del server: ";
     public static final String GET_SERVER_PORT = "Inserisci la porta del server ip del server [1024- 65535]: ";

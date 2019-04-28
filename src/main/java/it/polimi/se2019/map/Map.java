@@ -10,11 +10,16 @@ import java.util.Scanner;
 
 public class Map
 {
+	private final char[][] cliMap;
+	final int mapWidth = 48;
+	final int mapHeight = 24;
+
 	private ArrayList<Room> map;
 	private Scanner scanner;
 
 	private Map()
 	{
+		cliMap = new char[mapHeight][mapWidth];
 		this.map = new ArrayList<>();
 	}
 
@@ -60,7 +65,7 @@ public class Map
 
 	private void readDoors()
 	{
-		String[] doors = scanner.nextLine().split(";");
+		String[] doors = scanner.nextLine().split(",");
 		for(String door : doors)
 		{
 			String[] blocks = door.split("-");
@@ -69,6 +74,7 @@ public class Map
 			block1.setDoor(block2);
 			block2.setDoor(block1);
 		}
+
 	}
 
 	private void createBlock(GameColor color, boolean spawnPoint, int x, int y)
@@ -119,6 +125,39 @@ public class Map
 			}
 		}
 		return stringBuilder.toString();
+	}
+
+	private static final String EMPTY_BLOCK = "            \n            \n            \n            \n            \n            \n            \n            \n";
+
+	public String drawMap()
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		Block[][] mapMatrix = getMapMatrix();
+		String[][] blockString = new String[3][4];
+
+		for(int i = 0; i < mapMatrix.length; i++)
+			for(int j = 0; j < mapMatrix[i].length; j++)
+			{
+				if(mapMatrix[i][j] != null)blockString[i][j] = mapMatrix[i][j].drawBlock();
+				else blockString[i][j] = EMPTY_BLOCK;
+			}
+
+
+		for(int x = 0; x < 3; x++)
+		{
+			for(int i = 0; i < 8; i++)
+			{
+				for(int j = 0; j < 4 ; j++)
+				{
+					String line = blockString[x][j].split("\n")[i];
+					stringBuilder.append(line);
+				}
+				stringBuilder.append("\n");
+			}
+		}
+
+		return stringBuilder.toString();
+
 	}
 
 }

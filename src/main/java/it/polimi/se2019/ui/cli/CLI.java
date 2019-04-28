@@ -26,6 +26,7 @@ public class CLI implements UI
         Option<Integer> serverModeOption = new Options<Integer>(Strings.GET_CONNECTION_MODE, true).addOption("Socket", "S", NetworkInterface.SOCKET_MODE).addOption("RMI", "R", NetworkInterface.RMI_MODE).show();
         String serverIp = new FormattedInput(Strings.GET_SERVER_IP, FormattedInput.IP_REGEX).show();
         int serverPort = Integer.parseInt(new FormattedInput(Strings.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, port -> Integer.parseInt(port) >= 1024 && Integer.parseInt(port) <= 65535).show());
+        Logger.cli(Strings.CONNECTING);
         client.connect(serverIp, serverPort, serverModeOption.getValue());
     }
 

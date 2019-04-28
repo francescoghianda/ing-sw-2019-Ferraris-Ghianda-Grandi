@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class NetworkMessageServer<T> extends NetworkMessage<T> implements Serializable
 {
     private final MessageExecutor<NetworkMessageServer<T>> executor;
-    private ClientConnectionInterface clientConnection;
+    private transient ClientConnectionInterface clientConnection;
     private CallbackInterface sender;
 
     public NetworkMessageServer(MessageExecutor<NetworkMessageServer<T>> executor)
@@ -47,7 +47,7 @@ public class NetworkMessageServer<T> extends NetworkMessage<T> implements Serial
         return this;
     }
 
-    public ClientConnectionInterface getServer()
+    public ClientConnectionInterface getClientConnection()
     {
         return this.clientConnection;
     }

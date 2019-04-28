@@ -21,7 +21,9 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     private transient CallbackInterface stub;
     private transient volatile boolean getIncomeMessage;
     private transient volatile boolean incomeMessageReceived;
+    private transient volatile boolean waitResponse;
     private transient volatile NetworkMessageClient<?> message;
+    private transient volatile NetworkMessageServer<?> responseMessage;
 
     private boolean logged;
 
@@ -52,6 +54,31 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
         }
     }
 
+    @Override
+    public boolean isConnected()
+    {
+        return true;
+    }
+
+    @Override
+    public synchronized NetworkMessageServer ask(NetworkMessageClient<?> message) throws RemoteException
+    {
+        try
+        {
+            waitResponse = true;
+            Thread threadMessage = new Thread(() -> message.setClient(this).execute());
+            threadMessage.start();
+            while (waitResponse)this.wait();
+            return responseMessage;
+        }
+        catch (InterruptedException e)
+        {
+            Logger.exception(e);
+            Thread.currentThread().interrupt();
+            throw new RemoteException();
+        }
+    }
+
     public ServerInterface getServer()
     {
         return this.server;
@@ -60,13 +87,22 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     @Override
     public synchronized void sendMessageToServer(NetworkMessageServer<?> message)
     {
-        try
+        if(waitResponse)
         {
-            server.sendMessage(message.setSender(stub));
+            responseMessage = message.setSender(stub);
+            waitResponse = false;
+            this.notifyAll();
         }
-        catch (RemoteException e)
+        else
         {
-            Logger.exception(e);
+            try
+            {
+                server.sendMessage(message.setSender(stub));
+            }
+            catch (RemoteException e)
+            {
+                Logger.exception(e);
+            }
         }
     }
 
@@ -79,7 +115,7 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     @Override
     public void invalidNickname()
     {
-
+        //TODO
     }
 
     @Override
@@ -95,7 +131,7 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
         try
         {
             getIncomeMessage = true;
-            sendMessageToServer(messageServer.setSender(currMessage.getRecipient()));
+            sendMessageToServer(messageServer.setSender(stub));
 
             while (!incomeMessageReceived) this.wait();
 
@@ -135,18 +171,5 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     public synchronized void stop()
     {
         running = false;
-        this.notifyAll();
-    }
-
-    private synchronized void waitCallbacks()
-    {
-        try
-        {
-            while(running)this.wait();
-        }
-        catch (InterruptedException e)
-        {
-            Logger.exception(e);
-        }
     }
 }

@@ -2,33 +2,34 @@ package it.polimi.se2019.network.socket.server;
 
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.ClientConnectionInterface;
+import it.polimi.se2019.network.OnClientDisconnectionListener;
 import it.polimi.se2019.network.message.Messages;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
-import it.polimi.se2019.network.rmi.client.CallbackInterface;
+import it.polimi.se2019.network.rmi.server.RmiClientConnection;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
-public class ClientConnection implements Runnable, ClientConnectionInterface
+public class SocketClientConnection implements Runnable, ClientConnectionInterface
 {
     private Thread userThread;
     private volatile boolean running;
     private boolean connected;
     private boolean logged;
     private Socket client;
-    private Server server;
+    private SocketServer server;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
     private final GameController controller;
     private Player player;
     private String nickname;
 
-    ClientConnection(Socket client, Server server, GameController controller)
+    private OnClientDisconnectionListener clientDisconnectionListener;
+
+    SocketClientConnection(Socket client, SocketServer server, GameController controller)
     {
         this.controller = controller;
 
@@ -56,7 +57,7 @@ public class ClientConnection implements Runnable, ClientConnectionInterface
         }
     }
 
-    void stop()
+    public void stop()
     {
         try
         {
@@ -85,7 +86,8 @@ public class ClientConnection implements Runnable, ClientConnectionInterface
             }
             catch (ClassNotFoundException | NullPointerException | IOException e)
             {
-                Logger.exception(e);
+                lostConnection();
+                //Logger.exception(e);
             }
         }
     }
@@ -106,72 +108,73 @@ public class ClientConnection implements Runnable, ClientConnectionInterface
         }
         catch (IOException e)
         {
-            running = false;
-            connected = false;
-            Logger.exception(e);
-        }
-    }
-
-    private synchronized void notifyAllClient(NetworkMessageClient<?> message)
-    {
-        for (ClientConnection clientConnection : server.getClients())
-        {
-            if(clientConnection.isConnected() && !clientConnection.equals(this))
-            {
-                clientConnection.sendMessageToClient(message);
-            }
+            lostConnection();
+            //Logger.exception(e);
         }
     }
 
     @Override
-    public synchronized void sendBroadcastMessage(NetworkMessageClient<?> message)
+    public synchronized void notifyOtherClients(NetworkMessageClient<?> message)
     {
-        for (ClientConnection clientConnection : server.getClients())
+        server.getClients().forEach(clientConnection ->
         {
-            if(clientConnection.isConnected())
-            {
-                clientConnection.sendMessageToClient(message);
-            }
-        }
+            if(!clientConnection.equals(this))clientConnection.sendMessageToClient(message);
+        });
     }
 
     @Override
-    public void setNickname(String nickname, CallbackInterface client)
+    public NetworkMessageServer getResponseTo(NetworkMessageClient<?> messageToClient)
+    {
+        try
+        {
+            sendMessageToClient(messageToClient);
+            return (NetworkMessageServer) ois.readObject();
+        }
+        catch (IOException | ClassNotFoundException e)
+        {
+            //Logger.exception(e);
+            lostConnection();
+        }
+
+        return null;
+    }
+
+    private void lostConnection()
+    {
+        stop();
+        Logger.warning("Client "+nickname+" has disconnected!");
+        clientDisconnectionListener.onClientDisconnection(this);
+    }
+
+    @Override
+    public void setUsername(String nickname)
     {
         this.nickname = nickname;
     }
 
     @Override
-    public String getNickname(CallbackInterface client)
+    public String getUsername()
     {
         return this.nickname;
     }
 
     @Override
-    public void setLogged(boolean logged, CallbackInterface client)
+    public void setLogged(boolean logged)
     {
         this.logged = logged;
-        this.player = controller.createPlayer();
+        this.player = controller.createPlayer(this);
     }
 
     @Override
-    public boolean isLogged(CallbackInterface client)
+    public boolean isLogged()
     {
         return this.logged;
     }
 
     @Override
-    public Player getPlayer(CallbackInterface client)
+    public Player getPlayer()
     {
         return player;
-    }
-
-    @Override
-    public List<String> getNicknames()
-    {
-        List<String> nicknames = new ArrayList<>();
-        for(ClientConnection clientConnection : server.getClients())nicknames.add(clientConnection.nickname);
-        return nicknames;
     }
 
     @Override
@@ -185,13 +188,26 @@ public class ClientConnection implements Runnable, ClientConnectionInterface
         return this.connected;
     }
 
-    public Server getServer()
+    @Override
+    public SocketServer getServer()
     {
         return server;
+    }
+
+    @Override
+    public void setPlayer(Player player)
+    {
+        this.player = player;
     }
 
     public GameController getGameCotroller()
     {
         return controller;
+    }
+
+    public SocketClientConnection setOnClientDisconnectionListener(OnClientDisconnectionListener listener)
+    {
+        this.clientDisconnectionListener = listener;
+        return this;
     }
 }

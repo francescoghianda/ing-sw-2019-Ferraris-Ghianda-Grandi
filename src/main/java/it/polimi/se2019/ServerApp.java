@@ -3,7 +3,7 @@ package it.polimi.se2019;
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.rmi.server.RmiServer;
-import it.polimi.se2019.network.socket.server.Server;
+import it.polimi.se2019.network.socket.server.SocketServer;
 import it.polimi.se2019.ui.cli.FormattedInput;
 import it.polimi.se2019.ui.cli.Option;
 import it.polimi.se2019.ui.cli.Options;
@@ -35,9 +35,9 @@ public class ServerApp
 
     private void startServer(int serverMode, int port)
     {
-        GameController controller = new GameController();
+        GameController controller = new GameController(server);
 
-        if(serverMode == SOCKET_MODE) server = new Server(controller);
+        if(serverMode == SOCKET_MODE) server = new SocketServer(controller);
         else
          {
             try

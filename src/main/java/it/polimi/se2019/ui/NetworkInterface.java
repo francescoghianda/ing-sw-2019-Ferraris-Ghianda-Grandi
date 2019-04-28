@@ -2,7 +2,7 @@ package it.polimi.se2019.ui;
 
 import it.polimi.se2019.network.NetworkClient;
 import it.polimi.se2019.network.rmi.client.RmiClient;
-import it.polimi.se2019.network.socket.client.Client;
+import it.polimi.se2019.network.socket.client.SocketClient;
 
 public class NetworkInterface
 {
@@ -23,7 +23,7 @@ public class NetworkInterface
         this.connectionMode = connectionMode;
 
         if (connectionMode == RMI_MODE) client = new RmiClient(ui);
-        else client = new Client(ui);
+        else client = new SocketClient(ui);
         client.connect(serverIp, serverPort);
     }
 }

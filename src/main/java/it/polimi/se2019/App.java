@@ -10,10 +10,5 @@ public class App
         UI ui = new CLI();
         ui.init();
 
-        //Map map = new Map();
-        //map.initMap();
-
-        //Logger.info(map.toString());
-
     }
 }

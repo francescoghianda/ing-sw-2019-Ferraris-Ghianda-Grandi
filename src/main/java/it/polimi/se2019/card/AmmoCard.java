@@ -21,9 +21,9 @@ public class AmmoCard extends Card
 
 	public void apply(Player player)
 	{
-		player.getGameBoard().addRedAmmo(this.redAmmo);
-		player.getGameBoard().addYellowAmmo(this.yellowAmmo);
-		player.getGameBoard().addBlueAmmo(this.blueAmmo);
+		player.getGameBoard().setRedAmmo(this.redAmmo);
+		player.getGameBoard().setYellowAmmo(this.yellowAmmo);
+		player.getGameBoard().setBlueAmmo(this.blueAmmo);
 	}
 
 	public int getRedAmmo()

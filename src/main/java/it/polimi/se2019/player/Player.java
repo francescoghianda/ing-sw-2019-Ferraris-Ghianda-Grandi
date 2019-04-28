@@ -2,17 +2,20 @@ package it.polimi.se2019.player;
 
 import it.polimi.se2019.card.PowerUpCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
+import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.map.Block;
 import it.polimi.se2019.network.ClientConnectionInterface;
+import it.polimi.se2019.network.message.NetworkMessageClient;
+import it.polimi.se2019.network.message.NetworkMessageServer;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
 import it.polimi.se2019.utils.constants.GameColor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Player
 {
-
 	private final GameColor color;
 	private boolean startingPlayer;
 	private ArrayList<WeaponCard> weapons;
@@ -20,18 +23,26 @@ public class Player
 	private Block block;
 	private GameBoard gameBoard;
 	private ArrayList<Integer> executedAction;
+	private GameController gameController;
 
-	private final CallbackInterface callbackInterface;
+	//private final CallbackInterface callbackInterface;
 	private final ClientConnectionInterface server;
 
-	public Player(GameColor color, CallbackInterface callbackInterface, ClientConnectionInterface server)
+	public Player(GameColor color, GameController gameController, ClientConnectionInterface server)
 	{
 		weapons = new ArrayList<>();
 		powerUps = new ArrayList<>();
 		executedAction = new ArrayList<>();
+		gameBoard = new GameBoard();
 		this.color = color;
-		this.callbackInterface = callbackInterface;
+		//this.callbackInterface = callbackInterface;
 		this.server = server;
+		this.gameController = gameController;
+	}
+
+	public GameController getGameController()
+	{
+		return this.gameController;
 	}
 
 	public GameBoard getGameBoard()
@@ -49,7 +60,7 @@ public class Player
 		this.executedAction.clear();
 	}
 
-	public Block[] getVisibleBlock()
+	public Block[] getVisibleBlocks()
 	{
 		ArrayList<Block> visibleBlocks = new ArrayList<>(block.getRoom().getBlocks());
 		if(block.hasDoor())
@@ -65,7 +76,16 @@ public class Player
 		return visibleBlocks.toArray(visible);
 	}
 
-	public Integer[] getExecutedAction()
+	public Player[] getVisiblePlayers()
+	{
+		Block[] visibleBlocks = getVisibleBlocks();
+		List<Player> visiblePlayer = new ArrayList<>();
+		for(Block visibleBlock : visibleBlocks)visiblePlayer.addAll(visibleBlock.getPlayers());
+		Player[] players = new Player[visiblePlayer.size()];
+		return visiblePlayer.toArray(players);
+	}
+
+	public Integer[] getExecutedActions()
 	{
 		Integer[] executed = new Integer[executedAction.size()];
 		return executedAction.toArray(executed);
@@ -97,25 +117,35 @@ public class Player
 		return startingPlayer;
 	}
 
+	public void setAsStartingPlayer(boolean startingPlayer)
+	{
+		this.startingPlayer = startingPlayer;
+	}
+
 	public Block getBlock()
 	{
 		return this.block;
 	}
-
 
 	public void setBlock(Block block)
 	{
 		this.block = block;
 	}
 
-	private boolean pathPossible(int currX, int currY, int destX, int destY)
+
+	public NetworkMessageServer getResponseTo(NetworkMessageClient<?> message)
 	{
-		return false;
+		return server.getResponseTo(message);
 	}
 
-	private void execAction(ActionsGroup actionsGroup)
+	public void sendMessageToClient(NetworkMessageClient<?> message)
 	{
+		server.sendMessageToClient(message);
+	}
 
+	public void notifyOtherClients(NetworkMessageClient<?> message)
+	{
+		server.notifyOtherClients(message);
 	}
 
 }
