@@ -1,7 +1,7 @@
 package it.polimi.se2019.network.rmi.server;
 
 import it.polimi.se2019.controller.GameController;
-import it.polimi.se2019.network.ClientConnectionInterface;
+import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
 import it.polimi.se2019.network.message.Messages;
@@ -23,8 +23,8 @@ import java.util.List;
 public class RmiServer extends UnicastRemoteObject implements NetworkServer, ServerInterface, OnClientDisconnectionListener
 {
     public static final String SERVER_NAME = "Server";
-    private transient HashMap<CallbackInterface, ClientConnectionInterface> clients;
-    private transient HashMap<String, ClientConnectionInterface> disconnectedClients;
+    private transient HashMap<CallbackInterface, ClientConnection> clients;
+    private transient HashMap<String, ClientConnection> disconnectedClients;
     private transient GameController gameController;
     private transient boolean running;
 
@@ -92,7 +92,7 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
     public synchronized void registerClient(CallbackInterface clientStub) throws RemoteException
     {
         Logger.info("Client connected!");
-        ClientConnectionInterface connectionInterface = new RmiClientConnection(clientStub, this, gameController).setOnClientDisconnectionListener(this);
+        ClientConnection connectionInterface = new RmiClientConnection(clientStub, this, gameController).setOnClientDisconnectionListener(this);
         clients.put(clientStub, connectionInterface);
         new ConnectionController(connectionInterface).setOnClientDisconnectionListener(this).start();
         clients.get(clientStub).sendMessageToClient(Messages.LOGIN_REQUEST);
@@ -113,12 +113,12 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
     public List<String> getConnectedClientsUsername()
     {
         List<String> allUsername = new ArrayList<>();
-        for(ClientConnectionInterface connection : clients.values())allUsername.add(connection.getUsername());
+        for(ClientConnection connection : clients.values())allUsername.add(connection.getUsername());
         return allUsername;
     }
 
     @Override
-    public void onClientDisconnection(ClientConnectionInterface disconnectedClient)
+    public void onClientDisconnection(ClientConnection disconnectedClient)
     {
         Logger.warning("Client "+disconnectedClient.getUsername()+" has disconnected!");
         disconnectedClient.setLogged(false);

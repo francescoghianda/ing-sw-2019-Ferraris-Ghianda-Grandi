@@ -1,7 +1,7 @@
 package it.polimi.se2019.network.socket.server;
 
 import it.polimi.se2019.controller.GameController;
-import it.polimi.se2019.network.ClientConnectionInterface;
+import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
 import it.polimi.se2019.network.message.NetworkMessageClient;
@@ -20,10 +20,10 @@ public class SocketServer implements NetworkServer, Runnable, OnClientDisconnect
     private ServerSocket serverSocket;
     private Thread serverThread;
     private boolean running;
-    private ArrayList<ClientConnectionInterface> clients;
+    private ArrayList<ClientConnection> clients;
     private GameController gameController;
 
-    private HashMap<String, ClientConnectionInterface> disconnectedClients;
+    private HashMap<String, ClientConnection> disconnectedClients;
 
     public SocketServer(GameController controller)
     {
@@ -65,7 +65,7 @@ public class SocketServer implements NetworkServer, Runnable, OnClientDisconnect
         {
             Logger.info("Stopping server...");
 
-            for (ClientConnectionInterface client : clients) client.stop();
+            for (ClientConnection client : clients) client.stop();
 
             running = false;
             serverSocket.close();
@@ -97,8 +97,8 @@ public class SocketServer implements NetworkServer, Runnable, OnClientDisconnect
     @Override
     public void clientReconnected(String username, CallbackInterface client)
     {
-        ClientConnectionInterface clientConnection = null;
-        for(ClientConnectionInterface connection : clients)if(connection.getUsername().equals(username))clientConnection = connection;
+        ClientConnection clientConnection = null;
+        for(ClientConnection connection : clients)if(connection.getUsername().equals(username))clientConnection = connection;
         if(clientConnection != null)clientConnection.setPlayer(disconnectedClients.get(username).getPlayer());
         disconnectedClients.remove(username);
     }
@@ -131,13 +131,13 @@ public class SocketServer implements NetworkServer, Runnable, OnClientDisconnect
         }
     }
 
-    public synchronized List<ClientConnectionInterface> getClients()
+    public synchronized List<ClientConnection> getClients()
     {
         return this.clients;
     }
 
     @Override
-    public void onClientDisconnection(ClientConnectionInterface disconnectedClient)
+    public void onClientDisconnection(ClientConnection disconnectedClient)
     {
         disconnectedClients.putIfAbsent(disconnectedClient.getUsername(), disconnectedClient);
         clients.remove(disconnectedClient);

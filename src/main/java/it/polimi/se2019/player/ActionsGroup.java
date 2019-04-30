@@ -28,7 +28,7 @@ public class ActionsGroup
 	private final GameMode gameMode;
 	private final int damageToActivate;
 
-	public ActionsGroup(GameMode gameMode, int damageToActivate, Integer... actions)
+	private ActionsGroup(GameMode gameMode, int damageToActivate, Integer... actions)
 	{
 		this.actions = new ArrayList<>();
 		this.actions.addAll(Arrays.asList(actions));
@@ -37,8 +37,7 @@ public class ActionsGroup
 		this.damageToActivate = damageToActivate;
 	}
 
-	public List<Integer> getActions()
-	{
+	public List<Integer> getActions() {
 		return this.actions;
 	}
 
@@ -47,16 +46,11 @@ public class ActionsGroup
 		Field[] allFields = ActionsGroup.class.getFields();
 		ArrayList<ActionsGroup> actionsGroups = new ArrayList<>();
 
-		for(Field field : allFields)
-		{
-			if(field.getType().equals(ActionsGroup.class))
-			{
-				try
-				{
+		for (Field field : allFields) {
+			if (field.getType().equals(ActionsGroup.class)) {
+				try {
 					actionsGroups.add(((ActionsGroup) field.get(null)).clone());
-				}
-				catch (IllegalAccessException e)
-				{
+				} catch (IllegalAccessException e) {
 					Logger.exception(e);
 				}
 			}
@@ -67,13 +61,25 @@ public class ActionsGroup
 		return actionsGroups.toArray(retArray);
 	}
 
+	/**
+	 *
+	 * @param player The player for whom you want to know possible actions
+	 * @return The possible ActionGroups for the player
+	 */
+
 	public static ActionsGroup[] getPossibleActionGroups(Player player)
 	{
-		//TODO filtrare i gruppi in base alla gamemode e al danno
+		GameMode gameMode = player.getGameController().getGameMode();
+		int totalDamage = player.getGameBoard().getTotalReceivedDamage();
 
 		Integer[] alreadyExecutedActions = player.getExecutedActions();
 
 		ArrayList<ActionsGroup> groups = new ArrayList<>(Arrays.asList(ActionsGroup.clonedValues()));
+
+		groups.forEach(group ->
+		{
+			if(!group.gameMode.equals(gameMode) || group.damageToActivate > totalDamage)groups.remove(group);
+		});
 
 		for(int j = 0; j < alreadyExecutedActions.length; j++)
 		{
@@ -105,6 +111,12 @@ public class ActionsGroup
 		return groups.toArray(possibleActionGroups);
 
 	}
+
+	/**
+	 *
+	 * @param player The player for whom you want to know possible actions
+	 * @return The distinct possible actions for the player
+	 */
 
 	public static Integer[] getPossibleActions(Player player)
 	{

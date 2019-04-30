@@ -3,10 +3,9 @@ package it.polimi.se2019.controller;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.map.Block;
 import it.polimi.se2019.map.Map;
-import it.polimi.se2019.network.ClientConnectionInterface;
+import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.message.Messages;
-import it.polimi.se2019.network.rmi.client.CallbackInterface;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.constants.GameMode;
@@ -53,7 +52,7 @@ public class GameController
         return this.gameMode;
     }
 
-    public Player createPlayer(ClientConnectionInterface server)
+    public Player createPlayer(ClientConnection server)
     {
         GameColor color = availablePlayerColors.get(random.nextInt(availablePlayerColors.size()));
         availablePlayerColors.remove(color);

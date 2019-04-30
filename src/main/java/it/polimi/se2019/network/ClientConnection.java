@@ -5,7 +5,7 @@ import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
 import it.polimi.se2019.player.Player;
 
-public interface ClientConnectionInterface
+public interface ClientConnection
 {
     void notifyOtherClients(NetworkMessageClient<?> message);
     void sendMessageToClient(NetworkMessageClient<?> message);

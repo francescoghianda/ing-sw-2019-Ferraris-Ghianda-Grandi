@@ -4,10 +4,9 @@ import it.polimi.se2019.card.PowerUpCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.map.Block;
-import it.polimi.se2019.network.ClientConnectionInterface;
+import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
-import it.polimi.se2019.network.rmi.client.CallbackInterface;
 import it.polimi.se2019.utils.constants.GameColor;
 
 import java.util.ArrayList;
@@ -26,9 +25,9 @@ public class Player
 	private GameController gameController;
 
 	//private final CallbackInterface callbackInterface;
-	private final ClientConnectionInterface server;
+	private final ClientConnection server;
 
-	public Player(GameColor color, GameController gameController, ClientConnectionInterface server)
+	public Player(GameColor color, GameController gameController, ClientConnection server)
 	{
 		weapons = new ArrayList<>();
 		powerUps = new ArrayList<>();

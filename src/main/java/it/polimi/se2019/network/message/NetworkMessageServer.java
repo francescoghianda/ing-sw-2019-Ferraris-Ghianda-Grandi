@@ -1,6 +1,6 @@
 package it.polimi.se2019.network.message;
 
-import it.polimi.se2019.network.ClientConnectionInterface;
+import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
 
 import java.io.Serializable;
@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class NetworkMessageServer<T> extends NetworkMessage<T> implements Serializable
 {
     private final MessageExecutor<NetworkMessageServer<T>> executor;
-    private transient ClientConnectionInterface clientConnection;
+    private transient ClientConnection clientConnection;
     private CallbackInterface sender;
 
     public NetworkMessageServer(MessageExecutor<NetworkMessageServer<T>> executor)
@@ -41,13 +41,13 @@ public class NetworkMessageServer<T> extends NetworkMessage<T> implements Serial
         return this.executor;
     }
 
-    public NetworkMessageServer<T> setClientConnection(ClientConnectionInterface connection)
+    public NetworkMessageServer<T> setClientConnection(ClientConnection connection)
     {
         this.clientConnection = connection;
         return this;
     }
 
-    public ClientConnectionInterface getClientConnection()
+    public ClientConnection getClientConnection()
     {
         return this.clientConnection;
     }

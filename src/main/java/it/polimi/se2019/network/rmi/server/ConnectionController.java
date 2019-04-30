@@ -1,18 +1,18 @@
 package it.polimi.se2019.network.rmi.server;
 
-import it.polimi.se2019.network.ClientConnectionInterface;
+import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
 
 import java.rmi.RemoteException;
 
 public class ConnectionController implements Runnable
 {
-    private final ClientConnectionInterface connectionInterface;
+    private final ClientConnection connectionInterface;
     private Thread thread;
     private volatile boolean running;
     private OnClientDisconnectionListener listener;
 
-    ConnectionController(ClientConnectionInterface callbackInterface)
+    ConnectionController(ClientConnection callbackInterface)
     {
         this.connectionInterface = callbackInterface;
     }

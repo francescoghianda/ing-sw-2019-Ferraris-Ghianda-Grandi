@@ -1,19 +1,18 @@
 package it.polimi.se2019.network.socket.server;
 
 import it.polimi.se2019.controller.GameController;
-import it.polimi.se2019.network.ClientConnectionInterface;
+import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
 import it.polimi.se2019.network.message.Messages;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
-import it.polimi.se2019.network.rmi.server.RmiClientConnection;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.*;
 import java.net.Socket;
 
-public class SocketClientConnection implements Runnable, ClientConnectionInterface
+public class SocketClientConnection implements Runnable, ClientConnection
 {
     private Thread userThread;
     private volatile boolean running;

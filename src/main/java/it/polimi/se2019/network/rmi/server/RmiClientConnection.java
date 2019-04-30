@@ -1,7 +1,7 @@
 package it.polimi.se2019.network.rmi.server;
 
 import it.polimi.se2019.controller.GameController;
-import it.polimi.se2019.network.ClientConnectionInterface;
+import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
 import it.polimi.se2019.network.message.NetworkMessageClient;
@@ -11,7 +11,7 @@ import it.polimi.se2019.player.Player;
 
 import java.rmi.RemoteException;
 
-public class RmiClientConnection implements ClientConnectionInterface
+public class RmiClientConnection implements ClientConnection
 {
     private final CallbackInterface callback;
     private final RmiServer server;
