@@ -33,6 +33,11 @@ public class Map
 		return new Map().initMap();
 	}
 
+
+	/**
+	 * initializes the map with a random selection
+	 * @return return the map generated
+	 */
 	private Map initMap()
 	{
 		int mapNumber = 1 + new Random().nextInt(4);
@@ -51,6 +56,9 @@ public class Map
 		return this;
 	}
 
+	/**
+	 * reads the map from the file
+	 */
 	private void readMap()
 	{
 		for(int i = 0; i < 3; i++)
@@ -63,6 +71,9 @@ public class Map
 		}
 	}
 
+	/**
+	 * reads the doors of the map
+	 */
 	private void readDoors()
 	{
 		String[] doors = scanner.nextLine().split(",");
@@ -77,6 +88,14 @@ public class Map
 
 	}
 
+	/**
+	 * creates the blocks of the map
+	 * @param color color of the block
+	 * @param spawnPoint spawnpoint of the block
+	 * @param x coord. x of the block
+	 * @param y coord. y of the block
+	 */
+
 	private void createBlock(GameColor color, boolean spawnPoint, int x, int y)
 	{
 		Room room = findByColor(color);
@@ -84,6 +103,11 @@ public class Map
 		room.addBlock(new Block(spawnPoint, x, y, room));
 	}
 
+	/**
+	 * creates a room into the map
+	 * @param color color of the new room
+	 * @return the created room
+	 */
 	private Room createRoom(GameColor color)
 	{
 		Room room = new Room(color, this);
@@ -91,12 +115,21 @@ public class Map
 		return room;
 	}
 
+	/**
+	 * finds a room by its color
+	 * @param color color of the room
+	 * @return null if the room doesn't exist
+	 */
 	private Room findByColor(GameColor color)
 	{
 		for(Room room : map)if(room.getColor().equals(color))return room;
 		return null;
 	}
 
+	/**
+	 * creates the matrix of the map created before
+	 * @return the map in matrix format
+	 */
 	public Block[][] getMapMatrix()
 	{
 		Block[][] mapMatrix = new Block[3][4];

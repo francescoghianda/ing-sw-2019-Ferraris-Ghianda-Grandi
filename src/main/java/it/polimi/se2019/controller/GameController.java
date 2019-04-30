@@ -52,6 +52,11 @@ public class GameController
         return this.gameMode;
     }
 
+    /**
+     * creates a new player for the client
+     * @param server connection between server and client for the player created
+     * @return the created player
+     */
     public Player createPlayer(ClientConnection server)
     {
         GameColor color = availablePlayerColors.get(random.nextInt(availablePlayerColors.size()));

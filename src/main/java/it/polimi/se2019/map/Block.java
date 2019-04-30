@@ -56,12 +56,21 @@ public class Block
 		return this.spawnPoint;
 	}
 
+	/**
+	 *
+	 * @return return true if the block contains any door
+	 */
 	public boolean hasDoor()
 	{
 		for(Block door: doors)if(door != null)return true;
 		return false;
 	}
 
+	/**
+	 *
+	 * @param side the side of the block
+	 * @return true if there is a door in the side
+	 */
 	public boolean hasDoor(int side)
 	{
 		return doors[side] != null;
@@ -153,6 +162,11 @@ public class Block
 		}
 	}
 
+	/**
+	 * return controls if the block is near to this block
+	 * @param block the block near to this block
+	 * @return return true if the block is near to thi block, false if not
+	 */
 	public boolean isNear(Block block)
 	{
 		if(block.getX() == x)
@@ -167,6 +181,12 @@ public class Block
 		return false;
 	}
 
+	/**
+	 * controls if the blocks are near and they are connected with a door
+	 * @param block block connected with this block with a door
+	 * @return return true if the block is near to this one and there is a door, return false if the block is near
+	 * to ths block but there's not a door that connect them
+	 */
 	public boolean isConnected(Block block)
 	{
 		if(!this.isNear(block))return false;
@@ -184,6 +204,7 @@ public class Block
 		return ""+room.getColor().name().charAt(0);
 	}
 
+
 	public boolean isInSameRoom(Block block)
 	{
 		return block != null && block.getRoom().equals(room);
@@ -196,6 +217,10 @@ public class Block
 		return false;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	String drawBlock()
 	{
 		StringBuilder stringBuilder = new StringBuilder();

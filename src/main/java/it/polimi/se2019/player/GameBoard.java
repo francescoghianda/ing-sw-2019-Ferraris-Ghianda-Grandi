@@ -2,6 +2,9 @@ package it.polimi.se2019.player;
 
 import java.util.HashMap;
 
+/**
+ * Defines the gameboard of the game
+ */
 public class GameBoard
 {
     private Player player;
@@ -13,6 +16,9 @@ public class GameBoard
     private int skulls;
     private int aviableActions;
 
+    /**
+     * gameboard
+     */
     public GameBoard()
     {
         receivedDamage = new HashMap<>();
@@ -56,12 +62,22 @@ public class GameBoard
         return skulls;
     }
 
+    /**
+     * adds the received damage to the gameboard of this player
+     * @param player player who received the damage
+     * @param damage received damage
+     */
     public void addDamage(Player player, int damage)
     {
         if(receivedDamage.containsKey(player)) receivedDamage.replace(player, receivedDamage.get(player)+damage);
         else receivedDamage.put(player, damage);
     }
 
+    /**
+     * adds a marker after a received damage
+     * @param player player who received the damage and who has to receive the marker
+     * @param mark mark that has to be added to a player
+     */
     public void addMarker(Player player, int mark)
     {
         if(markers.containsKey(player)) markers.replace(player, markers.get(player)+mark);

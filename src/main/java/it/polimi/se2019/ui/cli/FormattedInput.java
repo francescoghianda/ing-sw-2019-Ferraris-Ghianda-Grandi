@@ -5,6 +5,9 @@ import it.polimi.se2019.utils.logging.Logger;
 import java.util.Scanner;
 import java.util.function.Predicate;
 
+/**
+ * receive a question , a regular expression/a predicate
+ */
 public class FormattedInput
 {
     public static final String IP_REGEX = "^(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$";
@@ -21,6 +24,11 @@ public class FormattedInput
     private boolean useRegex;
     private boolean usePredicate;
 
+    /**
+     *
+     * @param question
+     * @param regex
+     */
     public FormattedInput(String question, String regex)
     {
         this.question = question;
@@ -30,6 +38,11 @@ public class FormattedInput
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     *
+     * @param question
+     * @param predicate
+     */
     public FormattedInput(String question, Predicate<String> predicate)
     {
         this.question = question;
@@ -39,6 +52,12 @@ public class FormattedInput
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     *
+     * @param question
+     * @param regex
+     * @param predicate
+     */
     public FormattedInput(String question, String regex, Predicate<String> predicate)
     {
         this.question = question;
