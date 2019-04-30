@@ -7,6 +7,9 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * class which contains a group of actions that can be executed by players
+ */
 public class ActionsGroup
 {
 	public static final ActionsGroup RUN = new ActionsGroup(GameMode.NORMAL, 0, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.MOVE_ACTION);
@@ -28,6 +31,12 @@ public class ActionsGroup
 	private final GameMode gameMode;
 	private final int damageToActivate;
 
+	/**
+	 * creates a group of actions
+	 * @param gameMode it defines the mode of the game related to the group of actions
+	 * @param damageToActivate damages that lead to a spec. group of actions
+	 * @param actions actions that can be included in the group
+	 */
 	private ActionsGroup(GameMode gameMode, int damageToActivate, Integer... actions)
 	{
 		this.actions = new ArrayList<>();
@@ -41,7 +50,7 @@ public class ActionsGroup
 		return this.actions;
 	}
 
-	public static ActionsGroup[] clonedValues()
+		public static ActionsGroup[] clonedValues()
 	{
 		Field[] allFields = ActionsGroup.class.getFields();
 		ArrayList<ActionsGroup> actionsGroups = new ArrayList<>();

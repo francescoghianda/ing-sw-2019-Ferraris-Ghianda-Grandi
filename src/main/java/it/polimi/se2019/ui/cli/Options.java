@@ -6,6 +6,10 @@ import it.polimi.se2019.utils.logging.Logger;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * receives a question and some options of the group of options
+ * @param <T>
+ */
 public class Options<T>
 {
     private String question;
@@ -46,6 +50,10 @@ public class Options<T>
         return this;
     }
 
+    /**
+     *
+     * @return
+     */
     public Option<T> show()
     {
         if(options.isEmpty())return null;
@@ -73,6 +81,11 @@ public class Options<T>
         return selected;
     }
 
+    /**
+     *
+     * @param response
+     * @return
+     */
     private Option<T> findOption(String response)
     {
         for(Option<T> option : options)

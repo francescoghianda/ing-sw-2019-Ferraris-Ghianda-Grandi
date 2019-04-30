@@ -11,6 +11,11 @@ public class Room
 	private ArrayList<Block> blocks;
 	private final Map map;
 
+	/**
+	 * creates a room of a spec color
+	 * @param color color of the room that has to be created
+	 * @param map ref to the map containing the room
+	 */
 	public Room(GameColor color, Map map)
 	{
 		this.blocks = new ArrayList<>();
@@ -23,6 +28,10 @@ public class Room
 		return this.map;
 	}
 
+	/**
+	 * adds a block to the room
+	 * @param block block that has to be added
+	 */
 	public void addBlock(Block block)
 	{
 		this.blocks.add(block);

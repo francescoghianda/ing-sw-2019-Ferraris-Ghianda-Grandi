@@ -12,7 +12,9 @@ import it.polimi.se2019.utils.constants.GameColor;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * creates a player
+ */
 public class Player
 {
 	private final GameColor color;
@@ -27,6 +29,12 @@ public class Player
 	//private final CallbackInterface callbackInterface;
 	private final ClientConnection server;
 
+	/**
+	 * creates and initializes the features of the player
+	 * @param color color of the player's pawn
+	 * @param gameController current gamecontroller of the game
+	 * @param server connection that the player has established to the client
+	 */
 	public Player(GameColor color, GameController gameController, ClientConnection server)
 	{
 		weapons = new ArrayList<>();
@@ -90,6 +98,11 @@ public class Player
 		return executedAction.toArray(executed);
 	}
 
+
+	/**
+	 * adds a weapon card to the gameboard of the player
+	 * @param weaponCard weaponcard added to this pleayer
+	 */
 	public void addWeaponCard (WeaponCard weaponCard)
 	{
 		if(weapons.size() < 3)
@@ -98,6 +111,10 @@ public class Player
 		}
 	}
 
+	/**
+	 *  adds a powerup card to the gameboard of the player
+	 * @param powerUpCard powerup card added to this pleayer
+	 */
 	public void addPowerUpCard (PowerUpCard powerUpCard)
 	{
 		if(powerUps.size() < 3)

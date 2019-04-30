@@ -6,6 +6,9 @@ import it.polimi.se2019.utils.logging.Logger;
 
 import java.util.Scanner;
 
+/**
+ *
+ */
 public class CLI implements UI
 {
     private final Scanner scanner;
