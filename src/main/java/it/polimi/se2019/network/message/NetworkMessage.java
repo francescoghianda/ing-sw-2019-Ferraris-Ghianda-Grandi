@@ -16,6 +16,11 @@ class NetworkMessage<T> implements Serializable
         this.param = param;
     }
 
+    /**
+     * Set the parameter of the message on the cloned instance of the message
+     * @param param The parameter for the message
+     * @return The cloned message with the parameter
+     */
     public NetworkMessage<T> setParam(T param)
     {
         NetworkMessage<T> nm = this.clone();

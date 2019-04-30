@@ -5,12 +5,20 @@ import it.polimi.se2019.network.rmi.client.CallbackInterface;
 
 import java.io.Serializable;
 
+/**
+ * NetworkMessage that can be executed by a server
+ * @param <T> The type of the parameter in the message
+ */
 public class NetworkMessageServer<T> extends NetworkMessage<T> implements Serializable
 {
     private final MessageExecutor<NetworkMessageServer<T>> executor;
     private transient ClientConnection clientConnection;
     private CallbackInterface sender;
 
+    /**
+     * Create a message without a parameter
+     * @param executor The executor of the message
+     */
     public NetworkMessageServer(MessageExecutor<NetworkMessageServer<T>> executor)
     {
         this.executor = executor;

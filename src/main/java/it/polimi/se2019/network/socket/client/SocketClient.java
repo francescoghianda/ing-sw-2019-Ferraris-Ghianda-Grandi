@@ -112,7 +112,7 @@ public class SocketClient implements Runnable, NetworkClient
     }
 
     @Override
-    public String getNickname()
+    public String getUsername()
     {
         return ui.getUsername();
     }
@@ -131,7 +131,7 @@ public class SocketClient implements Runnable, NetworkClient
     }
 
     @Override
-    public NetworkMessageClient<?> getResponseTo(NetworkMessageServer<?> messageServer, NetworkMessageClient<?> currentMessage)
+    public NetworkMessageClient<?> getResponseTo(NetworkMessageServer<?> messageServer)
     {
         try
         {

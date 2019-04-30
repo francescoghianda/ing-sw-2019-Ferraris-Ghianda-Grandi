@@ -131,7 +131,6 @@ public class Player
 		this.block = block;
 	}
 
-
 	public NetworkMessageServer getResponseTo(NetworkMessageClient<?> message)
 	{
 		return server.getResponseTo(message);

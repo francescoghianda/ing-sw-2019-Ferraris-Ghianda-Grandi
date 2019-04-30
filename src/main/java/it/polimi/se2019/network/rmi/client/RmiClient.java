@@ -15,6 +15,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+/**
+ * A RMI client
+ */
 public class RmiClient implements CallbackInterface, NetworkClient, Serializable
 {
     private transient ServerInterface server;
@@ -31,7 +34,10 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
 
     private transient boolean running;
 
-
+    /**
+     * Create a RMI client
+     * @param ui The user interface for show the model
+     */
     public RmiClient(UI ui)
     {
         super();
@@ -107,7 +113,7 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     }
 
     @Override
-    public String getNickname()
+    public String getUsername()
     {
         return ui.getUsername();
     }
@@ -126,7 +132,7 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     }
 
     @Override
-    public synchronized NetworkMessageClient<?> getResponseTo(NetworkMessageServer<?> messageServer, NetworkMessageClient<?> currMessage)
+    public synchronized NetworkMessageClient<?> getResponseTo(NetworkMessageServer<?> messageServer)
     {
         try
         {

@@ -11,6 +11,9 @@ import it.polimi.se2019.player.Player;
 
 import java.rmi.RemoteException;
 
+/**
+ * Class that manage the connection with the client and his data
+ */
 public class RmiClientConnection implements ClientConnection
 {
     private final CallbackInterface callback;
@@ -23,6 +26,12 @@ public class RmiClientConnection implements ClientConnection
 
     private OnClientDisconnectionListener clientDisconnectionListener;
 
+    /**
+     * Create a new connection with the client
+     * @param callback The callback of the client
+     * @param server The current RMI server
+     * @param gameController The current game controller
+     */
     public RmiClientConnection(CallbackInterface callback, RmiServer server, GameController gameController)
     {
         this.gameController = gameController;
@@ -41,6 +50,7 @@ public class RmiClientConnection implements ClientConnection
         return this;
     }
 
+    @Override
     public void notifyOtherClients(NetworkMessageClient<?> message)
     {
         server.getClientsCallback().forEach(callbackInterface ->
@@ -49,6 +59,8 @@ public class RmiClientConnection implements ClientConnection
         });
     }
 
+
+    @Override
     public synchronized void sendMessageToClient(NetworkMessageClient<?> message)
     {
         try
@@ -60,6 +72,8 @@ public class RmiClientConnection implements ClientConnection
             clientDisconnectionListener.onClientDisconnection(this);
         }
     }
+
+
 
     @Override
     public NetworkMessageServer getResponseTo(NetworkMessageClient<?> messageToClient)
@@ -74,6 +88,8 @@ public class RmiClientConnection implements ClientConnection
             return null;
         }
     }
+
+
 
     @Override
     public void stop()

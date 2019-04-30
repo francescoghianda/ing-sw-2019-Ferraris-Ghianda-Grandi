@@ -4,11 +4,19 @@ import it.polimi.se2019.network.NetworkClient;
 
 import java.io.Serializable;
 
+/**
+ * Network message that can be executed by a client
+ * @param <T> The type of the parameter
+ */
 public class NetworkMessageClient<T> extends NetworkMessage<T> implements Serializable
 {
     private final MessageExecutor<NetworkMessageClient<T>> executor;
     private transient NetworkClient client;
 
+    /**
+     * Create a message without a parameter
+     * @param executor The executor of the message
+     */
     public NetworkMessageClient(MessageExecutor<NetworkMessageClient<T>> executor)
     {
         this.executor = executor;
@@ -22,6 +30,10 @@ public class NetworkMessageClient<T> extends NetworkMessage<T> implements Serial
         return nmc;
     }
 
+    /**
+     * @param client The client that execute the message
+     * @return
+     */
     public NetworkMessageClient<T> setClient(NetworkClient client)
     {
         this.client = client;

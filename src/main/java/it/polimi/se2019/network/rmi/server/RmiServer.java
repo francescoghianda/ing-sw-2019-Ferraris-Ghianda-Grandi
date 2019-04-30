@@ -29,6 +29,11 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
     private transient boolean running;
 
 
+    /**
+     * Create a RMI server
+     * @param controller The current game controller
+     * @throws RemoteException
+     */
     public  RmiServer(GameController controller) throws RemoteException
     {
         super();
@@ -98,6 +103,9 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
         clients.get(clientStub).sendMessageToClient(Messages.LOGIN_REQUEST);
     }
 
+    /**
+     * @return The list of the callback of all the current connected clients
+     */
     List<CallbackInterface> getClientsCallback()
     {
         return new ArrayList<>(clients.keySet());

@@ -7,6 +7,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+/**
+ * A class that provide to log the output on a console and/or a file
+ */
 public class Logger
 {
     private static Logger logger = new Logger();
@@ -44,6 +47,11 @@ public class Logger
         return builder.toString();
     }
 
+    /**
+     * Enable the game mode
+     * With the game mode enabled the console not print the timestamp and the level of the message
+     * @param gameMode
+     */
     public void enableGameMode(boolean gameMode)
     {
         this.gameMode = gameMode;
@@ -69,6 +77,10 @@ public class Logger
         return logger;
     }
 
+    /**
+     * Add an output for the logger
+     * @param loggerOutputStream The LoggerOutputStream to add
+     */
     public void addOutput(LoggerOutputStream loggerOutputStream)
     {
         outputs.add(loggerOutputStream);

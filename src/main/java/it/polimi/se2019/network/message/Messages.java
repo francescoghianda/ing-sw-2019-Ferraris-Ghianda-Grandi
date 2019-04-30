@@ -20,8 +20,8 @@ public class Messages
         int stateMessage;
         do
         {
-            String username = message.getClient().getNickname();
-            stateMessage = (Integer)message.getClient().getResponseTo(Messages.LOGIN_RESPONSE.setParam(username), message).param;
+            String username = message.getClient().getUsername();
+            stateMessage = (Integer)message.getClient().getResponseTo(Messages.LOGIN_RESPONSE.setParam(username)).param;
             if(stateMessage != OK)message.getClient().invalidNickname();
         }
         while (stateMessage != OK);

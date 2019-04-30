@@ -5,6 +5,9 @@ import it.polimi.se2019.network.OnClientDisconnectionListener;
 
 import java.rmi.RemoteException;
 
+/**
+ * Thread to verify that the client RMI remain connected
+ */
 public class ConnectionController implements Runnable
 {
     private final ClientConnection connectionInterface;
@@ -12,11 +15,15 @@ public class ConnectionController implements Runnable
     private volatile boolean running;
     private OnClientDisconnectionListener listener;
 
+
     ConnectionController(ClientConnection callbackInterface)
     {
         this.connectionInterface = callbackInterface;
     }
 
+    /**
+     * Start the connection controller thread\
+     */
     void start()
     {
         if(!running)
@@ -33,6 +40,9 @@ public class ConnectionController implements Runnable
         return this;
     }
 
+    /**
+     * Stop the connection controller thread
+     */
     void stop()
     {
         running = false;
