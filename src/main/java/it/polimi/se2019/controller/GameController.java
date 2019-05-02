@@ -1,7 +1,6 @@
 package it.polimi.se2019.controller;
 
 import it.polimi.se2019.card.weapon.WeaponCard;
-import it.polimi.se2019.map.Block;
 import it.polimi.se2019.map.Map;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.NetworkServer;

@@ -1,6 +1,5 @@
 package it.polimi.se2019.network.message;
 
-import it.polimi.se2019.map.Block;
 import it.polimi.se2019.utils.logging.Logger;
 
 public class Messages

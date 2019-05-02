@@ -189,11 +189,12 @@ public class Block
 	 */
 	public boolean isConnected(Block block)
 	{
+		if(block == null)return false;
 		if(!this.isNear(block))return false;
 		if(room.equals(block.room))return true;
 		for(Block door : doors)
 		{
-			if(door.equals(block))return true;
+			if(block.equals(door))return true;
 		}
 		return false;
 	}
