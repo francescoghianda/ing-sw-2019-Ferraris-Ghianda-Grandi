@@ -14,18 +14,20 @@ public class Map
 	final int mapWidth = 48;
 	final int mapHeight = 24;
 
-	private ArrayList<Room> map;
+	private ArrayList<Room> rooms;
 	private Scanner scanner;
+
+	private Block[][] mapMatrix;
 
 	private Map()
 	{
 		cliMap = new char[mapHeight][mapWidth];
-		this.map = new ArrayList<>();
+		this.rooms = new ArrayList<>();
 	}
 
 	public List<Room> getMap()
 	{
-		return map;
+		return rooms;
 	}
 
 	public static Map createMap()
@@ -35,8 +37,8 @@ public class Map
 
 
 	/**
-	 * initializes the map with a random selection
-	 * @return return the map generated
+	 * initializes the rooms with a random selection
+	 * @return return the rooms generated
 	 */
 	private Map initMap()
 	{
@@ -52,8 +54,25 @@ public class Map
 		Logger.debug("Read map "+mapNumber);
 		readMap();
 		readDoors();
+		createPaths();
 		Logger.debug("Map ready!");
 		return this;
+	}
+
+	/**
+	 * calculate the paths for all blocks
+	 */
+	private void createPaths()
+	{
+		List<Block> blocks = getAllBlocks();
+		blocks.forEach(startBlock ->
+		{
+			PathFinder pathFinder = new PathFinder(startBlock);
+			blocks.forEach(endBlock ->
+			{
+				if(!startBlock.equals(endBlock))startBlock.addPathsTo(endBlock, pathFinder.getAllPathsTo(endBlock));
+			});
+		});
 	}
 
 	/**
@@ -72,7 +91,18 @@ public class Map
 	}
 
 	/**
-	 * reads the doors of the map
+	 *
+	 * @return All the blocks in the entire map
+	 */
+	public List<Block> getAllBlocks()
+	{
+		List<Block> blocks = new ArrayList<>();
+		rooms.forEach(room -> blocks.addAll(room.getBlocks()));
+		return blocks;
+	}
+
+	/**
+	 * reads the doors of the rooms
 	 */
 	private void readDoors()
 	{
@@ -89,7 +119,7 @@ public class Map
 	}
 
 	/**
-	 * creates the blocks of the map
+	 * creates the blocks of the rooms
 	 * @param color color of the block
 	 * @param spawnPoint spawnpoint of the block
 	 * @param x coord. x of the block
@@ -104,14 +134,14 @@ public class Map
 	}
 
 	/**
-	 * creates a room into the map
+	 * creates a room into the rooms
 	 * @param color color of the new room
 	 * @return the created room
 	 */
 	private Room createRoom(GameColor color)
 	{
 		Room room = new Room(color, this);
-		map.add(room);
+		rooms.add(room);
 		return room;
 	}
 
@@ -122,18 +152,19 @@ public class Map
 	 */
 	private Room findByColor(GameColor color)
 	{
-		for(Room room : map)if(room.getColor().equals(color))return room;
+		for(Room room : rooms)if(room.getColor().equals(color))return room;
 		return null;
 	}
 
 	/**
-	 * creates the matrix of the map created before
+	 * creates the matrix of the rooms created before
 	 * @return the map in matrix format
 	 */
 	public Block[][] getMapMatrix()
 	{
-		Block[][] mapMatrix = new Block[3][4];
-		for(Room room : map)
+		if(mapMatrix != null)return mapMatrix;
+		mapMatrix = new Block[3][4];
+		for(Room room : rooms)
 		{
 			for(Block block : room.getBlocks())
 			{
@@ -147,13 +178,13 @@ public class Map
 	public String toString()
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		Block[][] mapMatrix = getMapMatrix();
-		for(int i = 0; i < mapMatrix.length; i++)
+		getMapMatrix();
+		for (Block[] matrix : mapMatrix)
 		{
 			stringBuilder.append('\n');
-			for(int j = 0; j < mapMatrix[i].length; j++)
+			for (Block block : matrix)
 			{
-				if(mapMatrix[i][j] != null)stringBuilder.append(mapMatrix[i][j].toString()).append(" ");
+				if (block != null) stringBuilder.append(block.toString()).append(" ");
 				else stringBuilder.append("  ");
 			}
 		}
@@ -165,7 +196,7 @@ public class Map
 	public String drawMap()
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		Block[][] mapMatrix = getMapMatrix();
+		getMapMatrix();
 		String[][] blockString = new String[3][4];
 
 		for(int i = 0; i < mapMatrix.length; i++)
@@ -190,7 +221,6 @@ public class Map
 		}
 
 		return stringBuilder.toString();
-
 	}
 
 }

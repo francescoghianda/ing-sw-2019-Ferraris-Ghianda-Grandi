@@ -5,7 +5,9 @@ import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.AnsiColor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 public class Block
 {
@@ -19,6 +21,8 @@ public class Block
 	private Grabbable[] cards;
 	private final boolean spawnPoint;
 
+	private HashMap<Block, List<Path>> paths;
+
 	private ArrayList<Player> players;
 
 	private final int x;
@@ -30,10 +34,27 @@ public class Block
 	{
 		cards = new Grabbable[3];
 		doors = new Block[4];
+		paths = new HashMap<>();
 		this.spawnPoint = spawnPoint;
 		this.x = x;
 		this.y = y;
 		this.room = room;
+	}
+
+	public void addPathsTo(Block block, List<Path> paths)
+	{
+		this.paths.put(block, paths);
+	}
+
+	public List<Path> getAllPathsTo(Block block)
+	{
+		return this.paths.getOrDefault(block, new ArrayList<>());
+	}
+
+	public Path getRandomPathTo(Block block)
+	{
+		List<Path> paths = getAllPathsTo(block);
+		return paths.isEmpty() ? null : paths.get(new Random().nextInt(paths.size()));
 	}
 
 	public void addPlayer(Player player)

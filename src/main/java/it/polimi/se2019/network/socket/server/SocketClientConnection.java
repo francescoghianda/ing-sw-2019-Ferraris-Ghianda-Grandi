@@ -2,6 +2,7 @@ package it.polimi.se2019.network.socket.server;
 
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.ClientConnection;
+import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
 import it.polimi.se2019.network.message.Messages;
 import it.polimi.se2019.network.message.NetworkMessageClient;
@@ -26,11 +27,14 @@ public class SocketClientConnection implements Runnable, ClientConnection
     private Player player;
     private String nickname;
 
+    private ClientsManager clientsManager;
+
     private OnClientDisconnectionListener clientDisconnectionListener;
 
     SocketClientConnection(Socket client, SocketServer server, GameController controller)
     {
         this.controller = controller;
+        this.clientsManager = ClientsManager.getInstance();
 
         try
         {
@@ -115,7 +119,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
     @Override
     public synchronized void notifyOtherClients(NetworkMessageClient<?> message)
     {
-        server.getClients().forEach(clientConnection ->
+        clientsManager.getConnectedClients().forEach(clientConnection ->
         {
             if(!clientConnection.equals(this))clientConnection.sendMessageToClient(message);
         });

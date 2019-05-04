@@ -1,5 +1,6 @@
 package it.polimi.se2019.card;
 
+import it.polimi.se2019.map.Block;
 import it.polimi.se2019.player.Player;
 
 import java.util.HashMap;

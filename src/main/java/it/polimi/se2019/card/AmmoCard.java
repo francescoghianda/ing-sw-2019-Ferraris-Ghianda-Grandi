@@ -5,25 +5,27 @@ import it.polimi.se2019.player.Player;
 public class AmmoCard extends Card
 {
 
+	private final String id;
 	private final int redAmmo;
 	private final int yellowAmmo;
 	private final int blueAmmo;
 	private final boolean pickPowerUp;
 
-	public AmmoCard(int id, String name, String description, int redAmmo, int yellowAmmo, int blueAmmo, boolean pickPowerUp)
+	public AmmoCard(int redAmmo, int blueAmmo, int yellowAmmo, boolean pickPowerUp, String id)
 	{
 		super();
 		this.redAmmo = redAmmo;
-		this.yellowAmmo = yellowAmmo;
 		this.blueAmmo = blueAmmo;
+		this.yellowAmmo = yellowAmmo;
 		this.pickPowerUp = pickPowerUp;
+		this.id = id;
 	}
 
 	public void apply(Player player)
 	{
-		player.getGameBoard().setRedAmmo(this.redAmmo);
-		player.getGameBoard().setYellowAmmo(this.yellowAmmo);
-		player.getGameBoard().setBlueAmmo(this.blueAmmo);
+		player.getGameBoard().addRedAmmo(this.redAmmo);
+		player.getGameBoard().addYellowAmmo(this.yellowAmmo);
+		player.getGameBoard().addBlueAmmo(this.blueAmmo);
 	}
 
 	public int getRedAmmo()
@@ -48,7 +50,7 @@ public class AmmoCard extends Card
 
 	public String toString()
 	{
-		return "";
+		return "AmmoCard #"+id+": [Red: "+redAmmo+" Blue: "+blueAmmo+" Yellow: "+yellowAmmo+" PowerUp: "+pickPowerUp+"]";
 	}
 
 }

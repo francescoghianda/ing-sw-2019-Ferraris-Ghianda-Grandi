@@ -2,10 +2,10 @@ package it.polimi.se2019.network.rmi.server;
 
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.ClientConnection;
+import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
 import it.polimi.se2019.network.message.Messages;
-import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
 import it.polimi.se2019.utils.logging.Logger;
@@ -16,17 +16,15 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class RmiServer extends UnicastRemoteObject implements NetworkServer, ServerInterface, OnClientDisconnectionListener
 {
     public static final String SERVER_NAME = "Server";
     private transient HashMap<CallbackInterface, ClientConnection> clients;
-    private transient HashMap<String, ClientConnection> disconnectedClients;
     private transient GameController gameController;
     private transient boolean running;
+    private transient ClientsManager clientsManager;
 
 
     /**
@@ -39,7 +37,7 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
         super();
         clients = new HashMap<>();
         this.gameController = controller;
-        disconnectedClients = new HashMap<>();
+        clientsManager = ClientsManager.getInstance();
     }
 
     @Override
@@ -74,19 +72,6 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
     }
 
     @Override
-    public List<String> getDisconnectedClientsUsername()
-    {
-        return new ArrayList<>(disconnectedClients.keySet());
-    }
-
-    @Override
-    public void clientReconnected(String username, CallbackInterface client)
-    {
-        clients.get(client).setPlayer(disconnectedClients.get(username).getPlayer());
-        disconnectedClients.remove(username);
-    }
-
-    @Override
     public synchronized void sendMessage(NetworkMessageServer<?> message) throws RemoteException
     {
         Thread threadMessage = new Thread(() -> message.setClientConnection(clients.get(message.getSender())).execute());
@@ -97,32 +82,18 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
     public synchronized void registerClient(CallbackInterface clientStub) throws RemoteException
     {
         Logger.info("Client connected!");
-        ClientConnection connectionInterface = new RmiClientConnection(clientStub, this, gameController).setOnClientDisconnectionListener(this);
-        clients.put(clientStub, connectionInterface);
-        new ConnectionController(connectionInterface).setOnClientDisconnectionListener(this).start();
+        ClientConnection clientConnection = new RmiClientConnection(clientStub, this, gameController).setOnClientDisconnectionListener(this);
+        clients.put(clientStub, clientConnection);
+        clientsManager.registerClient(clientConnection);
+        new ConnectionController(clientConnection).setOnClientDisconnectionListener(this).start();
         clients.get(clientStub).sendMessageToClient(Messages.LOGIN_REQUEST);
     }
 
-    /**
-     * @return The list of the callback of all the current connected clients
-     */
-    List<CallbackInterface> getClientsCallback()
-    {
-        return new ArrayList<>(clients.keySet());
-    }
-
     @Override
-    public synchronized void sendBroadcastMessage(NetworkMessageClient<?> message)
+    public void clientReconnected(ClientConnection clientConnection)
     {
-        clients.values().forEach(clientConnection -> clientConnection.sendMessageToClient(message));
-    }
-
-    @Override
-    public List<String> getConnectedClientsUsername()
-    {
-        List<String> allUsername = new ArrayList<>();
-        for(ClientConnection connection : clients.values())allUsername.add(connection.getUsername());
-        return allUsername;
+        clients.put(((RmiClientConnection)clientConnection).getCallback(), clientConnection);
+        clientsManager.registerClient(clientConnection);
     }
 
     @Override
@@ -130,7 +101,8 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
     {
         Logger.warning("Client "+disconnectedClient.getUsername()+" has disconnected!");
         disconnectedClient.setLogged(false);
-        disconnectedClients.put(disconnectedClient.getUsername(), disconnectedClient);
+
         clients.remove(((RmiClientConnection)disconnectedClient).getCallback());
+        clientsManager.unregisterClient(disconnectedClient);
     }
 }

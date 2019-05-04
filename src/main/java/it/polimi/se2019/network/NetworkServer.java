@@ -21,19 +21,18 @@ public interface NetworkServer
     /**
      * @return All the username of the connected clients
      */
-    List<String> getConnectedClientsUsername();
+    //List<String> getConnectedClientsUsername();
 
     /**
      * @return All the username of the client that has lost the connection
      */
-    List<String> getDisconnectedClientsUsername();
+    //List<String> getDisconnectedClientsUsername();
 
     /**
      * Restore the data of the client that reconnect after has lost the connection
-     * @param username The username of the client
-     * @param client The callback of the client
+     * @param clientConnection The client that has reconnected
      */
-    void clientReconnected(String username, CallbackInterface client);
-    void sendBroadcastMessage(NetworkMessageClient<?> message);
+    void clientReconnected(ClientConnection clientConnection);
+    //void sendBroadcastMessage(NetworkMessageClient<?> message);
 
 }

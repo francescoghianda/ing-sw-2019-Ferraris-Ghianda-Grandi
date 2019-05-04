@@ -1,33 +1,18 @@
 package it.polimi.se2019.card;
 
-import it.polimi.se2019.utils.logging.Logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.Scanner;
+import it.polimi.se2019.card.ammo.AmmoParser;
 
-public class DeckFactory<T extends Card>
+public class DeckFactory
 {
-	private Scanner scanner;
-
-	public DeckFactory(File file)
+	public DeckFactory()
 	{
-		try
-		{
-			scanner = new Scanner(new FileReader(file));
-		}
-		catch (FileNotFoundException e)
-		{
-			Logger.exception(e);
-		}
+
 	}
 
-	public Deck<T> createDeck()
+	public static Deck<AmmoCard> createAmmoDeck()
 	{
-
-
-		return null;
+		return new Deck<>(AmmoParser.parseCards());
 	}
 
 }

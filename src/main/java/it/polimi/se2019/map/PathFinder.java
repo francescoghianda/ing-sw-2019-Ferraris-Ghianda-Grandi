@@ -26,7 +26,13 @@ public class PathFinder
     public List<Path> getAllPathsTo(Block endBlock)
     {
         this.endBlock = endBlock;
-        return findPaths().stream().filter(Path::isValid).collect(Collectors.toList());
+        List<Path> paths = findPaths();
+
+        paths = paths.stream().filter(Path::isValid).sorted(Comparator.comparingInt(Path::getLength)).collect(Collectors.toList());
+        int minLength = paths.get(0).getLength();
+        paths = paths.stream().filter(path -> path.getLength() <= minLength).collect(Collectors.toList());
+
+        return paths;
     }
 
     private List<Path> findPaths()

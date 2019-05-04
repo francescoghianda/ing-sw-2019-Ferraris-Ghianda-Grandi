@@ -1,8 +1,10 @@
 package it.polimi.se2019.controller;
 
 import it.polimi.se2019.card.weapon.WeaponCard;
+import it.polimi.se2019.map.Block;
 import it.polimi.se2019.map.Map;
 import it.polimi.se2019.network.ClientConnection;
+import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.message.Messages;
 import it.polimi.se2019.player.Player;
@@ -21,11 +23,11 @@ public class GameController
     private List<Player> players;
     private Map map;
     private GameMode gameMode;
-    private NetworkServer server;
+    private ClientsManager clientsManager;
 
-    public GameController(NetworkServer server)
+    public GameController()
     {
-        this.server = server;
+        this.clientsManager = ClientsManager.getInstance();
         availablePlayerColors = new ArrayList<>(Arrays.asList(GameColor.values()));
         availablePlayerColors.remove(GameColor.RED);
         random = new Random();

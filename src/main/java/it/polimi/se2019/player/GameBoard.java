@@ -57,6 +57,8 @@ public class GameBoard
         return yellowAmmo;
     }
 
+
+
     public int getSkulls()
     {
         return skulls;
@@ -97,6 +99,21 @@ public class GameBoard
     public void setBlueAmmo(int blueAmmo)
     {
         this.blueAmmo = blueAmmo;
+    }
+
+    public void addRedAmmo(int redAmmo)
+    {
+        this.redAmmo += redAmmo;
+    }
+
+    public void addBlueAmmo(int blueAmmo)
+    {
+        this.blueAmmo += blueAmmo;
+    }
+
+    public void addYellowAmmo(int yellowAmmo)
+    {
+        this.yellowAmmo += yellowAmmo;
     }
 
 

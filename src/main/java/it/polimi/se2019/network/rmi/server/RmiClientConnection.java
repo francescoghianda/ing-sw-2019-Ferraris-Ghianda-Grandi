@@ -2,6 +2,7 @@ package it.polimi.se2019.network.rmi.server;
 
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.ClientConnection;
+import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
 import it.polimi.se2019.network.message.NetworkMessageClient;
@@ -26,6 +27,8 @@ public class RmiClientConnection implements ClientConnection
 
     private OnClientDisconnectionListener clientDisconnectionListener;
 
+    private ClientsManager clientsManager;
+
     /**
      * Create a new connection with the client
      * @param callback The callback of the client
@@ -37,6 +40,7 @@ public class RmiClientConnection implements ClientConnection
         this.gameController = gameController;
         this.callback = callback;
         this.server = server;
+        this.clientsManager = ClientsManager.getInstance();
     }
 
     public CallbackInterface getCallback()
@@ -53,12 +57,11 @@ public class RmiClientConnection implements ClientConnection
     @Override
     public void notifyOtherClients(NetworkMessageClient<?> message)
     {
-        server.getClientsCallback().forEach(callbackInterface ->
+        clientsManager.getConnectedClients().forEach(clientConnection ->
         {
-            if(!callbackInterface.equals(callback))sendMessageToClient(message);
+            if(!clientConnection.equals(this))clientConnection.sendMessageToClient(message);
         });
     }
-
 
     @Override
     public synchronized void sendMessageToClient(NetworkMessageClient<?> message)
@@ -73,8 +76,6 @@ public class RmiClientConnection implements ClientConnection
         }
     }
 
-
-
     @Override
     public NetworkMessageServer getResponseTo(NetworkMessageClient<?> messageToClient)
     {
@@ -88,8 +89,6 @@ public class RmiClientConnection implements ClientConnection
             return null;
         }
     }
-
-
 
     @Override
     public void stop()

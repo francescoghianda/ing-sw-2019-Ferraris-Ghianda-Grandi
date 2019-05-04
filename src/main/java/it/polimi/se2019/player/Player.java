@@ -3,6 +3,7 @@ package it.polimi.se2019.player;
 import it.polimi.se2019.card.PowerUpCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.controller.GameController;
+import it.polimi.se2019.map.Block;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
@@ -26,15 +27,15 @@ public class Player
 	private GameController gameController;
 
 	//private final CallbackInterface callbackInterface;
-	private final ClientConnection server;
+	private final ClientConnection clientConnection;
 
 	/**
 	 * creates and initializes the features of the player
 	 * @param color color of the player's pawn
 	 * @param gameController current gamecontroller of the game
-	 * @param server connection that the player has established to the client
+	 * @param clientConnection connection that the player has established to the client
 	 */
-	public Player(GameColor color, GameController gameController, ClientConnection server)
+	public Player(GameColor color, GameController gameController, ClientConnection clientConnection)
 	{
 		weapons = new ArrayList<>();
 		powerUps = new ArrayList<>();
@@ -42,7 +43,7 @@ public class Player
 		gameBoard = new GameBoard();
 		this.color = color;
 		//this.callbackInterface = callbackInterface;
-		this.server = server;
+		this.clientConnection = clientConnection;
 		this.gameController = gameController;
 	}
 
@@ -149,17 +150,17 @@ public class Player
 
 	public NetworkMessageServer getResponseTo(NetworkMessageClient<?> message)
 	{
-		return server.getResponseTo(message);
+		return clientConnection.getResponseTo(message);
 	}
 
 	public void sendMessageToClient(NetworkMessageClient<?> message)
 	{
-		server.sendMessageToClient(message);
+		clientConnection.sendMessageToClient(message);
 	}
 
 	public void notifyOtherClients(NetworkMessageClient<?> message)
 	{
-		server.notifyOtherClients(message);
+		clientConnection.notifyOtherClients(message);
 	}
 
 }

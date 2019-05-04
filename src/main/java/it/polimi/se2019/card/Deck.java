@@ -1,17 +1,25 @@
 package it.polimi.se2019.card;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 public class Deck<T extends Card>
 {
-	private ArrayList<T> cards;
+	private List<T> cards;
 	private static Random random = new Random();
 
 	public Deck()
 	{
 		cards = new ArrayList<>();
 	}
+
+	public Deck(List<T> cards)
+	{
+		this.cards = new ArrayList<>(cards);
+	}
+
 
 	public void addCard(T card)
 	{
@@ -38,22 +46,25 @@ public class Deck<T extends Card>
 
 	public void shuffle()
 	{
-		for(int i = 0; i < cards.size(); i++)
-		{
-			invert(i, random.nextInt(cards.size()));
-		}
+		Collections.shuffle(cards);
 	}
 
-	private void invert(int index1, int index2)
+	public int size()
 	{
-		T card1 = cards.get(index1);
-		cards.set(index1, cards.get(index2));
-		cards.set(index2, card1);
+		return cards.size();
 	}
 
 	public boolean isEmpty()
 	{
 		return cards.isEmpty();
+	}
+
+	@Override
+	public String toString()
+	{
+		StringBuilder builder = new StringBuilder();
+		cards.forEach(card -> builder.append(card).append("\n"));
+		return builder.toString();
 	}
 
 }
