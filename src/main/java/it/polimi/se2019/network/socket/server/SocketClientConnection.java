@@ -164,6 +164,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
     @Override
     public void setLogged(boolean logged)
     {
+        //TODO spostare la creazione del giocatore in un metodo apposito (anche su rmi)
         this.logged = logged;
         this.player = controller.createPlayer(this);
     }

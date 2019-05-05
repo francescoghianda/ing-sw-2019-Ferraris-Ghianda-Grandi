@@ -1,6 +1,8 @@
 package it.polimi.se2019.card.weapon;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardScriptExecutor;
+import it.polimi.se2019.card.Cost;
 import it.polimi.se2019.card.Grabbable;
 import it.polimi.se2019.player.Player;
 
@@ -14,22 +16,15 @@ public class WeaponCard extends Card implements Grabbable
 	private boolean hasAlternateFireMode;
 	private boolean hasOptionalEffect;
 
-	private int buyCostRed;
-	private int buyCostYellow;
-	private int buyCostBlue;
-
-	private int reloadCostRed;
-	private int reloadCostYellow;
-	private int reloadCostBlue;
-
-	private int alternateModeCostRed;
-	private int alternateModeCostBlue;
-	private int alternateModeCostYellow;
-
-	private String basicModeScript;
-	private String alternateModeScript;
+	private Cost buyCost;
+	private Cost reloadCost;
+	private Cost alternateModeCost;
 
 	private HashMap<String, OptionalEffect> optionalEffects;
+
+	private boolean isLoad;
+
+	private CardScriptExecutor scriptExecutor;
 
 	public WeaponCard()
 	{
@@ -37,9 +32,30 @@ public class WeaponCard extends Card implements Grabbable
 		fireMode = Mode.BASIC;
 	}
 
-	public void exec(Player player, int effect)
+	public boolean isLoad()
 	{
+		return this.isLoad;
+	}
 
+	public void reload()
+	{
+		this.isLoad = true;
+	}
+
+	public void fire(Player player)
+	{
+		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))scriptExecutor = new CardScriptExecutor(player);
+		scriptExecutor.setScript(fireMode.getScript());
+		scriptExecutor.execute();
+	}
+
+	public boolean useOptionalEffect(Player player, OptionalEffect effect)
+	{
+		if(!effect.isEnabled())return false;
+		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))scriptExecutor = new CardScriptExecutor(player);
+		scriptExecutor.setScript(effect.getScript());
+		scriptExecutor.execute();
+		return true;
 	}
 
 	@Override
@@ -48,25 +64,34 @@ public class WeaponCard extends Card implements Grabbable
 
 	}
 
+	Cost getBuyCost()
+	{
+		return buyCost;
+	}
+
+	Cost getReloadCost()
+	{
+		return reloadCost;
+	}
+
+	Cost getAlternateModeCost()
+	{
+		return alternateModeCost;
+	}
+
 	void setBuyCost(int redCost, int blueCost, int yellowCost)
 	{
-		this.buyCostRed = redCost;
-		this.buyCostBlue = blueCost;
-		this.buyCostYellow = yellowCost;
+		buyCost = new Cost(redCost, blueCost, yellowCost);
 	}
 
 	void setReloadCost(int redCost, int blueCost, int yellowCost)
 	{
-		this.reloadCostRed = redCost;
-		this.reloadCostBlue = blueCost;
-		this.reloadCostYellow = yellowCost;
+		reloadCost = new Cost(redCost, blueCost, yellowCost);
 	}
 
 	void setAlternateModeCost(int redCost, int blueCost, int yellowCost)
 	{
-		this.alternateModeCostRed = redCost;
-		this.alternateModeCostBlue = blueCost;
-		this.alternateModeCostYellow = yellowCost;
+		alternateModeCost = new Cost(redCost, blueCost, yellowCost);
 	}
 
 	void setHasAlternateFireMode(boolean hasAlternateFireMode)
@@ -76,12 +101,12 @@ public class WeaponCard extends Card implements Grabbable
 
 	void setBasicModeScript(String basicModeScript)
 	{
-		this.basicModeScript = basicModeScript;
+		Mode.BASIC.setScript(basicModeScript);
 	}
 
 	void setAlternateModeScript(String alternateModeScript)
 	{
-		this.alternateModeScript = alternateModeScript;
+		Mode.ALTERNATE_FIRE.setScript(alternateModeScript);
 	}
 
 	void addOptionalEffect(OptionalEffect effect, String name)
@@ -102,7 +127,19 @@ public class WeaponCard extends Card implements Grabbable
 
 	public enum Mode
 	{
-		BASIC, ALTERNATE_FIRE
+		BASIC, ALTERNATE_FIRE;
+
+		private String script;
+
+		void setScript(String script)
+		{
+			this.script = script;
+		}
+
+		String getScript()
+		{
+			return this.script;
+		}
 	}
 
 

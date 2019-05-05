@@ -26,7 +26,6 @@ public class Player
 	private ArrayList<Integer> executedAction;
 	private GameController gameController;
 
-	//private final CallbackInterface callbackInterface;
 	private final ClientConnection clientConnection;
 
 	/**
@@ -42,7 +41,6 @@ public class Player
 		executedAction = new ArrayList<>();
 		gameBoard = new GameBoard();
 		this.color = color;
-		//this.callbackInterface = callbackInterface;
 		this.clientConnection = clientConnection;
 		this.gameController = gameController;
 	}
@@ -83,19 +81,23 @@ public class Player
 		return visibleBlocks.toArray(visible);
 	}
 
-	public Player[] getVisiblePlayers()
+	public List<Player> getVisiblePlayers()
 	{
 		Block[] visibleBlocks = getVisibleBlocks();
-		List<Player> visiblePlayer = new ArrayList<>();
-		for(Block visibleBlock : visibleBlocks)visiblePlayer.addAll(visibleBlock.getPlayers());
-		Player[] players = new Player[visiblePlayer.size()];
-		return visiblePlayer.toArray(players);
+		List<Player> visiblePlayers = new ArrayList<>();
+		for(Block visibleBlock : visibleBlocks)visiblePlayers.addAll(visibleBlock.getPlayers());
+		return visiblePlayers;
 	}
 
 	public Integer[] getExecutedActions()
 	{
 		Integer[] executed = new Integer[executedAction.size()];
 		return executedAction.toArray(executed);
+	}
+
+	public ClientConnection getClientConnection()
+	{
+		return this.clientConnection;
 	}
 
 
@@ -121,6 +123,11 @@ public class Player
 		{
 			powerUps.add(powerUpCard);
 		}
+	}
+
+	public List<WeaponCard> getWeapons()
+	{
+		return this.weapons;
 	}
 
 	public GameColor getColor()

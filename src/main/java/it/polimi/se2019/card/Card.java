@@ -4,10 +4,16 @@ public abstract class Card
 {
 	private String name;
 	private String description;
+	private String id;
 
 	protected Card()
 	{
 
+	}
+
+	public final void setId(String id)
+	{
+		this.id = id;
 	}
 
 	public final void setName(String name)
@@ -28,6 +34,11 @@ public abstract class Card
 	public final String getDescriprion()
 	{
 		return description;
+	}
+
+	public final String getId()
+	{
+		return this.id;
 	}
 
 	public abstract String toString();

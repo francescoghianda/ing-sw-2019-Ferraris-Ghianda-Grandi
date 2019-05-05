@@ -133,39 +133,39 @@ public class Logger
         for(LoggerOutputStream out : outputs)if(message.getLevel().getValue() >= out.getMinValue())out.print(out.getFormatter().format(message.setPrintColor(out.supportColor())));
     }
 
-    public static void log(Level level, String message)
+    public static void log(Level level, Object obj)
     {
-        logger.log(LogMessage.pack(level, message));
+        logger.log(LogMessage.pack(level, obj.toString()));
     }
 
-    public static void info(String msg)
+    public static void info(Object obj)
     {
-        logger.log(LogMessage.pack(Level.INFO, msg));
+        logger.log(LogMessage.pack(Level.INFO, obj.toString()));
     }
 
-    public static void debug(String msg)
+    public static void debug(Object obj)
     {
-        logger.log(LogMessage.pack(Level.DEBUG, msg));
+        logger.log(LogMessage.pack(Level.DEBUG, obj.toString()));
     }
 
-    public static void error(String msg)
+    public static void error(Object obj)
     {
-        logger.log(LogMessage.pack(Level.ERROR, msg));
+        logger.log(LogMessage.pack(Level.ERROR, obj.toString()));
     }
 
-    public static void warning(String msg)
+    public static void warning(Object obj)
     {
-        logger.log(LogMessage.pack(Level.WARNING, msg));
+        logger.log(LogMessage.pack(Level.WARNING, obj.toString()));
     }
 
-    public static void cli(String msg)
+    public static void cli(Object obj)
     {
-        logger.log(LogMessage.pack(Level.CLI, msg));
+        logger.log(LogMessage.pack(Level.CLI, obj.toString()));
     }
 
-    public static void inputCli(String msg)
+    public static void inputCli(Object obj)
     {
-        logger.inputLog(LogMessage.pack(Level.CLI, msg));
+        logger.inputLog(LogMessage.pack(Level.CLI, obj.toString()));
     }
 
 

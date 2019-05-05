@@ -17,10 +17,11 @@ public class Strings
     public static final String GET_CONNECTION_MODE = "Inserisci la modalità di connessione: ";
     public static final String CONNECTING = "Cerco server adrenalina...";
     public static final String LOGGED = "Sei connesso!";
-
     public static final String INVALID_INPUT = "Input non valido!";
-
     public static final String GET_USERNAME = "Inserisci uno username: ";
+    public static final String GAME_STARTING = "La partita inizierà tra...";
+    public static final String YOU_ARE_FIRST_PLAYER = "Sei il giocatore iniziale!";
+    public static final String FIRST_PLAYER_IS = "Il giocatore iniziale è: %s";
 
 
 }

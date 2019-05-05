@@ -131,6 +131,12 @@ public class SocketClient implements Runnable, NetworkClient
     }
 
     @Override
+    public UI getUI()
+    {
+        return ui;
+    }
+
+    @Override
     public NetworkMessageClient<?> getResponseTo(NetworkMessageServer<?> messageServer)
     {
         try

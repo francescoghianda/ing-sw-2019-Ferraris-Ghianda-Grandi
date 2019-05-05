@@ -111,7 +111,9 @@ public class RmiClientConnection implements ClientConnection
     @Override
     public void setLogged(boolean logged)
     {
+        //TODO vedi socket
         this.logged = logged;
+        this.player = gameController.createPlayer(this);
     }
 
     @Override

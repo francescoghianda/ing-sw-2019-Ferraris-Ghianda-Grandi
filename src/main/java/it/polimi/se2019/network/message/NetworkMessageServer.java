@@ -24,6 +24,11 @@ public class NetworkMessageServer<T> extends NetworkMessage<T> implements Serial
         this.executor = executor;
     }
 
+    public NetworkMessageServer()
+    {
+        this.executor = message -> {};
+    }
+
     @Override
     public NetworkMessageServer<T> setParam(T param)
     {

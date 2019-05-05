@@ -1,18 +1,35 @@
 package it.polimi.se2019.card;
 
 import it.polimi.se2019.player.Player;
+import it.polimi.se2019.utils.constants.GameColor;
 
 public class PowerUpCard extends Card implements Grabbable
 {
+	private String name;
+	private String description;
+	private String id;
 
-	public PowerUpCard(String name, String description)
+	private String script;
+	private GameColor color;
+
+	public PowerUpCard()
 	{
 		super();
 	}
 
-	public void applyTo(Player player)
+	public void execute(Player player)
 	{
 
+	}
+
+	public void setScript(String script)
+	{
+		this.script = script;
+	}
+
+	public void setColor(GameColor color)
+	{
+		this.color = color;
 	}
 
 	@Override

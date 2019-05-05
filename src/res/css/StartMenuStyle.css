@@ -1,0 +1,9 @@
+.root
+{
+    -fx-background-color: #FE6666;
+}
+.label
+{
+    -fx-text-alignment: right;
+    -fx-font-size: 15;
+}

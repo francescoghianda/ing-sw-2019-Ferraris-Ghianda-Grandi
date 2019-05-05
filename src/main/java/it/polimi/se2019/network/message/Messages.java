@@ -2,12 +2,14 @@ package it.polimi.se2019.network.message;
 
 import it.polimi.se2019.map.Block;
 import it.polimi.se2019.network.ClientsManager;
+import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.logging.Logger;
 
 public class Messages
 {
-    private static final int OK = 0;
-    private static final int INVALID_USER = 1;
+    public static final int OK = 0;
+    public static final int INVALID_USER = 1;
+    public static final int INVALID_PLAYER = 2;
 
     private Messages(){}
 
@@ -30,21 +32,38 @@ public class Messages
     });
 
 
-    public static final NetworkMessageClient<Integer> STATE_MESSAGE = new NetworkMessageClient<>(message -> {});
+    public static final NetworkMessageClient<Integer> STATE_MESSAGE = new NetworkMessageClient<>();
 
     public static final NetworkMessageClient<Void> YOU_ARE_FIRST_PLAYER = new NetworkMessageClient<>(message ->
+            message.getClient().getUI().youAreFirstPlayer());
+
+    public static final NetworkMessageClient<String> FIRST_PLAYER_IS = new NetworkMessageClient<>(message ->
+            message.getClient().getUI().firstPlayerIs(message.getParam()));
+
+    public static final NetworkMessageClient<Void> SELECT_PLAYER = new NetworkMessageClient<>(message ->
     {
-        //TODO
+        NetworkMessageClient<?> stateMessage;
+        do
+        {
+            Player selectedPlayer = message.getClient().getUI().selectPlayer();
+            stateMessage = message.getClient().getResponseTo(Messages.SELECT_PLAYER_RESPONSE.setParam(selectedPlayer));
+        }
+        while ((Integer)stateMessage.getParam() != OK);
+
     });
+
+    public static final NetworkMessageClient<Void> GAME_IS_STARTING = new NetworkMessageClient<>(message ->
+            message.getClient().getUI().gameIsStarting());
+
+    public static final NetworkMessageClient<Integer> TIMER_SECONDS = new NetworkMessageClient<>(message ->
+            message.getClient().getUI().showTimerCountdown(message.getParam()));
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////MESSAGES EXECUTED ON SERVER///////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static final NetworkMessageServer<Block> MOVE_PLAYER = new NetworkMessageServer<>(message ->
-            message.getClientConnection().getGameController().movePlayer(message.getClientConnection().getPlayer(), message.param));
-
+    public static final NetworkMessageServer<Player> SELECT_PLAYER_RESPONSE = new NetworkMessageServer<>();
 
     public static final NetworkMessageServer<String> LOGIN_RESPONSE = new NetworkMessageServer<>(message ->
     {
@@ -64,10 +83,12 @@ public class Messages
                 message.getClientConnection().getServer().clientReconnected(message.getClientConnection());
                 Logger.warning("Client "+message.param+" has reconnected!");
             }
-
         }
 
     });
+
+    public static final NetworkMessageServer<Block> MOVE_PLAYER = new NetworkMessageServer<>(message ->
+            message.getClientConnection().getGameController().movePlayer(message.getClientConnection().getPlayer(), message.getParam()));
 
 
 }

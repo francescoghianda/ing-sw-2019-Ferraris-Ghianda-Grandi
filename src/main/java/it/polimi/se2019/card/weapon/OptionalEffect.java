@@ -31,6 +31,11 @@ public class OptionalEffect
         this.yellowCost = yellowCost;
     }
 
+    public String getScript()
+    {
+        return this.script;
+    }
+
     boolean isEnabled()
     {
         return this.enabled;

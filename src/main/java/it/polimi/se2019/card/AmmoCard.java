@@ -4,7 +4,6 @@ import it.polimi.se2019.player.Player;
 
 public class AmmoCard extends Card
 {
-
 	private final String id;
 	private final int redAmmo;
 	private final int yellowAmmo;

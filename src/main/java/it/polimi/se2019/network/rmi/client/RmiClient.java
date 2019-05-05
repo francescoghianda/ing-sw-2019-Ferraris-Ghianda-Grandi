@@ -132,6 +132,12 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     }
 
     @Override
+    public UI getUI()
+    {
+        return ui;
+    }
+
+    @Override
     public synchronized NetworkMessageClient<?> getResponseTo(NetworkMessageServer<?> messageServer)
     {
         try

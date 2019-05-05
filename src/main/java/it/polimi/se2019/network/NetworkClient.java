@@ -2,6 +2,7 @@ package it.polimi.se2019.network;
 
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
+import it.polimi.se2019.ui.UI;
 
 public interface NetworkClient
 {
@@ -28,6 +29,7 @@ public interface NetworkClient
     String getUsername();
     void invalidNickname();
     void setLogged(boolean logged);
+    UI getUI();
 
     /**
      * Close the connection with the server

@@ -12,10 +12,12 @@ public class WeaponParser
     public WeaponParser(Scanner scanner)
     {
         this.scanner = scanner;
+        this.weaponCards = new ArrayList<>();
     }
 
     public WeaponCard[] parse()
     {
+        weaponCards.clear();
         while(scanner.hasNextLine())
         {
             String line = scanner.nextLine();
@@ -31,8 +33,9 @@ public class WeaponParser
 
         String line;
 
-        while((line = removeSpaces(scanner.nextLine().toLowerCase())).equals("end_card"))
+        while(!(line = removeSpaces(scanner.nextLine().toLowerCase())).equals("end_card"))
         {
+            if(line.startsWith("#") || line.isEmpty())continue;
             String[] token = line.split("=");
 
             switch (token[0])
@@ -62,6 +65,8 @@ public class WeaponParser
                     break;
             }
         }
+
+        weaponCards.add(card);
     }
 
     private void addOptionalEffect(WeaponCard card, String name)
@@ -71,8 +76,9 @@ public class WeaponParser
 
         String line;
 
-        while((line = removeSpaces(scanner.nextLine().toLowerCase())).equals("end_optional_effect"))
+        while(!(line = removeSpaces(scanner.nextLine().toLowerCase())).equals("end_optional_effect"))
         {
+            if(line.startsWith("#") || line.isEmpty())continue;
             String[] token = line.split("=");
 
             switch (token[0])

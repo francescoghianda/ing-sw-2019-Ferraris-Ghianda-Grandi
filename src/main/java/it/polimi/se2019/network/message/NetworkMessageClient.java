@@ -22,6 +22,11 @@ public class NetworkMessageClient<T> extends NetworkMessage<T> implements Serial
         this.executor = executor;
     }
 
+    public NetworkMessageClient()
+    {
+        this.executor = message -> {};
+    }
+
     @Override
     public NetworkMessageClient<T> setParam(T param)
     {
@@ -31,7 +36,7 @@ public class NetworkMessageClient<T> extends NetworkMessage<T> implements Serial
     }
 
     /**
-     * @param client The client that execute the message
+     * @param client The client that fire the message
      * @return
      */
     public NetworkMessageClient<T> setClient(NetworkClient client)

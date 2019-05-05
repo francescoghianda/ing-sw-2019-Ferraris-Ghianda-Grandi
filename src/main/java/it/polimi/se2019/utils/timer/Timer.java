@@ -40,6 +40,15 @@ public class Timer implements Runnable
         return timers.get(name);
     }
 
+    public static void destroyTimer(String name)
+    {
+        if(timers.containsKey(name))
+        {
+            getTimer(name).stop();
+            timers.remove(name);
+        }
+    }
+
     public void start()
     {
         if(thread == null || !thread.isAlive())
@@ -50,16 +59,21 @@ public class Timer implements Runnable
         }
     }
 
+    public void stop()
+    {
+        running = false;
+    }
+
     @Override
     public void run()
     {
         long delay = 0;
         int elapsedSeconds = 0;
-        for(TimerListener listener : listeners)listener.onTimerStart();
+        for(TimerListener listener : listeners)listener.onTimerStart(name);
         while(running)
         {
             long startTime = System.currentTimeMillis();
-            for(TimerListener listener : listeners)listener.onTimerTick(seconds-elapsedSeconds);
+            for(TimerListener listener : listeners)listener.onTimerTick(name, seconds-elapsedSeconds);
             long delta = System.currentTimeMillis()-startTime;
             if(delta < 1000)
             {
@@ -81,6 +95,6 @@ public class Timer implements Runnable
             elapsedSeconds++;
             if(seconds-elapsedSeconds <= 0)running = false;
         }
-        for(TimerListener listener: listeners)listener.onTimerEnd();
+        for(TimerListener listener: listeners)listener.onTimerEnd(name);
     }
 }
