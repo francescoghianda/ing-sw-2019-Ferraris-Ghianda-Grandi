@@ -24,7 +24,7 @@ public class CLI implements UI
     }
 
     @Override
-    public synchronized void init()
+    public synchronized void startUI()
     {
         Logger.getInstance().enableGameMode(true);
         Logger.cli(Strings.TITLE);
@@ -67,6 +67,12 @@ public class CLI implements UI
     }
 
     @Override
+    public void gameStarted()
+    {
+
+    }
+
+    @Override
     public void showTimerCountdown(int remainSeconds)
     {
         Logger.cli(remainSeconds);
@@ -82,6 +88,12 @@ public class CLI implements UI
     public void firstPlayerIs(String firstPlayerUsername)
     {
         Logger.cli(String.format(Strings.FIRST_PLAYER_IS, firstPlayerUsername));
+    }
+
+    @Override
+    public void connectionRefused()
+    {
+
     }
 
     @Override

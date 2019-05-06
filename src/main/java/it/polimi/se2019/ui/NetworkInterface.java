@@ -27,6 +27,6 @@ public class NetworkInterface
 
         if (connectionMode == RMI_MODE) client = new RmiClient(ui);
         else client = new SocketClient(ui);
-        client.connect(serverIp, serverPort);
+        if(!client.connect(serverIp, serverPort))ui.connectionRefused();
     }
 }

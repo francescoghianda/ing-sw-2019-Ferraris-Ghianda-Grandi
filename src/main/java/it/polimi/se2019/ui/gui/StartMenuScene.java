@@ -51,9 +51,7 @@ public class StartMenuScene extends Scene implements EventHandler<MouseEvent>
         gridPane.setAlignment(Pos.BOTTOM_CENTER);
 
         ipLabel = new Label("IP:");
-        ipLabel.getStyleClass().add("outline");
         portLabel = new Label("Porta:");
-        portLabel.getStyleClass().add("outline");
 
         GridPane.setHalignment(ipLabel, HPos.RIGHT);
         GridPane.setHalignment(portLabel, HPos.RIGHT);
@@ -70,7 +68,6 @@ public class StartMenuScene extends Scene implements EventHandler<MouseEvent>
         });
 
         modeLabel = new Label("Modalità:");
-        modeLabel.getStyleClass().add("outline");
 
         toggleGroup = new ToggleGroup();
         socketMode = new RadioButton("Socket");
@@ -143,16 +140,19 @@ public class StartMenuScene extends Scene implements EventHandler<MouseEvent>
             int connectionMode = NetworkInterface.SOCKET_MODE;
             if(rmiMode.isSelected())connectionMode = NetworkInterface.RMI_MODE;
 
-            //searchServerBtn.setStyle("-fx-background-image: url('/img/loading.gif')");
-            searchServerBtn.setVisible(false);
-            loadingGifView.setVisible(true);
-
             if(ok)
             {
-
+                searchServerBtn.setVisible(false);
+                loadingGifView.setVisible(true);
                 SceneManager.getInstance().connect(ip, port, connectionMode);
             }
         }
+    }
+
+    public void connectionRefused()
+    {
+        searchServerBtn.setVisible(true);
+        loadingGifView.setVisible(false);
     }
 
 

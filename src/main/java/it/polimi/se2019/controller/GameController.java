@@ -10,6 +10,7 @@ import it.polimi.se2019.network.message.Messages;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.constants.GameMode;
+import it.polimi.se2019.utils.logging.Logger;
 import it.polimi.se2019.utils.timer.Timer;
 import it.polimi.se2019.utils.timer.TimerListener;
 
@@ -139,6 +140,18 @@ public class GameController implements TimerListener
     @Override
     public void onTimerEnd(String timerName)
     {
+        try
+        {
+            clientsManager.sendBroadcastMessage(Messages.TIMER_SECONDS.setParam(0));
+            Thread.sleep(1000);
+            clientsManager.sendBroadcastMessage(Messages.GAME_IS_STARTED);
+        }
+        catch (InterruptedException e)
+        {
+            Logger.exception(e);
+            Thread.currentThread().interrupt();
+        }
+
         startGame();
     }
 }

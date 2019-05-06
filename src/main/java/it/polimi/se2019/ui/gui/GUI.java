@@ -3,26 +3,21 @@ package it.polimi.se2019.ui.gui;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.ui.UI;
 import javafx.application.Application;
-import javafx.event.EventHandler;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 public class GUI extends Application implements UI
 {
     private static final String TITLE = "Adrenalina";
 
-    private Stage window;
+    private static Stage window;
+
+    private SceneManager sceneManager;
 
     public GUI()
     {
 
-    }
-
-    public static void main(String[] args)
-    {
-        launch(args);
     }
 
     @Override
@@ -30,14 +25,20 @@ public class GUI extends Application implements UI
     {
         window = new Stage();
 
-        SceneManager sceneManager = SceneManager.createSceneManager(window, this);
+        sceneManager = SceneManager.createSceneManager(window, this);
 
-        sceneManager.setScene(GameScene.START_MENU);
+        sceneManager.setScene(SceneManager.START_MENU_SCENE);
 
         window.setTitle(TITLE);
         window.setResizable(false);
         window.show();
         window.centerOnScreen();
+
+        /////TEST
+        sceneManager.setScene(SceneManager.MATCH_SCENE);
+        window.centerOnScreen();
+        ///////
+
     }
 
     @Override
@@ -47,21 +48,22 @@ public class GUI extends Application implements UI
     }
 
     @Override
-    public void init()
+    public void startUI()
     {
-
+        Thread thread = new Thread(Application::launch);
+        thread.start();
     }
 
     @Override
     public String getUsername()
     {
-        return null;
+        return sceneManager.getUsername();
     }
 
     @Override
     public void logged()
     {
-
+        sceneManager.setScene(SceneManager.WAIT_SCENE);
     }
 
     @Override
@@ -73,13 +75,23 @@ public class GUI extends Application implements UI
     @Override
     public void gameIsStarting()
     {
+        SceneManager.runOnFxThread(()->
+        {
+            if(!SceneManager.WAIT_SCENE.isTimerVisible())SceneManager.WAIT_SCENE.showTimer(true);
+        });
+    }
 
+    @Override
+    public void gameStarted()
+    {
+        sceneManager.setScene(SceneManager.MATCH_SCENE);
+        SceneManager.runOnFxThread(() -> window.centerOnScreen());
     }
 
     @Override
     public void showTimerCountdown(int remainSeconds)
     {
-
+        SceneManager.runOnFxThread(()-> SceneManager.WAIT_SCENE.updateTimer(remainSeconds));
     }
 
     @Override
@@ -93,4 +105,31 @@ public class GUI extends Application implements UI
     {
 
     }
+
+    @Override
+    public void connectionRefused()
+    {
+        SceneManager.START_MENU_SCENE.connectionRefused();
+    }
+
+    public static double getStageWidth()
+    {
+        return window.getWidth();
+    }
+
+    public static double getStageHeight()
+    {
+        return window.getHeight();
+    }
+
+    public static double getScreenWidth()
+    {
+        return Screen.getPrimary().getVisualBounds().getWidth();
+    }
+
+    public static double getScreenHeight()
+    {
+        return Screen.getPrimary().getVisualBounds().getHeight();
+    }
+
 }

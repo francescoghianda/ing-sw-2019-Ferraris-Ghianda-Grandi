@@ -24,7 +24,7 @@ public class Messages
         do
         {
             String username = message.getClient().getUsername();
-            stateMessage = (Integer)message.getClient().getResponseTo(Messages.LOGIN_RESPONSE.setParam(username)).param;
+            stateMessage = (Integer)message.getClient().getResponseTo(Messages.LOGIN_RESPONSE.setParam(username)).getParam();
             if(stateMessage != OK)message.getClient().invalidNickname();
         }
         while (stateMessage != OK);
@@ -54,6 +54,9 @@ public class Messages
 
     public static final NetworkMessageClient<Void> GAME_IS_STARTING = new NetworkMessageClient<>(message ->
             message.getClient().getUI().gameIsStarting());
+
+    public static final NetworkMessageClient<Void> GAME_IS_STARTED = new NetworkMessageClient<>(message ->
+            message.getClient().getUI().gameStarted());
 
     public static final NetworkMessageClient<Integer> TIMER_SECONDS = new NetworkMessageClient<>(message ->
             message.getClient().getUI().showTimerCountdown(message.getParam()));

@@ -8,15 +8,15 @@ import it.polimi.se2019.player.Player;
 public interface UI
 {
     void update();
-    void init();
+    void startUI();
 
     String getUsername();
     void logged();
-
     Player selectPlayer();
-
     void gameIsStarting();
+    void gameStarted();
     void showTimerCountdown(int remainSeconds);
     void youAreFirstPlayer();
     void firstPlayerIs(String firstPlayerUsername);
+    void connectionRefused();
 }
