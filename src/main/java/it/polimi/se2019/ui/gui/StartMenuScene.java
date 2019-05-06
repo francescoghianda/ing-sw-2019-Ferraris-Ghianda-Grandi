@@ -1,12 +1,13 @@
 package it.polimi.se2019.ui.gui;
 
-
+import javafx.animation.FadeTransition;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 
 
 public class StartMenuScene extends Scene
@@ -26,27 +27,36 @@ public class StartMenuScene extends Scene
 
     public StartMenuScene(int screenWidth, int screenHeight)
     {
-        super(new GridPane(), screenWidth/widthScale, screenHeight/heightScale);
+        super(new BorderPane(), 600, 403);
         getStylesheets().add("css/StartMenuStyle.css");
 
-        GridPane layout = (GridPane)getRoot();
+        BorderPane layout = (BorderPane)getRoot();
 
-        layout.setAlignment(Pos.CENTER);
-        layout.setVgap(20);
-        layout.setHgap(30);
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(20);
+        gridPane.setVgap(20);
+        gridPane.setAlignment(Pos.BOTTOM_CENTER);
 
         ipLabel = new Label("IP:");
+        ipLabel.getStyleClass().add("outline");
+        portLabel = new Label("Porta:");
+        portLabel.getStyleClass().add("outline");
+
+        GridPane.setHalignment(ipLabel, HPos.RIGHT);
+        GridPane.setHalignment(portLabel, HPos.RIGHT);
+
         ipTextFiled = new TextField();
         ipTextFiled.setMinSize(200, ipTextFiled.getMinHeight());
 
-        portLabel = new Label("Porta:");
         portTextFiled = new TextField();
         portTextFiled.setMinSize(200, portTextFiled.getMinHeight());
 
-        modeLabel = new Label("Modalità di connessione:");
+        modeLabel = new Label("Modalità:");
+        modeLabel.getStyleClass().add("outline");
 
         toggleGroup = new ToggleGroup();
         socketMode = new RadioButton("Socket");
+        socketMode.getStyleClass().add("outline");
         socketMode.setSelected(true);
         rmiMode = new RadioButton("RMI");
 
@@ -57,15 +67,18 @@ public class StartMenuScene extends Scene
         modeMenu.setSpacing(10);
         modeMenu.getChildren().addAll(socketMode, rmiMode);
 
-
+        VBox btnBox = new VBox();
+        btnBox.setMinHeight(150);
+        btnBox.setAlignment(Pos.CENTER);
         searchServerBtn = new Button("Cerca server");
-        GridPane.setHalignment(searchServerBtn, HPos.CENTER);
+        btnBox.getChildren().add(searchServerBtn);
 
+        gridPane.addRow(0, ipLabel, ipTextFiled);
+        gridPane.addRow(1, portLabel, portTextFiled);
+        gridPane.addRow(2, modeLabel, modeMenu);
 
-        layout.addRow(0, ipLabel, ipTextFiled);
-        layout.addRow(1, portLabel, portTextFiled);
-        layout.addRow(2, modeLabel, modeMenu);
-        //layout.addRow(4, searchServerBtn);
-        layout.add(searchServerBtn, 1, 4);
+        layout.setCenter(gridPane);
+        layout.setBottom(btnBox);
+
     }
 }
