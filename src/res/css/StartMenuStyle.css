@@ -2,18 +2,21 @@
 {
     -fx-background-color: #FE6666;
     -fx-background-image: url("/img/menubg.png");
+    -fx-background-size: stretch;
 }
 .label
 {
     -fx-text-alignment: right;
-    -fx-background-color: rgba(255, 255, 255, 0.50);
+    /*-fx-background-color: rgba(255, 255, 255, 0.60);*/
+    -fx-font-weight: bold;
     -fx-background-radius: 6 6 6 6;
     -fx-font-size: 20;
 }
 .radio-button
 {
     -fx-font-size: 15;
-    -fx-text-fill: white;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
 }
 .text-field
 {
@@ -26,7 +29,6 @@
 .button
 {
     -fx-background-color: rgb(255, 107, 0);
-    -fx-opacity: 0.5;
     -fx-background-radius: 8 8 8 8;
     -fx-font-size: 20;
     -fx-text-fill: white;

@@ -3,7 +3,9 @@ package it.polimi.se2019.ui.gui;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.ui.UI;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -28,12 +30,12 @@ public class GUI extends Application implements UI
     {
         window = new Stage();
 
-        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        StartMenuScene menuScene = new StartMenuScene((int)screenBounds.getWidth(), (int)screenBounds.getHeight());
+        SceneManager sceneManager = SceneManager.createSceneManager(window, this);
+
+        sceneManager.setScene(GameScene.START_MENU);
 
         window.setTitle(TITLE);
         window.setResizable(false);
-        window.setScene(menuScene);
         window.show();
         window.centerOnScreen();
     }
@@ -91,5 +93,4 @@ public class GUI extends Application implements UI
     {
 
     }
-
 }
