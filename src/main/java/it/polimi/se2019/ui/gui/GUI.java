@@ -5,7 +5,6 @@ import it.polimi.se2019.ui.UI;
 import javafx.application.Application;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 public class GUI extends Application implements UI
 {
@@ -34,10 +33,12 @@ public class GUI extends Application implements UI
         window.show();
         window.centerOnScreen();
 
-        /*
-        sceneManager.setScene(SceneManager.MATCH_SCENE);
-        window.centerOnScreen();
-        */
+
+        //gameStarted();
+        /////TEST
+        //sceneManager.setScene(SceneManager.MATCH_SCENE);
+        //window.centerOnScreen();
+        ///////
 
     }
 
@@ -81,11 +82,24 @@ public class GUI extends Application implements UI
         });
     }
 
+    private void maximizeStage()
+    {
+        window.setResizable(true);
+        window.setMaximized(true);
+        //window.setResizable(false);
+    }
+
     @Override
     public void gameStarted()
     {
+
         sceneManager.setScene(SceneManager.MATCH_SCENE);
-        SceneManager.runOnFxThread(() -> window.centerOnScreen());
+
+        SceneManager.runOnFxThread(() ->
+        {
+            window.centerOnScreen();
+            maximizeStage();
+        });
     }
 
     @Override

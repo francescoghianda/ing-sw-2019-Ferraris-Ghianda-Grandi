@@ -49,7 +49,7 @@ public class GameController implements TimerListener
         return instance;
     }*/
 
-    public void startGame()
+    private void startGame()
     {
         selectStartingPlayer();
     }

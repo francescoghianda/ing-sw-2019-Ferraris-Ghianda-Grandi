@@ -18,6 +18,7 @@ public class Timer implements Runnable
 
     private Timer(int seconds, String name)
     {
+        if(seconds < 0)throw new NegativeTimeException();
         this.seconds = seconds;
         this.name = name;
         this.listeners = new ArrayList<>();
