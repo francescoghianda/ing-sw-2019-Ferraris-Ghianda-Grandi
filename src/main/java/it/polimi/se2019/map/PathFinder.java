@@ -1,5 +1,6 @@
 package it.polimi.se2019.map;
 
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,8 +30,11 @@ public class PathFinder
         List<Path> paths = findPaths();
 
         paths = paths.stream().filter(Path::isValid).sorted(Comparator.comparingInt(Path::getLength)).collect(Collectors.toList());
-        int minLength = paths.get(0).getLength();
-        paths = paths.stream().filter(path -> path.getLength() <= minLength).collect(Collectors.toList());
+        if(!paths.isEmpty())
+        {
+            int minLength = paths.get(0).getLength();
+            paths = paths.stream().filter(path -> path.getLength() <= minLength).collect(Collectors.toList());
+        }
 
         return paths;
     }

@@ -14,6 +14,7 @@ import static junit.framework.TestCase.fail;
 public class MapTest
 {
     private Map map;
+
     @Before
     public void setUp()
     {
@@ -34,6 +35,7 @@ public class MapTest
         });
         assert true;
     }
+
     @Test
     public void spawnpointTest(){
         List<Block> blocks = map.getAllBlocks();

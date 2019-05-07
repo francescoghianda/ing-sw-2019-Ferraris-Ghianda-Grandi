@@ -43,6 +43,13 @@
     </dependencies>
 
     <build>
+
+        <resources>
+            <resource>
+                <directory>src/res</directory>
+            </resource>
+        </resources>
+
         <plugins>
 
             <!-- Export the project as a runnable JAR, with the provided mainClass -->

@@ -19,6 +19,8 @@ public class Map
 
 	private Block[][] mapMatrix;
 
+	private int mapNumber;
+
 	private Map()
 	{
 		cliMap = new char[mapHeight][mapWidth];
@@ -42,7 +44,7 @@ public class Map
 	 */
 	private Map initMap()
 	{
-		int mapNumber = 1 + new Random().nextInt(4);
+		mapNumber = 1 + new Random().nextInt(4);
 		Logger.debug("Map "+mapNumber+" selected");
 		scanner = new Scanner(getClass().getResourceAsStream("/maps"));
 		String line;
@@ -54,9 +56,14 @@ public class Map
 		Logger.debug("Read map "+mapNumber);
 		readMap();
 		readDoors();
-		createPaths();
+		//createPaths();
 		Logger.debug("Map ready!");
 		return this;
+	}
+
+	public int getSelectedMapNumber()
+	{
+		return mapNumber;
 	}
 
 	/**

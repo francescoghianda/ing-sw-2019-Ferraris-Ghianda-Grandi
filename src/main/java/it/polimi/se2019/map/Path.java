@@ -40,7 +40,7 @@ public class Path
     @Override
     public String toString()
     {
-        return blocks.toString()+" - Length: "+ blocks.size();
+        return blocks.toString()+" - Length: "+ blocks.size() + (valid ? " (valid)" : "");
     }
 
     @Override
