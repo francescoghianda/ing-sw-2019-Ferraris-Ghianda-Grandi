@@ -34,10 +34,10 @@ public class GUI extends Application implements UI
         window.show();
         window.centerOnScreen();
 
-        /////TEST
+        /*
         sceneManager.setScene(SceneManager.MATCH_SCENE);
         window.centerOnScreen();
-        ///////
+        */
 
     }
 
