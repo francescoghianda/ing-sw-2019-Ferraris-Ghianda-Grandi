@@ -38,6 +38,7 @@ public class GameController implements TimerListener
         this.clientsManager = ClientsManager.getInstance();
         availablePlayerColors = new ArrayList<>(Arrays.asList(GameColor.values()));
         availablePlayerColors.remove(GameColor.RED);
+        gameMode = GameMode.NORMAL;
         random = new Random();
         map = Map.createMap();
         players = new ArrayList<>();
@@ -49,8 +50,9 @@ public class GameController implements TimerListener
         return instance;
     }*/
 
-    private void startGame()
+    public void startGame()
     {
+        if(players.isEmpty())throw new StartGameWithoutPlayerException();
         selectStartingPlayer();
     }
 
@@ -82,10 +84,12 @@ public class GameController implements TimerListener
      */
     public Player createPlayer(ClientConnection server)
     {
+
+        if(availablePlayerColors.isEmpty())throw new TooManyPlayerException();
         GameColor color = availablePlayerColors.get(random.nextInt(availablePlayerColors.size()));
-        availablePlayerColors.remove(color);
         Player player = new Player(color, this, server);
         players.add(player);
+        availablePlayerColors.remove(color);
 
         if(players.size() >= playersForStart) startTimer();
 

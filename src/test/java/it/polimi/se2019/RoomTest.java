@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static junit.framework.TestCase.fail;
+
 public class RoomTest
 {
     private List<Room> rooms;
@@ -22,10 +24,21 @@ public class RoomTest
     }
 
     @Test
-    public void roomColorTest()
+    public void noDoorsInBlockOfTheSameRoomTest()
     {
+        rooms.forEach(room ->
+        {
+            List<Block> blocks = room.getBlocks();
 
-
+            blocks.forEach(block ->
+            {
+                List<Block> doors = block.getDoorsAsList();
+                doors.forEach(door ->
+                {
+                    if(door.getRoom().equals(block.getRoom()))fail();
+                });
+            });
+        });
     }
 
 

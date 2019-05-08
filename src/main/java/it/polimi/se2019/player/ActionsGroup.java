@@ -85,10 +85,11 @@ public class ActionsGroup
 
 		ArrayList<ActionsGroup> groups = new ArrayList<>(Arrays.asList(ActionsGroup.clonedValues()));
 
-		groups.forEach(group ->
+		groups.removeIf(group -> !group.gameMode.equals(gameMode) || group.damageToActivate > totalDamage);
+		/*groups.forEach(group ->
 		{
 			if(!group.gameMode.equals(gameMode) || group.damageToActivate > totalDamage)groups.remove(group);
-		});
+		});*/
 
 		for(int j = 0; j < alreadyExecutedActions.length; j++)
 		{
@@ -144,6 +145,23 @@ public class ActionsGroup
 		return possibleAction.toArray(intArray);
 	}
 
+	public boolean deepEquals(ActionsGroup group)
+	{
+		return super.equals(group);
+	}
+
+	@Override
+	public boolean equals(Object group)
+	{
+		if(!(group instanceof ActionsGroup) || ((ActionsGroup) group).getActions().size() != getActions().size() ||
+		!((ActionsGroup) group).gameMode.equals(gameMode) || ((ActionsGroup) group).damageToActivate != damageToActivate)return false;
+
+		for(int i = 0; i < actions.size(); i++)
+		{
+			if(!actions.get(i).equals(((ActionsGroup) group).actions.get(i)))return false;
+		}
+		return true;
+	}
 
 	@Override
 	public ActionsGroup clone()

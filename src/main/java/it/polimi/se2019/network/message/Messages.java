@@ -71,7 +71,7 @@ public class Messages
     public static final NetworkMessageServer<String> LOGIN_RESPONSE = new NetworkMessageServer<>(message ->
     {
 
-        if(ClientsManager.getInstance().getConnectedClientsUsername().contains(message.getParam()))
+        if(ClientsManager.getInstance().getConnectedClientsUsername().contains((String) message.getParam()))
         {
             message.getClientConnection().sendMessageToClient(Messages.STATE_MESSAGE.setParam(INVALID_USER));
         }
@@ -80,7 +80,7 @@ public class Messages
             message.getClientConnection().sendMessageToClient(Messages.STATE_MESSAGE.setParam(OK));
             message.getClientConnection().setUsername(message.param);
             message.getClientConnection().setLogged(true);
-            if(ClientsManager.getInstance().getDisconnectedClientsUsername().contains(message.getParam()))
+            if(ClientsManager.getInstance().getDisconnectedClientsUsername().contains((String) message.getParam()))
             {
 
                 message.getClientConnection().getServer().clientReconnected(message.getClientConnection());

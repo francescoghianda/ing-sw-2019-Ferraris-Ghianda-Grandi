@@ -56,7 +56,7 @@ public class Map
 		Logger.debug("Read map "+mapNumber);
 		readMap();
 		readDoors();
-		//createPaths();
+		createPaths();
 		Logger.debug("Map ready!");
 		return this;
 	}
@@ -117,10 +117,16 @@ public class Map
 		for(String door : doors)
 		{
 			String[] blocks = door.split("-");
-			Block block1 = findByColor(GameColor.parseColor(blocks[0].charAt(0))).getBlockAt(Integer.parseInt(""+blocks[0].charAt(1)));
-			Block block2 = findByColor(GameColor.parseColor(blocks[1].charAt(0))).getBlockAt(Integer.parseInt(""+blocks[1].charAt(1)));
-			block1.setDoor(block2);
-			block2.setDoor(block1);
+			Room room1 = findByColor(GameColor.parseColor(blocks[0].charAt(0)));
+			Room room2 = findByColor(GameColor.parseColor(blocks[1].charAt(0)));
+			if(room1 != null && room2 != null)
+			{
+				Block block1 = room1.getBlockAt(Integer.parseInt(""+blocks[0].charAt(1)));
+				Block block2 = room2.getBlockAt(Integer.parseInt(""+blocks[1].charAt(1)));
+				block1.setDoor(block2);
+				block2.setDoor(block1);
+			}
+
 		}
 
 	}

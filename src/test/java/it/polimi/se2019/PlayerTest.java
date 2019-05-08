@@ -9,7 +9,7 @@ public class PlayerTest
 {
 
     @Test
-    public void nullParamaterExceptionTest()
+    public void nullParameterExceptionTest()
     {
         Player player = null;
         try

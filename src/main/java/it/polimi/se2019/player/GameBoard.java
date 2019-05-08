@@ -71,6 +71,7 @@ public class GameBoard
      */
     public void addDamage(Player player, int damage)
     {
+        if(damage < 0)throw new NegativeValueException();
         if(receivedDamage.containsKey(player)) receivedDamage.replace(player, receivedDamage.get(player)+damage);
         else receivedDamage.put(player, damage);
     }
@@ -82,22 +83,29 @@ public class GameBoard
      */
     public void addMarker(Player player, int mark)
     {
+        if(mark < 0)throw new NegativeValueException();
         if(markers.containsKey(player)) markers.replace(player, markers.get(player)+mark);
         else markers.put(player, mark);
     }
 
     public void setRedAmmo(int redAmmo)
     {
+        if(redAmmo < 0)throw new NegativeValueException();
+        if(redAmmo > 3)throw new TooHighValueException();
         this.redAmmo = redAmmo;
     }
 
     public void setYellowAmmo(int yellowAmmo)
     {
+        if(yellowAmmo < 0)throw new NegativeValueException();
+        if(yellowAmmo > 3)throw new TooHighValueException();
         this.yellowAmmo = yellowAmmo;
     }
 
     public void setBlueAmmo(int blueAmmo)
     {
+        if(blueAmmo < 0)throw new NegativeValueException();
+        if(blueAmmo > 3)throw new TooHighValueException();
         this.blueAmmo = blueAmmo;
     }
 

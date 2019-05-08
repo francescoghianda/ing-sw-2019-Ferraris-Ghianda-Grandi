@@ -102,6 +102,16 @@ public class Block
 		return doors[side];
 	}
 
+	public List<Block> getDoorsAsList()
+	{
+		List<Block> doorsList = new ArrayList<>();
+		for(Block door : this.doors)
+		{
+			if(door != null)doorsList.add(door);
+		}
+		return doorsList;
+	}
+
 	public Block[] getDoors()
 	{
 		return this.doors;
@@ -109,6 +119,7 @@ public class Block
 
 	public void setDoor(Block block)
 	{
+		if(!block.isNear(this))throw new NotNearBlockException();
 		int side;
 		if(this.x == block.x && this.y > block.y)side = UPPER_SIDE;
 		else if(this.x == block.x && this.y < block.y)side = LOWER_SIDE;
@@ -116,6 +127,8 @@ public class Block
 		else side = RIGHT_SIDE;
 		doors[side] = block;
 	}
+
+
 
 	public int getX()
 	{
@@ -190,6 +203,7 @@ public class Block
 	 */
 	public boolean isNear(Block block)
 	{
+		if(block == null)return false;
 		if(block.getX() == x)
 		{
 			return block.getY() == y + 1 || block.getY() == y - 1;

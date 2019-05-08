@@ -49,6 +49,14 @@ public class MapTest
 
     }
 
+    @Test
+    public void mapNumberTest()
+    {
+        int mapNumber = map.getSelectedMapNumber();
+        if(mapNumber < 1 || mapNumber > 4)fail();
+        assert true;
+    }
+
 
 
 

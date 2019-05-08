@@ -44,6 +44,17 @@ public class Path
     }
 
     @Override
+    public boolean equals(Object path)
+    {
+        if(!(path instanceof Path) || ((Path) path).getLength() != getLength() || ((Path) path).isValid() != valid)return false;
+        for(int i = 0; i < blocks.size(); i++)
+        {
+            if(!blocks.get(i).equals(((Path) path).blocks.get(i)))return false;
+        }
+        return true;
+    }
+
+    @Override
     public Path clone()
     {
         Path clonedPath = new Path();

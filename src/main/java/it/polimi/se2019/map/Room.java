@@ -3,6 +3,7 @@ package it.polimi.se2019.map;
 import it.polimi.se2019.utils.constants.GameColor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Room
 {
@@ -43,7 +44,7 @@ public class Room
 		return this.color;
 	}
 
-	public ArrayList<Block> getBlocks()
+	public List<Block> getBlocks()
 	{
 		return this.blocks;
 	}

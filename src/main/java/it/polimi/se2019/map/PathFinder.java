@@ -20,8 +20,9 @@ public class PathFinder
     {
         this.endBlock = endBlock;
         List<Path> paths = findPaths();
-        Collections.shuffle(paths);
-        return getMinValidPath(paths);
+        //Collections.shuffle(paths);
+        List<Path> minPaths = getMinValidPath(paths);
+        return minPaths.get(new Random().nextInt(minPaths.size()));
     }
 
     public List<Path> getAllPathsTo(Block endBlock)
@@ -29,14 +30,7 @@ public class PathFinder
         this.endBlock = endBlock;
         List<Path> paths = findPaths();
 
-        paths = paths.stream().filter(Path::isValid).sorted(Comparator.comparingInt(Path::getLength)).collect(Collectors.toList());
-        if(!paths.isEmpty())
-        {
-            int minLength = paths.get(0).getLength();
-            paths = paths.stream().filter(path -> path.getLength() <= minLength).collect(Collectors.toList());
-        }
-
-        return paths;
+        return getMinValidPath(paths);
     }
 
     private List<Path> findPaths()
@@ -48,28 +42,33 @@ public class PathFinder
 
         ArrayList<Path> paths = new ArrayList<>();
 
-        paths.add(findPath(leftBlock, new Path()));
-        paths.add(findPath(rightBlock, new Path()));
-        paths.add(findPath(upperBlock, new Path()));
-        paths.add(findPath(bottomBlock, new Path()));
+        paths.addAll(findPaths(leftBlock, new Path()));
+        paths.addAll(findPaths(rightBlock, new Path()));
+        paths.addAll(findPaths(upperBlock, new Path()));
+        paths.addAll(findPaths(bottomBlock, new Path()));
 
         return paths;
     }
 
-    private Path getMinValidPath(List<Path> paths)
+    private List<Path> getMinValidPath(List<Path> paths)
     {
-        Optional<Path> minPath = paths.stream().filter(Path::isValid).min(Comparator.comparingInt(Path::getLength));
-        return minPath.orElse(new Path());
+        paths = paths.stream().filter(Path::isValid).sorted(Comparator.comparingInt(Path::getLength)).collect(Collectors.toList());
+        if(!paths.isEmpty())
+        {
+            int minLength = paths.get(0).getLength();
+            paths = paths.stream().filter(path -> path.getLength() <= minLength).collect(Collectors.toList());
+        }
+        return paths;
     }
 
-    private Path findPath(Block block, Path path)
+    private List<Path> findPaths(Block block, Path path)
     {
-        if(block == null || block.equals(startBlock))return path;
+        if(block == null || block.equals(startBlock))return Collections.singletonList(path);
         if(block.equals(endBlock))
         {
             path.addBlock(block);
             path.setValid(true);
-            return path;
+            return Collections.singletonList(path);
         }
         path.addBlock(block);
 
@@ -80,10 +79,10 @@ public class PathFinder
         Block upperBlock = block.getUpperBlock();
         Block bottomBlock = block.getBottomBlock();
 
-        if(!path.contains(leftBlock) && block.isConnected(leftBlock)) paths.add(findPath(leftBlock, path.clone()));
-        if(!path.contains(rightBlock) && block.isConnected(rightBlock)) paths.add(findPath(rightBlock, path.clone()));
-        if(!path.contains(upperBlock) && block.isConnected(upperBlock)) paths.add(findPath(upperBlock, path.clone()));
-        if(!path.contains(bottomBlock) && block.isConnected(bottomBlock)) paths.add(findPath(bottomBlock, path.clone()));
+        if(!path.contains(leftBlock) && block.isConnected(leftBlock)) paths.addAll(findPaths(leftBlock, path.clone()));
+        if(!path.contains(rightBlock) && block.isConnected(rightBlock)) paths.addAll(findPaths(rightBlock, path.clone()));
+        if(!path.contains(upperBlock) && block.isConnected(upperBlock)) paths.addAll(findPaths(upperBlock, path.clone()));
+        if(!path.contains(bottomBlock) && block.isConnected(bottomBlock)) paths.addAll(findPaths(bottomBlock, path.clone()));
 
         return getMinValidPath(paths);
     }

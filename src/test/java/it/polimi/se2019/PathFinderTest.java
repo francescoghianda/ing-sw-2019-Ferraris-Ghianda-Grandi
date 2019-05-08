@@ -9,39 +9,53 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static junit.framework.TestCase.fail;
+
 public class PathFinderTest
 {
     private Map map;
+    private List<Path> testPaths;
 
     @Before
     public void setUp()
     {
         map = Map.createMap();
+
+        PathFinder pathFinder = new PathFinder(map.getMapMatrix()[0][0]);
+        testPaths = pathFinder.getAllPathsTo(map.getMapMatrix()[2][3]);
     }
 
     @Test
     public void getAllPathsToTest()
     {
-        /*PathFinder pathFinder = new PathFinder(map.getMapMatrix()[0][0]);
-        List<Path> paths = pathFinder.getAllPathsTo(map.getMapMatrix()[2][3]);
-
-
+        int expected = -1;
 
         switch (map.getSelectedMapNumber())
         {
             case 1:
-
+            case 3:
+                expected = 4;
                 break;
             case 2:
-
-                break;
-            case 3:
-
+                expected = 3;
                 break;
             case 4:
-
+                expected = 5;
                 break;
-        }*/
+        }
+
+        Assert.assertEquals(expected, testPaths.size());
+        Assert.assertEquals(5, testPaths.get(0).getLength());
+    }
+
+    @Test
+    public void pathsLengthTest()
+    {
+        for(int i = 0; i < testPaths.size()-1; i++)
+        {
+            if(testPaths.get(i).getLength() != testPaths.get(i+1).getLength())fail();
+        }
+        assert true;
     }
 
     @Test
