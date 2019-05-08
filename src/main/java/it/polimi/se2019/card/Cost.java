@@ -6,6 +6,8 @@ public class Cost
 
     public Cost(int red, int blue, int yellow)
     {
+        if(red < 0 || blue < 0 || yellow < 0)throw new NegativeCostException();
+        if(red > 3 || blue > 3 || yellow > 3)throw new CostTooHighException();
         this.red = red;
         this.blue = blue;
         this.yellow = yellow;

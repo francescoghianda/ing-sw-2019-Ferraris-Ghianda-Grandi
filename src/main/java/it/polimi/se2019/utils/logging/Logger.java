@@ -1,6 +1,8 @@
 package it.polimi.se2019.utils.logging;
 
 import it.polimi.se2019.utils.constants.AnsiColor;
+import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.AnsiConsole;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -25,6 +27,7 @@ public class Logger
     {
         try
         {
+            AnsiConsole.systemInstall();
             sdf = new SimpleDateFormat("ddMMyy_HHmmss");
             addOutput(new LoggerOutputStream(System.out, getDefaultFormatter(),true));
             File logFile = new File(getLogFileName());

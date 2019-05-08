@@ -8,6 +8,7 @@ import it.polimi.se2019.ui.cli.FormattedInput;
 import it.polimi.se2019.ui.cli.Option;
 import it.polimi.se2019.ui.cli.Options;
 import it.polimi.se2019.ui.cli.Strings;
+import it.polimi.se2019.utils.constants.AnsiColor;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.rmi.RemoteException;
@@ -18,10 +19,11 @@ public class ServerApp
     private static final int RMI_MODE = 1;
     private static final int BOTH_SERVER_MODE = 2;
 
-    private static final String TITLE = "    _      _                   _ _             ___                      \n" +
-            "   /_\\  __| |_ _ ___ _ _  __ _| (_)_ _  __ _  / __| ___ _ ___ _____ _ _ \n" +
-            "  / _ \\/ _` | '_/ -_) ' \\/ _` | | | ' \\/ _` | \\__ \\/ -_) '_\\ V / -_) '_|\n" +
-            " /_/ \\_\\__,_|_| \\___|_||_\\__,_|_|_|_||_\\__,_| |___/\\___|_|  \\_/\\___|_|  \n" +
+    private static final String TITLE = AnsiColor.YELLOW
+            + "    _      _                   _ _           "+AnsiColor.WHITE+"  ___                      \n" +
+            AnsiColor.YELLOW+"   /_\\  __| |_ _ ___ _ _  __ _| (_)_ _  __ _  "+AnsiColor.WHITE+"/ __| ___ _ ___ _____ _ _ \n" +
+            AnsiColor.YELLOW+"  / _ \\/ _` | '_/ -_) ' \\/ _` | | | ' \\/ _` |"+AnsiColor.WHITE+" \\__ \\/ -_) '_\\ V / -_) '_|\n" +
+            AnsiColor.YELLOW+" /_/ \\_\\__,_|_| \\___|_||_\\__,_|_|_|_||_\\__,_|"+AnsiColor.WHITE+" |___/\\___|_|  \\_/\\___|_|  \n" +
             "                                                                        ";
     private NetworkServer server1;
     private NetworkServer server2;

@@ -39,6 +39,13 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>1.18</version>
+        </dependency>
+
         
     </dependencies>
 
@@ -52,19 +59,33 @@
 
         <plugins>
 
-            <!-- Export the project as a runnable JAR, with the provided mainClass -->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Export the project as a runnable JAR, with the provided mainClass -->
+           <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>it.polimi.se2019.App</mainClass>
+                            <mainClass>it.polimi.se2019.ServerApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
-            </plugin>
+           </plugin>
 
             <!-- Jacoco is a code coverage library that allows basic report creation -->
             <plugin>

@@ -36,6 +36,7 @@ public class Player
 	 */
 	public Player(GameColor color, GameController gameController, ClientConnection clientConnection)
 	{
+		if(color == null || gameController == null || clientConnection == null)throw new NullPointerException();
 		weapons = new ArrayList<>();
 		powerUps = new ArrayList<>();
 		executedAction = new ArrayList<>();
