@@ -1,5 +1,6 @@
 package it.polimi.se2019.card;
 
+import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.map.Block;
 import it.polimi.se2019.network.message.Messages;
 import it.polimi.se2019.network.message.NetworkMessageServer;
@@ -21,6 +22,8 @@ public class CardScriptExecutor
     private HashMap<String, Player> players;
     private HashMap<String, Block> blocks;
 
+    private WeaponCard weapon;
+
     public CardScriptExecutor(Player contextPlayer)
     {
         this.players = new HashMap<>();
@@ -41,6 +44,11 @@ public class CardScriptExecutor
         {
             Logger.exception(e);
         }
+    }
+
+    public void setWeapon(WeaponCard weapon)
+    {
+        this.weapon = weapon;
     }
 
     public Player getContextPlayer()
@@ -113,6 +121,21 @@ public class CardScriptExecutor
         players.put(params[1].trim(), (Player)response.getParam());
     }
 
+    private void selectBlock(String param)
+    {
+        String[] params = param.trim().split("->");
+        if(blocks.containsKey(params[1].trim()))throw new CardScriptErrorException();
+        String[] expressions = getExpressions(params[0].trim());
+        Predicate<Block> predicate = block -> evaluateBlock(expressions, block);
+        NetworkMessageServer<?> response = contextPlayer.getResponseTo(Messages.SELECT_BLOCK);
+        while(!predicate.test((Block)response.getParam()))
+        {
+            response = contextPlayer.getResponseTo(Messages.STATE_MESSAGE.setParam(Messages.INVALID_BLOCK));
+        }
+        contextPlayer.sendMessageToClient(Messages.STATE_MESSAGE.setParam(Messages.OK));
+        blocks.put(params[1].trim(), (Block)response.getParam());
+    }
+
     private String[] getExpressions(String str)
     {
         if(str == null || str.isEmpty() || !(str.startsWith("(") && str.endsWith(")")))throw new CardScriptErrorException();
@@ -122,6 +145,12 @@ public class CardScriptExecutor
     private boolean evaluatePlayer(String[] expressions, Player player)
     {
         for(String expression : expressions)if(!evaluatePlayer(expression.trim(), player))return false;
+        return true;
+    }
+
+    private boolean evaluateBlock(String[] expressions, Block block)
+    {
+        for(String expression : expressions)if(!evaluateBlock(expression.trim(), block))return false;
         return true;
     }
 
@@ -151,9 +180,30 @@ public class CardScriptExecutor
         return result;
     }
 
-    private void selectBlock(String param)
+    private boolean evaluateBlock(String expression, Block block)
     {
+        boolean invert = false;
+        boolean result;
+        String[] split = expression.split(" ");
+        if(expression.startsWith("!"))
+        {
+            invert = true;
+            split[0] = split[0].substring(1);
+        }
 
+        switch (split[0])
+        {
+            case "visible":
+                result = players.get(split[1]).getVisibleBlocks().contains(block);
+                break;
+            case "equal":
+                result = block.equals(blocks.get(split[1]));
+                break;
+            default:
+                throw new CardScriptErrorException();
+        }
+        if(invert)return !result;
+        return result;
     }
 
     private void hit(String param)
@@ -172,7 +222,9 @@ public class CardScriptExecutor
 
     private void move(String param)
     {
-
+        String[] params = param.split(" ");
+        if(!players.containsKey(params[0]) || blocks.containsKey(params[1]))throw new CardScriptErrorException();
+        players.get(params[0]).setBlock(blocks.get(params[1]));
     }
 
 

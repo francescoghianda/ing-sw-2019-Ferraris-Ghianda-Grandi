@@ -3,7 +3,7 @@ package it.polimi.se2019.ui.cli;
 /**
  * containes the default strings printed by the CLI
  */
-public class Strings
+public class CliString
 {
     public static final String TITLE = "     _       _                      _ _             \n" +
             "    / \\   __| |_ __ ___ _ __   __ _| (_)_ __   __ _ \n" +

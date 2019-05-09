@@ -66,7 +66,7 @@ public class Player
 		this.executedAction.clear();
 	}
 
-	public Block[] getVisibleBlocks()
+	public List<Block> getVisibleBlocks()
 	{
 		ArrayList<Block> visibleBlocks = new ArrayList<>(block.getRoom().getBlocks());
 		if(block.hasDoor())
@@ -78,13 +78,12 @@ public class Player
 			}
 		}
 
-		Block[] visible = new Block[visibleBlocks.size()];
-		return visibleBlocks.toArray(visible);
+		return visibleBlocks;
 	}
 
 	public List<Player> getVisiblePlayers()
 	{
-		Block[] visibleBlocks = getVisibleBlocks();
+		List<Block> visibleBlocks = getVisibleBlocks();
 		List<Player> visiblePlayers = new ArrayList<>();
 		for(Block visibleBlock : visibleBlocks)visiblePlayers.addAll(visibleBlock.getPlayers());
 		return visiblePlayers;

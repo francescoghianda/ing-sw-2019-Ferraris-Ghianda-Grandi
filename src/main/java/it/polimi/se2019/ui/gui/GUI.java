@@ -1,12 +1,22 @@
 package it.polimi.se2019.ui.gui;
 
+import it.polimi.se2019.map.Block;
+import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.ui.UI;
+import it.polimi.se2019.ui.gui.dialogs.CloseDialog;
 import javafx.application.Application;
+import javafx.event.EventHandler;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
-public class GUI extends Application implements UI
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class GUI extends Application implements UI, EventHandler<WindowEvent>
 {
     private static final String TITLE = "Adrenalina";
 
@@ -30,6 +40,7 @@ public class GUI extends Application implements UI
 
         window.setTitle(TITLE);
         window.setResizable(false);
+        window.setOnCloseRequest(this);
         window.show();
         window.centerOnScreen();
 
@@ -69,6 +80,12 @@ public class GUI extends Application implements UI
 
     @Override
     public Player selectPlayer()
+    {
+        return null;
+    }
+
+    @Override
+    public Block selectBlock()
     {
         return null;
     }
@@ -126,6 +143,13 @@ public class GUI extends Application implements UI
         SceneManager.START_MENU_SCENE.connectionRefused();
     }
 
+    @Override
+    public String choose(Bundle<String, ArrayList<String>> options)
+    {
+        return null;
+    }
+
+
     public static double getStageWidth()
     {
         return window.getWidth();
@@ -146,4 +170,25 @@ public class GUI extends Application implements UI
         return Screen.getPrimary().getVisualBounds().getHeight();
     }
 
+    @Override
+    public void handle(WindowEvent event)
+    {
+        /*ButtonType yesButton = new ButtonType("Si", ButtonBar.ButtonData.YES);
+        ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+        Dialog<ButtonType> closeDialog = new Dialog<>();
+        closeDialog.setContentText("Sei sicuro di voler uscire?");
+        closeDialog.getDialogPane().getStylesheets().add("css/CloseDialogStyle.css");
+        String bgUrl = "img/close_dialog_bg/close_dialog_bg_"+ (new Random().nextInt(5) + 1)+".png";
+        closeDialog.getDialogPane().setBackground(new Background(new BackgroundImage(new Image(bgUrl), null, null, BackgroundPosition.CENTER, new BackgroundSize(300, 300, false, false, true, true))));
+        closeDialog.getDialogPane().setMinSize(300, 300);
+        closeDialog.getDialogPane().getButtonTypes().addAll(yesButton, noButton);
+        Optional<ButtonType> result = closeDialog.showAndWait();
+        if(!(result.isPresent() && result.get().equals(yesButton)))event.consume();*/
+
+        CloseDialog closeDialog = new CloseDialog(window);
+        Optional<ButtonType> result = closeDialog.showAndWait();
+        if(!(result.isPresent() && result.get().equals(ButtonType.YES)))event.consume();
+
+
+    }
 }

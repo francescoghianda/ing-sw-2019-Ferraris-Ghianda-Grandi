@@ -5,11 +5,15 @@ import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.logging.Logger;
 
+import java.util.ArrayList;
+
+
 public class Messages
 {
     public static final int OK = 0;
     public static final int INVALID_USER = 1;
     public static final int INVALID_PLAYER = 2;
+    public static final int INVALID_BLOCK = 3;
 
     private Messages(){}
 
@@ -52,6 +56,18 @@ public class Messages
 
     });
 
+    public static final NetworkMessageClient<Void> SELECT_BLOCK = new NetworkMessageClient<>(message ->
+    {
+        NetworkMessageClient<?> stateMessage;
+        do
+        {
+            Block selectedBlock = message.getClient().getUI().selectBlock();
+            stateMessage = message.getClient().getResponseTo(Messages.SELECT_BLOCK_RESPONSE.setParam(selectedBlock));
+        }
+        while ((Integer)stateMessage.getParam() != OK);
+
+    });
+
     public static final NetworkMessageClient<Void> GAME_IS_STARTING = new NetworkMessageClient<>(message ->
             message.getClient().getUI().gameIsStarting());
 
@@ -61,16 +77,26 @@ public class Messages
     public static final NetworkMessageClient<Integer> TIMER_SECONDS = new NetworkMessageClient<>(message ->
             message.getClient().getUI().showTimerCountdown(message.getParam()));
 
+    public static final NetworkMessageClient<Bundle<String, ArrayList<String>>> CHOOSER_MESSAGE = new NetworkMessageClient<>(message ->
+    {
+        String res = message.getClient().getUI().choose(message.getParam());
+        message.getClient().sendMessageToServer(Messages.CHOOSER_RESPONSE.setParam(res));
+    });
+
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////MESSAGES EXECUTED ON SERVER///////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public static final NetworkMessageServer<String> CHOOSER_RESPONSE = new NetworkMessageServer<>();
+
     public static final NetworkMessageServer<Player> SELECT_PLAYER_RESPONSE = new NetworkMessageServer<>();
+
+    public static final NetworkMessageServer<Block> SELECT_BLOCK_RESPONSE = new NetworkMessageServer<>();
 
     public static final NetworkMessageServer<String> LOGIN_RESPONSE = new NetworkMessageServer<>(message ->
     {
-
         if(ClientsManager.getInstance().getConnectedClientsUsername().contains((String) message.getParam()))
         {
             message.getClientConnection().sendMessageToClient(Messages.STATE_MESSAGE.setParam(INVALID_USER));
@@ -92,6 +118,5 @@ public class Messages
 
     public static final NetworkMessageServer<Block> MOVE_PLAYER = new NetworkMessageServer<>(message ->
             message.getClientConnection().getGameController().movePlayer(message.getClientConnection().getPlayer(), message.getParam()));
-
 
 }

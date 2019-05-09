@@ -85,7 +85,7 @@ public class FormattedInput
             boolean matchRegex = useRegex && response.matches(regex);
             boolean matchPredicate = useRegex ? usePredicate && matchRegex && predicate.test(response) : usePredicate && predicate.test(response);
             if(useRegex && usePredicate && matchRegex && matchPredicate || useRegex && !usePredicate && matchRegex || usePredicate && !useRegex && matchPredicate)break;
-            Logger.cli(Strings.INVALID_INPUT);
+            Logger.cli(CliString.INVALID_INPUT);
         }
         return response;
     }

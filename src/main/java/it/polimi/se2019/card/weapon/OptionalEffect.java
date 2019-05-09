@@ -2,6 +2,7 @@ package it.polimi.se2019.card.weapon;
 
 public class OptionalEffect
 {
+    private final String name;
     private boolean enabled;
     private int redCost;
     private int blueCost;
@@ -9,9 +10,9 @@ public class OptionalEffect
 
     private String script;
 
-    public OptionalEffect()
+    public OptionalEffect(String name)
     {
-
+        this.name = name;
     }
 
     void setScript(String script)
@@ -29,6 +30,11 @@ public class OptionalEffect
         this.redCost = redCost;
         this.blueCost = blueCost;
         this.yellowCost = yellowCost;
+    }
+
+    public String getName()
+    {
+        return this.name;
     }
 
     public String getScript()

@@ -1,0 +1,24 @@
+card
+id = 21
+name = Distruttore
+description
+effetto base: Dai 2 danni e 1 marchio a 1 bersaglio che puoi vedere.
+secondo aggancio: Dai 1 marchio a un altro bersaglio che puoi vedere.
+end_description
+buy_cost = 1b
+reload_cost = 2b
+basic_mode
+select_player(visible context_player) -> player1
+hit player1 2
+mark player1 1
+enable secondo_aggancio
+end_basic_mode
+optional_effect = secondo_aggancio
+cost = 1r
+enabled = false
+script
+select_player(visible context_player, !equal player1) -> player2
+mark player2 1
+end_script
+end_optional_effect
+end_card

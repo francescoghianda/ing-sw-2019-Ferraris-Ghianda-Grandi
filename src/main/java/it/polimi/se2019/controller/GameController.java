@@ -1,11 +1,13 @@
 package it.polimi.se2019.controller;
 
 import it.polimi.se2019.card.PowerUpCard;
+import it.polimi.se2019.card.weapon.OptionalEffect;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.map.Block;
 import it.polimi.se2019.map.Map;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
+import it.polimi.se2019.network.message.Chooser;
 import it.polimi.se2019.network.message.Messages;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.GameColor;
@@ -31,6 +33,8 @@ public class GameController implements TimerListener
     private ClientsManager clientsManager;
     private Timer timer;
 
+    private RoundManager roundManager;
+
     private int playersForStart = 2;
 
     public GameController()
@@ -50,10 +54,20 @@ public class GameController implements TimerListener
         return instance;
     }*/
 
+    private void nextRound()
+    {
+        Player currentPlayer = roundManager.next();
+
+        Chooser chooser = new Chooser("Come stai?", "Bene", "Male");
+
+        Logger.info(chooser.getResponse(currentPlayer));
+    }
+
     public void startGame()
     {
         if(players.isEmpty())throw new StartGameWithoutPlayerException();
         selectStartingPlayer();
+        nextRound();
     }
 
     private void startTimer()
@@ -70,6 +84,7 @@ public class GameController implements TimerListener
         firstPlayer.setAsStartingPlayer(true);
         firstPlayer.sendMessageToClient(Messages.YOU_ARE_FIRST_PLAYER);
         firstPlayer.notifyOtherClients(Messages.FIRST_PLAYER_IS.setParam(firstPlayer.getClientConnection().getUsername()));
+        roundManager = new RoundManager(players, firstPlayer);
     }
 
     public GameMode getGameMode()
@@ -105,8 +120,10 @@ public class GameController implements TimerListener
     {
         if(player.getWeapons().contains(weapon) && weapon.isLoad())
         {
-
+            List<OptionalEffect> enabledFffects = weapon.getEnabledOptionalEffects();
         }
+
+        weapon.setLoad(false);
     }
 
     public void usePowerUp(Player player, PowerUpCard powerUp)

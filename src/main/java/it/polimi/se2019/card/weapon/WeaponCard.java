@@ -6,8 +6,9 @@ import it.polimi.se2019.card.Cost;
 import it.polimi.se2019.card.Grabbable;
 import it.polimi.se2019.player.Player;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class WeaponCard extends Card implements Grabbable
 {
@@ -19,6 +20,9 @@ public class WeaponCard extends Card implements Grabbable
 	private Cost buyCost;
 	private Cost reloadCost;
 	private Cost alternateModeCost;
+
+	private String basicModeScript;
+	private String alternateModeScript;
 
 	private HashMap<String, OptionalEffect> optionalEffects;
 
@@ -42,26 +46,44 @@ public class WeaponCard extends Card implements Grabbable
 		this.isLoad = true;
 	}
 
-	public void fire(Player player)
+	public void fire(Player player)throws WeaponNotLoadException
 	{
-		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))scriptExecutor = new CardScriptExecutor(player);
-		scriptExecutor.setScript(fireMode.getScript());
+		if(!isLoad)throw new WeaponNotLoadException(this);
+		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))createScriptExecutor(player);
+		scriptExecutor.setScript(fireMode.equals(Mode.BASIC) ? basicModeScript : alternateModeScript);
 		scriptExecutor.execute();
 	}
 
-	public boolean useOptionalEffect(Player player, OptionalEffect effect)
+	public boolean useOptionalEffect(Player player, OptionalEffect effect)throws WeaponNotLoadException
 	{
+		if(!isLoad)throw new WeaponNotLoadException(this);
 		if(!effect.isEnabled())return false;
-		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))scriptExecutor = new CardScriptExecutor(player);
+		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))createScriptExecutor(player);
 		scriptExecutor.setScript(effect.getScript());
 		scriptExecutor.execute();
 		return true;
+	}
+
+	private void createScriptExecutor(Player player)
+	{
+		scriptExecutor = new CardScriptExecutor(player);
+		scriptExecutor.setWeapon(this);
+	}
+
+	public void setLoad(boolean isLoad)
+	{
+		this.isLoad = isLoad;
 	}
 
 	@Override
 	public void grab(Player player)
 	{
 
+	}
+
+	public List<OptionalEffect> getEnabledOptionalEffects()
+	{
+		return this.optionalEffects.values().stream().filter(OptionalEffect::isEnabled).collect(Collectors.toList());
 	}
 
 	Cost getBuyCost()
@@ -101,17 +123,18 @@ public class WeaponCard extends Card implements Grabbable
 
 	void setBasicModeScript(String basicModeScript)
 	{
-		Mode.BASIC.setScript(basicModeScript);
+		this.basicModeScript = basicModeScript;
 	}
 
 	void setAlternateModeScript(String alternateModeScript)
 	{
-		Mode.ALTERNATE_FIRE.setScript(alternateModeScript);
+		this.alternateModeScript = alternateModeScript;
 	}
 
 	void addOptionalEffect(OptionalEffect effect, String name)
 	{
 		optionalEffects.putIfAbsent(name, effect);
+		hasOptionalEffect = true;
 	}
 
 	OptionalEffect getOptionaEffect(String name)
@@ -121,25 +144,13 @@ public class WeaponCard extends Card implements Grabbable
 
 	public String toString()
 	{
-		return "";
+		return "WeaponCard "+getName();
 	}
 
 
 	public enum Mode
 	{
-		BASIC, ALTERNATE_FIRE;
-
-		private String script;
-
-		void setScript(String script)
-		{
-			this.script = script;
-		}
-
-		String getScript()
-		{
-			return this.script;
-		}
+		BASIC, ALTERNATE_FIRE
 	}
 
 

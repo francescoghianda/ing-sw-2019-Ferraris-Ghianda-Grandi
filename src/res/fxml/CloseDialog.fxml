@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<BorderPane fx:id="borderPane" xmlns:fx="http://javafx.com/fxml" fx:controller="it.polimi.se2019.ui.gui.dialogs.CloseDialogController">
+   <bottom>
+      <HBox alignment="CENTER" spacing="20.0" minHeight="100" BorderPane.alignment="CENTER">
+         <children>
+            <Button minWidth="70.0" text="Si" fx:id="yesButton" onAction="#btnClick" />
+            <Button minWidth="70.0" text="No" fx:id="noButton" onAction="#btnClick"/>
+         </children>
+      </HBox>
+   </bottom>
+   <center>
+      <Label text="Sei sicuro di voler uscire?" maxWidth="300" maxHeight="Infinity" wrapText="true" textAlignment="CENTER" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>
+

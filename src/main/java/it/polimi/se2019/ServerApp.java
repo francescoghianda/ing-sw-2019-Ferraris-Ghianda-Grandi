@@ -7,7 +7,7 @@ import it.polimi.se2019.network.socket.server.SocketServer;
 import it.polimi.se2019.ui.cli.FormattedInput;
 import it.polimi.se2019.ui.cli.Option;
 import it.polimi.se2019.ui.cli.Options;
-import it.polimi.se2019.ui.cli.Strings;
+import it.polimi.se2019.ui.cli.CliString;
 import it.polimi.se2019.utils.constants.AnsiColor;
 import it.polimi.se2019.utils.logging.Logger;
 
@@ -83,9 +83,9 @@ public class ServerApp
         Logger.cli(TITLE);
         Option<Integer> serverMode = new Options<Integer>("Scegli la modalità di connessione:", true).addOption("Socket", "S", SOCKET_MODE).addOption("RMI", "R", RMI_MODE).addOption("Entrambi", "E", BOTH_SERVER_MODE).show();
 
-        int port1 = Integer.parseInt(new FormattedInput(Strings.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, port -> Integer.parseInt(port) >= 1024 && Integer.parseInt(port) <= 65535).setDefaultResponse(serverMode.getValue() == RMI_MODE ? "1099" : "0").show());
+        int port1 = Integer.parseInt(new FormattedInput(CliString.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, port -> Integer.parseInt(port) >= 1024 && Integer.parseInt(port) <= 65535).setDefaultResponse(serverMode.getValue() == RMI_MODE ? "1099" : "0").show());
         int port2 = 0;
-        if(serverMode.getValue() == BOTH_SERVER_MODE)port2 = Integer.parseInt(new FormattedInput(Strings.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, port -> Integer.parseInt(port) >= 1024 && Integer.parseInt(port) <= 65535 && Integer.parseInt(port) != port1).setDefaultResponse(serverMode.getValue() == RMI_MODE ? "1099" : "0").show());
+        if(serverMode.getValue() == BOTH_SERVER_MODE)port2 = Integer.parseInt(new FormattedInput(CliString.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, port -> Integer.parseInt(port) >= 1024 && Integer.parseInt(port) <= 65535 && Integer.parseInt(port) != port1).setDefaultResponse(serverMode.getValue() == RMI_MODE ? "1099" : "0").show());
         Logger.getInstance().enableGameMode(false);
         startServer(serverMode.getValue(), port1, port2);
     }

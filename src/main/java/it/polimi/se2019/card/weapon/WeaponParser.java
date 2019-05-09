@@ -1,6 +1,7 @@
 package it.polimi.se2019.card.weapon;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class WeaponParser
@@ -9,13 +10,13 @@ public class WeaponParser
 
     private ArrayList<WeaponCard> weaponCards;
 
-    public WeaponParser(Scanner scanner)
+    public WeaponParser()
     {
-        this.scanner = scanner;
+        this.scanner = new Scanner(getClass().getResourceAsStream("/weapon_cards"));
         this.weaponCards = new ArrayList<>();
     }
 
-    public WeaponCard[] parse()
+    public List<WeaponCard> parseCards()
     {
         weaponCards.clear();
         while(scanner.hasNextLine())
@@ -23,8 +24,8 @@ public class WeaponParser
             String line = scanner.nextLine();
             if(line.equals("card"))parseCard();
         }
-        WeaponCard[] cards = new WeaponCard[weaponCards.size()];
-        return weaponCards.toArray(cards);
+
+        return weaponCards;
     }
 
     private void parseCard()
@@ -33,13 +34,16 @@ public class WeaponParser
 
         String line;
 
-        while(!(line = removeSpaces(scanner.nextLine().toLowerCase())).equals("end_card"))
+        while(!(line = removeSpaces(scanner.nextLine())).equalsIgnoreCase("end_card"))
         {
             if(line.startsWith("#") || line.isEmpty())continue;
             String[] token = line.split("=");
 
-            switch (token[0])
+            switch (token[0].toLowerCase())
             {
+                case "id":
+                    card.setId(token[1]);
+                    break;
                 case "name":
                     card.setName(token[1]);
                     break;
@@ -71,17 +75,17 @@ public class WeaponParser
 
     private void addOptionalEffect(WeaponCard card, String name)
     {
-        OptionalEffect effect = new OptionalEffect();
+        OptionalEffect effect = new OptionalEffect(name);
         card.addOptionalEffect(effect, name);
 
         String line;
 
-        while(!(line = removeSpaces(scanner.nextLine().toLowerCase())).equals("end_optional_effect"))
+        while(!(line = removeSpaces(scanner.nextLine())).equalsIgnoreCase("end_optional_effect"))
         {
             if(line.startsWith("#") || line.isEmpty())continue;
             String[] token = line.split("=");
 
-            switch (token[0])
+            switch (token[0].toLowerCase())
             {
                 case "cost":
                     setOptionalEffectCost(effect, token[1]);
@@ -116,7 +120,7 @@ public class WeaponParser
     {
         StringBuilder str = new StringBuilder();
         String line;
-        while((line = scanner.nextLine()).trim().equalsIgnoreCase(endBlockMarker))
+        while(!(line = scanner.nextLine()).trim().equalsIgnoreCase(endBlockMarker))
         {
             str.append(line).append('\n');
         }

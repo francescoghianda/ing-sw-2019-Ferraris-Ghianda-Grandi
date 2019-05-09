@@ -17,8 +17,8 @@ public class SocketClientConnection implements Runnable, ClientConnection
 {
     private Thread userThread;
     private volatile boolean running;
-    private boolean connected;
-    private boolean logged;
+    private volatile boolean connected;
+    private volatile boolean logged;
     private Socket client;
     private SocketServer server;
     private ObjectInputStream ois;
@@ -30,6 +30,9 @@ public class SocketClientConnection implements Runnable, ClientConnection
     private ClientsManager clientsManager;
 
     private OnClientDisconnectionListener clientDisconnectionListener;
+
+    private volatile boolean getResponse;
+    private volatile NetworkMessageServer response;
 
     SocketClientConnection(Socket client, SocketServer server, GameController controller)
     {
@@ -67,6 +70,8 @@ public class SocketClientConnection implements Runnable, ClientConnection
             running = false;
             connected = false;
             client.close();
+            ois.close();
+            oos.close();
             ///TODO informare gli altri client della disconnessione
         }
         catch (IOException e)
@@ -84,8 +89,24 @@ public class SocketClientConnection implements Runnable, ClientConnection
         {
             try
             {
+
                 NetworkMessageServer message = (NetworkMessageServer)ois.readObject();
-                message.setClientConnection(this).execute();
+
+                if(!getResponse)
+                {
+                    Thread thread = new Thread(() -> message.setClientConnection(this).execute());
+                    thread.start();
+                }
+                else
+                {
+                    synchronized (this)
+                    {
+                        response = message;
+                        getResponse = false;
+                        this.notifyAll();
+                    }
+                }
+
             }
             catch (ClassNotFoundException | NullPointerException | IOException e)
             {
@@ -101,7 +122,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
         sendMessageToClient(Messages.LOGIN_REQUEST);
     }
 
-    public synchronized void sendMessageToClient(NetworkMessageClient<?> message)
+    public void sendMessageToClient(NetworkMessageClient<?> message)
     {
         if(!connected)return;
         try
@@ -117,7 +138,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
     }
 
     @Override
-    public synchronized void notifyOtherClients(NetworkMessageClient<?> message)
+    public void notifyOtherClients(NetworkMessageClient<?> message)
     {
         clientsManager.getConnectedClients().forEach(clientConnection ->
         {
@@ -126,17 +147,24 @@ public class SocketClientConnection implements Runnable, ClientConnection
     }
 
     @Override
-    public NetworkMessageServer getResponseTo(NetworkMessageClient<?> messageToClient)
+    public synchronized NetworkMessageServer getResponseTo(NetworkMessageClient<?> messageToClient)
     {
         try
         {
+            getResponse = true;
             sendMessageToClient(messageToClient);
-            return (NetworkMessageServer) ois.readObject();
+            while (getResponse)
+            {
+                this.wait();
+            }
+            return response;
+            //return (NetworkMessageServer) ois.readObject();
         }
-        catch (IOException | ClassNotFoundException e)
+        catch (InterruptedException e)
         {
             //Logger.exception(e);
             lostConnection();
+            Thread.currentThread().interrupt();
         }
 
         return null;
