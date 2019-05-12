@@ -2,7 +2,7 @@ package it.polimi.se2019.network.message;
 
 import java.io.Serializable;
 
-class NetworkMessage<T> implements Serializable
+class NetworkMessage<T extends Serializable> implements Serializable
 {
     T param;
 

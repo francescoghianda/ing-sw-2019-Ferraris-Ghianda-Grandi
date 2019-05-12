@@ -1,0 +1,51 @@
+package it.polimi.se2019.controller;
+
+import it.polimi.se2019.controller.GameController;
+import it.polimi.se2019.controller.StartGameWithoutPlayerException;
+import it.polimi.se2019.controller.TooManyPlayerException;
+import it.polimi.se2019.network.rmi.server.RmiClientConnection;
+import org.junit.Test;
+
+import static junit.framework.TestCase.fail;
+
+public class GameControllerTest
+{
+
+    @Test
+    public void startGameWithoutPlayerTest()
+    {
+        GameController controller = new GameController();
+
+        try
+        {
+            controller.startGame();
+            fail();
+        }
+        catch (StartGameWithoutPlayerException e)
+        {
+            assert true;
+        }
+    }
+
+    @Test
+    public void createTooManyPlayerTest()
+    {
+        GameController controller = new GameController();
+
+        for(int i = 0; i < 5; i++)
+        {
+            controller.createPlayer(new RmiClientConnection(null, null, controller));
+        }
+
+        try
+        {
+            controller.createPlayer(new RmiClientConnection(null, null, controller));
+            fail();
+        }
+        catch (TooManyPlayerException e)
+        {
+            assert true;
+        }
+
+    }
+}

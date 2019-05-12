@@ -2,7 +2,7 @@ package it.polimi.se2019.map;
 
 import it.polimi.se2019.card.Grabbable;
 import it.polimi.se2019.player.Player;
-import it.polimi.se2019.utils.constants.AnsiColor;
+import it.polimi.se2019.utils.constants.Ansi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -128,6 +128,10 @@ public class Block
 		doors[side] = block;
 	}
 
+	public int getDistanceFrom(Block block)
+	{
+		return Math.abs(getX() - block.getX())+ Math.abs(getY() - block.getY());
+	}
 
 
 	public int getX()
@@ -278,17 +282,17 @@ public class Block
 			{
 				if(drawBackground)
 				{
-					if(canvas[i][j] != ' ' && canvas[i][j] != '┆' && canvas[i][j] != '┄' && canvas[i][j] != '┼')stringBuilder.append(AnsiColor.convertColor(getRoom().getColor()));
-					else if(canvas[i][j] == '┆' || canvas[i][j] == '┄' || canvas[i][j] == '┼')stringBuilder.append(AnsiColor.combineColor(AnsiColor.convertColorBackground(getRoom().getColor()), AnsiColor.BLACK));
-					else stringBuilder.append(AnsiColor.convertColorBackground(getRoom().getColor()));
+					if(canvas[i][j] != ' ' && canvas[i][j] != '┆' && canvas[i][j] != '┄' && canvas[i][j] != '┼')stringBuilder.append(Ansi.convertColor(getRoom().getColor()));
+					else if(canvas[i][j] == '┆' || canvas[i][j] == '┄' || canvas[i][j] == '┼')stringBuilder.append(Ansi.combineColor(Ansi.convertColorBackground(getRoom().getColor()), Ansi.BLACK));
+					else stringBuilder.append(Ansi.convertColorBackground(getRoom().getColor()));
 				}
 				else
 				{
-					if(canvas[i][j] != ' ')stringBuilder.append(AnsiColor.convertColor(getRoom().getColor()));
+					if(canvas[i][j] != ' ')stringBuilder.append(Ansi.convertColor(getRoom().getColor()));
 				}
 
 				stringBuilder.append(canvas[i][j]);
-				stringBuilder.append(AnsiColor.RESET);
+				stringBuilder.append(Ansi.RESET);
 			}
 			stringBuilder.append('\n');
 		}

@@ -10,7 +10,6 @@ import java.util.function.Predicate;
  */
 public class FormattedInput
 {
-    public static final String IP_REGEX = "^(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$";
     public static final String USERNAME_REGEX = "^[a-z0-9_-]{3,10}$";
     public static final String NUMERIC_REGEX = "[0-9]+";
 
@@ -79,13 +78,13 @@ public class FormattedInput
         String response;
         while(true)
         {
-            Logger.inputCli(question);
+            GameConsole.out.print(question);
             response = scanner.nextLine();
             if(defaultResponse != null && response.isEmpty())response = defaultResponse;
             boolean matchRegex = useRegex && response.matches(regex);
             boolean matchPredicate = useRegex ? usePredicate && matchRegex && predicate.test(response) : usePredicate && predicate.test(response);
             if(useRegex && usePredicate && matchRegex && matchPredicate || useRegex && !usePredicate && matchRegex || usePredicate && !useRegex && matchPredicate)break;
-            Logger.cli(CliString.INVALID_INPUT);
+            GameConsole.out.println(CliString.INVALID_INPUT);
         }
         return response;
     }

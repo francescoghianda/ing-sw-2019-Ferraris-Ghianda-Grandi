@@ -54,6 +54,12 @@ public class Room
 		return blocks.get(index);
 	}
 
+	public Block getSpawnPoint()
+	{
+		for(Block block : blocks)if(block.isSpawnPoint())return block;
+		return null;
+	}
+
 	@Override
 	public boolean equals(Object obj)
 	{

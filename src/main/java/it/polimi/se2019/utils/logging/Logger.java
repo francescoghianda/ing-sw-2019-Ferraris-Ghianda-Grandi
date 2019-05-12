@@ -1,7 +1,6 @@
 package it.polimi.se2019.utils.logging;
 
-import it.polimi.se2019.utils.constants.AnsiColor;
-import org.fusesource.jansi.Ansi;
+import it.polimi.se2019.utils.constants.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.io.*;
@@ -21,7 +20,7 @@ public class Logger
     private ArrayList<LoggerOutputStream> outputs = new ArrayList<>();
     private boolean enabled = true;
 
-    private boolean gameMode;
+    private boolean consoleOutput;
 
     private Logger()
     {
@@ -29,7 +28,7 @@ public class Logger
         {
             AnsiConsole.systemInstall();
             sdf = new SimpleDateFormat("ddMMyy_HHmmss");
-            addOutput(new LoggerOutputStream(System.out, getDefaultFormatter(),true));
+            addOutput(new LoggerOutputStream(AnsiConsole.out, getDefaultFormatter(),true));
             File logFile = new File(getLogFileName());
             boolean addFileOutput = true;
             if(!logFile.getParentFile().exists())addFileOutput = logFile.getParentFile().mkdirs();
@@ -43,36 +42,12 @@ public class Logger
 
     private String getLogFileName()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("log/log");
-        builder.append(sdf.format(Calendar.getInstance().getTime()));
-        builder.append(".txt");
-        return builder.toString();
-    }
-
-    /**
-     * Enable the game mode
-     * With the game mode enabled the console not print the timestamp and the level of the message
-     * @param gameMode
-     */
-    public void enableGameMode(boolean gameMode)
-    {
-        this.gameMode = gameMode;
-        if(gameMode)
-        {
-            outputs.get(0).setMinLevel(Level.CLI);
-            outputs.get(0).setFormatter(LogMessage::getMessage);
-        }
-        else
-        {
-            outputs.get(0).setMinLevel(Level.INFO);
-            outputs.get(0).setFormatter(getDefaultFormatter());
-        }
+        return "log/log" + sdf.format(Calendar.getInstance().getTime()) + ".txt";
     }
 
     public LoggerFormatter getDefaultFormatter()
     {
-        return  message -> (message.isPrintColor() ? message.getLevel().getPrintColor() : "")+getTime()+" "+message+(message.isPrintColor() ? AnsiColor.RESET : "");
+        return  message -> (message.isPrintColor() ? message.getLevel().getPrintColor() : "")+getTime()+" "+message+(message.isPrintColor() ? Ansi.RESET : "");
     }
 
     public static Logger getInstance()
@@ -127,13 +102,21 @@ public class Logger
     private void log(LogMessage message)
     {
         if(!enabled)return;
-        for(LoggerOutputStream out : outputs)if(message.getLevel().getValue() >= out.getMinValue())out.println(out.getFormatter().format(message.setPrintColor(out.supportColor())));
+        for(LoggerOutputStream out : outputs)
+        {
+            if(!consoleOutput && outputs.indexOf(out) == 0)continue;
+            if(message.getLevel().getValue() >= out.getMinValue())out.println(out.getFormatter().format(message.setPrintColor(out.supportColor())));
+        }
     }
 
     private void inputLog(LogMessage message)
     {
         if(!enabled)return;
-        for(LoggerOutputStream out : outputs)if(message.getLevel().getValue() >= out.getMinValue())out.print(out.getFormatter().format(message.setPrintColor(out.supportColor())));
+        for(LoggerOutputStream out : outputs)
+        {
+            if(!consoleOutput && outputs.indexOf(out) == 0)continue;
+            if(message.getLevel().getValue() >= out.getMinValue())out.print(out.getFormatter().format(message.setPrintColor(out.supportColor())));
+        }
     }
 
     public static void log(Level level, Object obj)
@@ -161,22 +144,21 @@ public class Logger
         logger.log(LogMessage.pack(Level.WARNING, obj.toString()));
     }
 
-    public static void cli(Object obj)
-    {
-        logger.log(LogMessage.pack(Level.CLI, obj.toString()));
-    }
-
-    public static void inputCli(Object obj)
-    {
-        logger.inputLog(LogMessage.pack(Level.CLI, obj.toString()));
-    }
-
-
     public static void exception(Exception e)
     {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
         logger.log(LogMessage.pack(Level.ERROR, sw.toString()));
+    }
+
+    public void disableConsole()
+    {
+        consoleOutput = false;
+    }
+
+    public void enableConsole()
+    {
+        consoleOutput = true;
     }
 
     public interface LoggerFormatter

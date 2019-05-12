@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<decks>
+    <deck type="weaponCards">
+        <weapon_card id="21">
+            <name>Distruttore</name>
+            <description>
+                <line>effetto base: Dai 2 danni e 1 marchio a 1 bersaglio che puoi vedere.</line>
+                <line>secondo aggancio: Dai 1 marchio a un altro bersaglio che puoi vedere.</line>
+            </description>
+            <buy_cost>
+                <blue>1</blue>
+            </buy_cost>
+            <reload_cost>
+                <blue>2</blue>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line>select_player(visible context_player) -> player1</line>
+                    <line>hit player1 2</line>
+                    <line>mark player1 1</line>
+                    <line>enable secondo_aggancio</line>
+                </cardscript>
+            </basic_mode>
+            <optional_effects>
+                <optional_effect name="secondo_aggancio">
+                    <cost>
+                        <red>1</red>
+                    </cost>
+                    <enabled>false</enabled>
+                    <cardscript>
+                        <line>select_player(visible context_player, !equal player1) -> player2</line>
+                        <line>mark player2 1</line>
+                    </cardscript>
+                </optional_effect>
+            </optional_effects>
+        </weapon_card>
+
+        <weapon_card id="22">
+            <name>Falce Protonica</name>
+            <description>
+                <line>modalità base: Dai 1 danno a ogni altro giocatore presente nel quadrato in cui ti trovi.</line>
+            </description>
+            <buy_cost>
+                <blue>1</blue>
+            </buy_cost>
+            <reload_cost>
+                <blue>1</blue>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line>hit context_block 1</line>
+                </cardscript>
+            </basic_mode>
+            <alternate_mode>
+                <cost>
+                    <blue>1</blue>
+                    <red>1</red>
+                </cost>
+                <cardscript>
+                    <line>hit context_block 2</line>
+                </cardscript>
+            </alternate_mode>
+        </weapon_card>
+
+        <weapon_card id="20">
+            <name>Mitragliatrice</name>
+            <description>
+                <line>effetto base: Scegli 1 o 2 bersagli che puoi vedere e dai 1 danno a entrambi</line>
+                <line>nota: Se hai dato entrambi i punti aggiuntivi di danno, devono</line>
+                <line>essere dati a 2 bersagli diversi. Se puoi vedere solo 2 bersagli,</line>
+                <line>dai 2 danni a entrambi se usi entrambi gli effetti opzionali. Se</line>
+                <line>usi l'effetto base solo su 1 bersaglio, puoi comunque usare il</line>
+                <line>tripode di supporto per dare 1 danno aggiuntivo.</line>
+            </description>
+            <buy_cost>
+                <blue>1</blue>
+            </buy_cost>
+            <reload_cost>
+                <blue>1</blue>
+                <red>1</red>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line>select_player(context_player)->player1</line>
+                    <line>select_player(context_player)->player2</line>
+                    <line>hit player1 1</line>
+                    <line>hit player2 1</line>
+                    <line>enable colpo_focalizzato</line>
+                </cardscript>
+            </basic_mode>
+            <optional_effects>
+                <optional_effect name="colpo_focalizzato">
+                    <cost>
+                        <yellow>1</yellow>
+                    </cost>
+                    <enabled>false</enabled>
+                    <cardscript>
+                        <line>select_player(equal player1 or equal player2) ->player3</line>
+                        <line>hit player3 1</line>
+                    </cardscript>
+                </optional_effect>
+                <optional_effect name="tripode_di_supporto">
+                    <cost>
+                        <blue>1</blue>
+                    </cost>
+                    <enabled>false</enabled>
+                    <cardscript>
+                        <line>select_player(visible context_player or !equal player3) -> player4</line>
+                        <line>hit player4 1</line>
+                    </cardscript>
+                </optional_effect>
+            </optional_effects>
+        </weapon_card>
+
+        <weapon_card id="17">
+            <name>Torpedine</name>
+            <description>
+                <line>effetto base: Dai 2 danni a 1 bersaglio che puoi vedere.</line>
+                <line>Nota: Questa carta limita l'ordine in cui puoi utilizzare i suoi effetti.</line>
+                <line>Inoltre ogni bersaglio deve essere un giocatore differente.</line>
+            </description>
+            <buy_cost>
+                <blue>1</blue>
+            </buy_cost>
+            <reload_cost>
+                <blue>1</blue>
+                <red>1</red>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line>select_player(visible context_player)-> player1</line>
+                    <line>hit player1 2</line>
+                    <line>enable reazione_a_catena</line>
+                </cardscript>
+            </basic_mode>
+            <optional_effects>
+                <optional_effect name="reazione_a_catena">
+                    <cost>
+                        <blue>1</blue>
+                    </cost>
+                    <enabled>false</enabled>
+                    <cardscript>
+                        <line>select(visible context_player1)->player2</line>
+                        <line>hit player2 1</line>
+                        <line>enable alta_tensione</line>
+                    </cardscript>
+                </optional_effect>
+                <optional_effect name="alta_tensione">
+                    <cost>
+                        <blue>1</blue>
+                    </cost>
+                    <enabled>false</enabled>
+                    <cardscript>
+                        <line>select(visible context_player2)->player3</line>
+                        <line>hit player3 2</line>
+                    </cardscript>
+                </optional_effect>
+            </optional_effects>
+        </weapon_card>
+
+        <weapon_card id="19">
+            <name>Fucile al Plasma</name>
+            <description>
+                <line>effetto base: Dai 2 danni a 1 bersaglio che puoi vedere.</line>
+                <line>Nota: I due movimenti non hanno costo in munizioni.</line>
+                <line>Non hai bisogno di vedere il tuo bersaglio quando giochi la</line>
+                <line>carta. Per esempio puoi muovere di 2 quadrati e sparare al</line>
+                <line>bersaglio che ora puoi vedere. Non puoi usare 1 movimento</line>
+                <line>prima di sparare e 1 dopo aver sparato.</line>
+            </description>
+            <buy_cost>
+                <blue>1</blue>
+            </buy_cost>
+            <reload_cost>
+                <blue>1</blue>
+                <yellow>1</yellow>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line>select_player(visible context_player)->player1</line>
+                    <line>hit player1 2</line>
+                    <line>enable colpo_sovraccarico</line>
+                </cardscript>
+            </basic_mode>
+            <optional_effects>
+                <optional_effect name="slittamento_di_fase">
+                    <enabled>true</enabled>
+                    <cardscript>
+                        <line>select_block(maxd context_player 2)->block1</line>
+                        <line>move context_player block1</line>
+                    </cardscript>
+                </optional_effect>
+                <optional_effect name="colpo_sovraccarico">
+                    <cost>
+                        <blue>1</blue>
+                    </cost>
+                    <enabled>false</enabled>
+                    <cardscript>
+                        <line>hit player1 1</line>
+                    </cardscript>
+                </optional_effect>
+            </optional_effects>
+        </weapon_card>
+
+        <weapon_card id="18">
+            <name>Fucile di Precisione</name>
+            <description>
+                <line>effetto: Dai 3 danni e 1 marchio a 1 bersaglio che puoi</line>
+                <line>vedere. Il bersaglio deve essere ad almeno 2 movimenti da te.</line>
+                <line>Nota: Per esempio, nella stanza 2x2, non puoi sparare a un</line>
+                <line>bersaglio in un quadrato adiacente, ma puoi sparare a un</line>
+                <line>bersaglio lungo la diagonale. Se sei vicino a una porta non</line>
+                <line>puoi sparare a un bersaglio dall'altra parte della porta,</line>
+                <line>ma puoi sparare a un bersaglio su un quadrato diverso in</line>
+                <line>quella stanza.</line>
+            </description>
+            <buy_cost>
+                <blue>1</blue>
+            </buy_cost>
+            <reload_cost>
+                <blue>2</blue>
+                <yellow>1</yellow>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line>select_player(visible context_player, mind context_player 2)->context_player1</line>
+                    <line>hit player1 3</line>
+                    <line>mark player1</line>
+                </cardscript>
+            </basic_mode>
+        </weapon_card>
+
+    </deck>
+
+    <deck type="powerUpCards">
+
+        <power_up_card id="8,9,10">
+            <name>Raggio Cinetico</name>
+            <use>always</use>
+            <description>
+                <line>Puoi giocare questa carta nel tuo turno prima o dopo aver svolto qualsiasi azione.</line>
+                <line>Scegli la miniatura di un altro giocatore e muovila di 1 o 2 quadrati in una direzione.</line>
+            </description>
+            <cardscript>
+                <line>select_player()->player1</line>
+                <line>select_block(maxd player1 2)->block1</line>
+                <line>move player1 block1</line>
+            </cardscript>
+        </power_up_card>
+
+        <power_up_card id="5,6,7">
+            <name>Mirino</name>
+            <use>onFire</use>
+            <description>
+                <line>Puoi giocare questa carta quando stai dando danno a uno o più bersagli.</line>
+                <line>Paga 1 cubo munizioni di qualsiasi colore. Scegli 1 dei bersagli e dagli 1 segnalino danno aggiuntivo.</line>
+                <line>Nota: non puoi usare questo potenziamento per dare 1 danno a un bersaglio che sta solo ricevendo marchi.</line>
+            </description>
+            <cardscript>
+                <line>pay x 1</line>
+                <line>select_player(damaged)->playerX</line>
+                <line>hit playerX 1</line>
+            </cardscript>
+        </power_up_card>
+
+    </deck>
+
+    <deck type="ammoCards">
+        <ammo_card id="2">
+            <value>
+                <blue>2</blue>
+                <yellow>1</yellow>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="3">
+            <value>
+                <red>2</red>
+                <yellow>1</yellow>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="4">
+            <value>
+                <red>1</red>
+                <blue>2</blue>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="5">
+            <value>
+                <red>1</red>
+                <yellow>2</yellow>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="6">
+            <value>
+                <blue>1</blue>
+                <yellow>2</yellow>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="7">
+            <value>
+                <red>2</red>
+                <blue>1</blue>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="8">
+            <value>
+                <blue>2</blue>
+                <yellow>1</yellow>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="9">
+            <value>
+                <red>2</red>
+                <yellow>1</yellow>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="10">
+            <value>
+                <red>1</red>
+                <blue>2</blue>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="11">
+            <value>
+                <red>1</red>
+                <yellow>2</yellow>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="12">
+            <value>
+                <blue>1</blue>
+                <yellow>2</yellow>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="13">
+            <value>
+                <red>2</red>
+                <blue>1</blue>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="14">
+            <value>
+                <blue>2</blue>
+                <yellow>1</yellow>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="15">
+            <value>
+                <red>2</red>
+                <yellow>1</yellow>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="16">
+            <value>
+                <red>1</red>
+                <blue>2</blue>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="17">
+            <value>
+                <red>1</red>
+                <yellow>2</yellow>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="18">
+            <value>
+                <blue>1</blue>
+                <yellow>2</yellow>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="19">
+            <value>
+                <red>2</red>
+                <blue>1</blue>
+            </value>
+            <pickUpPowerUp>false</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="20">
+            <value>
+                <yellow>2</yellow>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="21">
+            <value>
+                <red>2</red>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="22">
+            <value>
+                <blue>2</blue>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="23">
+            <value>
+                <red>1</red>
+                <yellow>1</yellow>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="24">
+            <value>
+                <blue>1</blue>
+                <yellow>1</yellow>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="25">
+            <value>
+                <red>1</red>
+                <blue>1</blue>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="26">
+            <value>
+                <red>1</red>
+                <yellow>1</yellow>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="27">
+            <value>
+                <blue>1</blue>
+                <yellow>1</yellow>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="28">
+            <value>
+                <red>1</red>
+                <blue>1</blue>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="29">
+            <value>
+                <yellow>2</yellow>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="30">
+            <value>
+                <red>2</red>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="31">
+            <value>
+                <blue>2</blue>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="32">
+            <value>
+                <red>1</red>
+                <yellow>1</yellow>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="33">
+            <value>
+                <blue>1</blue>
+                <yellow>1</yellow>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="34">
+            <value>
+                <red>1</red>
+                <blue>1</blue>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="35">
+            <value>
+                <red>1</red>
+                <yellow>1</yellow>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="36">
+            <value>
+                <blue>1</blue>
+                <yellow>1</yellow>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+
+        <ammo_card id="37">
+            <value>
+                <red>1</red>
+                <blue>1</blue>
+            </value>
+            <pickUpPowerUp>true</pickUpPowerUp>
+        </ammo_card>
+    </deck>
+</decks>

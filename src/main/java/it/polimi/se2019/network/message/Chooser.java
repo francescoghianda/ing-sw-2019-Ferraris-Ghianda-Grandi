@@ -33,12 +33,9 @@ public class Chooser
         this.options.add(option);
     }
 
-
     public String getResponse(Player player)
     {
         return (String) player.getResponseTo(Messages.CHOOSER_MESSAGE.setParam(new Bundle<>(question, options))).getParam();
     }
-
-
 
 }

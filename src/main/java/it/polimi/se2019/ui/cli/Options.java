@@ -66,7 +66,7 @@ public class Options<T>
 
         do
         {
-            Logger.inputCli(output.toString());
+            GameConsole.out.print(output.toString());
             response = scanner.nextLine().trim();
             if(firstDefault && response.isEmpty())
             {

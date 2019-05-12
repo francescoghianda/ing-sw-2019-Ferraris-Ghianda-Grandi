@@ -1,16 +1,17 @@
 package it.polimi.se2019.card.weapon;
 
 import it.polimi.se2019.card.Card;
-import it.polimi.se2019.card.CardScriptExecutor;
-import it.polimi.se2019.card.Cost;
+import it.polimi.se2019.card.cardscript.CardScriptExecutor;
+import it.polimi.se2019.card.cost.Cost;
 import it.polimi.se2019.card.Grabbable;
 import it.polimi.se2019.player.Player;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WeaponCard extends Card implements Grabbable
+public class WeaponCard extends Card implements Grabbable, Serializable
 {
 	private Mode fireMode;
 
@@ -21,19 +22,25 @@ public class WeaponCard extends Card implements Grabbable
 	private Cost reloadCost;
 	private Cost alternateModeCost;
 
-	private String basicModeScript;
-	private String alternateModeScript;
+	private transient String basicModeScript;
+	private transient String alternateModeScript;
 
-	private HashMap<String, OptionalEffect> optionalEffects;
+	private transient HashMap<String, OptionalEffect> optionalEffects;
 
 	private boolean isLoad;
 
-	private CardScriptExecutor scriptExecutor;
+	private transient CardScriptExecutor scriptExecutor;
 
 	public WeaponCard()
 	{
 		optionalEffects = new HashMap<>();
 		fireMode = Mode.BASIC;
+	}
+
+	@Override
+	public void setId(String id)
+	{
+		super.setId("WPC"+id);
 	}
 
 	public boolean isLoad()
@@ -101,19 +108,34 @@ public class WeaponCard extends Card implements Grabbable
 		return alternateModeCost;
 	}
 
-	void setBuyCost(int redCost, int blueCost, int yellowCost)
+	public void setBuyCost(int redCost, int blueCost, int yellowCost)
 	{
 		buyCost = new Cost(redCost, blueCost, yellowCost);
 	}
 
-	void setReloadCost(int redCost, int blueCost, int yellowCost)
+	public void setBuyCost(Cost buyCost)
+	{
+		this.buyCost = buyCost;
+	}
+
+	public void setReloadCost(Cost reloadCost)
+	{
+		this.reloadCost = reloadCost;
+	}
+
+	public void setReloadCost(int redCost, int blueCost, int yellowCost)
 	{
 		reloadCost = new Cost(redCost, blueCost, yellowCost);
 	}
 
-	void setAlternateModeCost(int redCost, int blueCost, int yellowCost)
+	public void setAlternateModeCost(int redCost, int blueCost, int yellowCost)
 	{
 		alternateModeCost = new Cost(redCost, blueCost, yellowCost);
+	}
+
+	public void setAlternateModeCost(Cost alternateModeCost)
+	{
+		this.alternateModeCost = alternateModeCost;
 	}
 
 	void setHasAlternateFireMode(boolean hasAlternateFireMode)
@@ -121,17 +143,17 @@ public class WeaponCard extends Card implements Grabbable
 		this.hasAlternateFireMode = hasAlternateFireMode;
 	}
 
-	void setBasicModeScript(String basicModeScript)
+	public void setBasicModeScript(String basicModeScript)
 	{
 		this.basicModeScript = basicModeScript;
 	}
 
-	void setAlternateModeScript(String alternateModeScript)
+	public void setAlternateModeScript(String alternateModeScript)
 	{
 		this.alternateModeScript = alternateModeScript;
 	}
 
-	void addOptionalEffect(OptionalEffect effect, String name)
+	public void addOptionalEffect(OptionalEffect effect, String name)
 	{
 		optionalEffects.putIfAbsent(name, effect);
 		hasOptionalEffect = true;
@@ -144,7 +166,7 @@ public class WeaponCard extends Card implements Grabbable
 
 	public String toString()
 	{
-		return "WeaponCard "+getName();
+		return "WeaponCard #"+getId()+" - "+getName();
 	}
 
 

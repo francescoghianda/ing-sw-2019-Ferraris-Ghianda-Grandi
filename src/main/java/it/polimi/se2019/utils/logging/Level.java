@@ -1,10 +1,10 @@
 package it.polimi.se2019.utils.logging;
 
-import it.polimi.se2019.utils.constants.AnsiColor;
+import it.polimi.se2019.utils.constants.Ansi;
 
 public enum Level
 {
-    INFO(0, AnsiColor.WHITE), DEBUG(1, AnsiColor.GREEN), WARNING(2, AnsiColor.YELLOW), ERROR(3, AnsiColor.RED), CLI(4, AnsiColor.WHITE);
+    INFO(0, Ansi.WHITE), DEBUG(1, Ansi.GREEN), WARNING(2, Ansi.YELLOW), ERROR(3, Ansi.RED), CLI(4, Ansi.WHITE);
 
     private int value;
     private String printColor;

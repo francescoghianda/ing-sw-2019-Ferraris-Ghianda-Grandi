@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="title">     _       _                      _ _             \n    / \   __| |_ __ ___ _ __   __ _| (_)_ __   __ _ \n   / _ \ / _` | '__/ _ \ '_ \ / _` | | | '_ \ / _` |\n  / ___ \ (_| | | |  __/ | | | (_| | | | | | | (_| |\n /_/   \_\__,_|_|  \___|_| |_|\__,_|_|_|_| |_|\__,_|\n                                                    \n</entry>
+    <entry key="get_server_ip">Inserisci l'indirizzo ip del server: </entry>
+    <entry key="get_server_port">Inserisci la porta del server ip del server [1024- 65535]: </entry>
+    <entry key="get_connection_mode">Inserisci la modalità di connessione: </entry>
+    <entry key="connecting">Cerco server adrenalina...</entry>
+    <entry key="logged">Sei connesso!</entry>
+    <entry key="invalid_input">Input non valido!</entry>
+    <entry key="get_username">Inserisci uno username: </entry>
+    <entry key="game_starting">La partita inizierà tra...</entry>
+    <entry key="you_are_first_player">Sei il giocatore iniziale!</entry>
+    <entry key="first_player_is">Il giocatore iniziale è: %s</entry>
+    <entry key="is_your_round">È il tuo turno!</entry>
+    <entry key="choose_spawn_point">Scegli la carta che vuoi scartare per generarti nella stanza del colore corrispondente: </entry>
+</properties>

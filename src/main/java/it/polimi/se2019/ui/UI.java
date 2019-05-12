@@ -1,8 +1,8 @@
 package it.polimi.se2019.ui;
 
-import it.polimi.se2019.map.Block;
+import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.network.message.Bundle;
-import it.polimi.se2019.player.Player;
+import it.polimi.se2019.ui.GameEventHandler;
 
 import java.util.ArrayList;
 
@@ -10,14 +10,14 @@ import java.util.ArrayList;
 /**
  * initializes the user interface
  */
-public interface UI
+public interface UI extends GameEventHandler
 {
     void update();
     void startUI();
 
     String getUsername();
-    Player selectPlayer();
-    Block selectBlock();
+    String selectPlayer();
+    String selectBlock();
     void logged();
     void gameIsStarting();
     void gameStarted();
@@ -25,5 +25,9 @@ public interface UI
     void youAreFirstPlayer();
     void firstPlayerIs(String firstPlayerUsername);
     void connectionRefused();
+
     String choose(Bundle<String, ArrayList<String>> options);
+    PowerUpCard chooseSpawnPoint(PowerUpCard option1, PowerUpCard option2);
+
+
 }

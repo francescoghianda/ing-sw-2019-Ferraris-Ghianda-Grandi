@@ -1,6 +1,6 @@
 package it.polimi.se2019.player;
 
-import it.polimi.se2019.card.PowerUpCard;
+import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.map.Block;
@@ -9,13 +9,14 @@ import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
 import it.polimi.se2019.utils.constants.GameColor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * creates a player
  */
-public class Player
+public class Player implements Serializable
 {
 	private final GameColor color;
 	private boolean startingPlayer;
@@ -23,10 +24,12 @@ public class Player
 	private ArrayList<PowerUpCard> powerUps;
 	private Block block;
 	private GameBoard gameBoard;
-	private ArrayList<Integer> executedAction;
-	private GameController gameController;
+	private transient ArrayList<Integer> executedAction;
+	private transient GameController gameController;
 
-	private final ClientConnection clientConnection;
+	private transient ArrayList<Player> damagedPlayers;
+
+	private final transient ClientConnection clientConnection;
 
 	/**
 	 * creates and initializes the features of the player
@@ -40,10 +43,17 @@ public class Player
 		weapons = new ArrayList<>();
 		powerUps = new ArrayList<>();
 		executedAction = new ArrayList<>();
+		damagedPlayers = new ArrayList<>();
 		gameBoard = new GameBoard();
 		this.color = color;
 		this.clientConnection = clientConnection;
 		this.gameController = gameController;
+	}
+
+	public void reset()
+	{
+		executedAction.clear();
+		damagedPlayers.clear();
 	}
 
 	public GameController getGameController()
@@ -64,6 +74,16 @@ public class Player
 	public void resetExecutedAction()
 	{
 		this.executedAction.clear();
+	}
+
+	public void addDamagedPlayer(Player player)
+	{
+		if(!damagedPlayers.contains(player))this.damagedPlayers.add(player);
+	}
+
+	public List<Player> getDamagedPlayers()
+	{
+		return this.damagedPlayers;
 	}
 
 	public List<Block> getVisibleBlocks()

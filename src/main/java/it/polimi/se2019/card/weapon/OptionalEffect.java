@@ -1,12 +1,13 @@
 package it.polimi.se2019.card.weapon;
 
+import it.polimi.se2019.card.cost.Cost;
+
 public class OptionalEffect
 {
     private final String name;
     private boolean enabled;
-    private int redCost;
-    private int blueCost;
-    private int yellowCost;
+
+    private Cost cost;
 
     private String script;
 
@@ -15,21 +16,24 @@ public class OptionalEffect
         this.name = name;
     }
 
-    void setScript(String script)
+    public void setScript(String script)
     {
         this.script = script;
     }
 
-    void setEnabled(boolean enabled)
+    public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
     }
 
-    void setCost(int redCost, int blueCost, int yellowCost)
+    public void setCost(int redCost, int blueCost, int yellowCost)
     {
-        this.redCost = redCost;
-        this.blueCost = blueCost;
-        this.yellowCost = yellowCost;
+        cost = new Cost(redCost, blueCost, yellowCost);
+    }
+
+    public void setCost(Cost cost)
+    {
+        this.cost = cost;
     }
 
     public String getName()

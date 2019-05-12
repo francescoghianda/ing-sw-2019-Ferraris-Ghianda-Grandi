@@ -15,6 +15,19 @@ public class NetworkUtils
         return port >= minPort && port <= maxPort;
     }
 
+    public static boolean isValidPort(String port)
+    {
+        try
+        {
+            int intPort = Integer.parseInt(port);
+            return isValidPort(intPort);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+
     public static boolean isIp(String ip)
     {
         return ipPattern.matcher(ip).matches();

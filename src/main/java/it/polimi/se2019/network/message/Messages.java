@@ -1,9 +1,10 @@
 package it.polimi.se2019.network.message;
 
-import it.polimi.se2019.map.Block;
+import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.network.ClientsManager;
-import it.polimi.se2019.player.Player;
+import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.utils.logging.Logger;
+import it.polimi.se2019.utils.network.SerializableVoid;
 
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ public class Messages
     //////////////////////////////////MESSAGES EXECUTED ON CLIENT///////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static final NetworkMessageClient<Void> LOGIN_REQUEST = new NetworkMessageClient<>(message ->
+    public static final NetworkMessageClient<SerializableVoid> LOGIN_REQUEST = new NetworkMessageClient<>(message ->
     {
         int stateMessage;
         do
@@ -36,42 +37,42 @@ public class Messages
     });
 
 
-    public static final NetworkMessageClient<Integer> STATE_MESSAGE = new NetworkMessageClient<>();
+    public static final NetworkMessageClient<Integer> STATE_MESSAGE_CLIENT = new NetworkMessageClient<>();
 
-    public static final NetworkMessageClient<Void> YOU_ARE_FIRST_PLAYER = new NetworkMessageClient<>(message ->
+    public static final NetworkMessageClient<SerializableVoid> YOU_ARE_FIRST_PLAYER = new NetworkMessageClient<>(message ->
             message.getClient().getUI().youAreFirstPlayer());
 
     public static final NetworkMessageClient<String> FIRST_PLAYER_IS = new NetworkMessageClient<>(message ->
             message.getClient().getUI().firstPlayerIs(message.getParam()));
 
-    public static final NetworkMessageClient<Void> SELECT_PLAYER = new NetworkMessageClient<>(message ->
+    public static final NetworkMessageClient<SerializableVoid> SELECT_PLAYER = new NetworkMessageClient<>(message ->
     {
         NetworkMessageClient<?> stateMessage;
         do
         {
-            Player selectedPlayer = message.getClient().getUI().selectPlayer();
+            String selectedPlayer = message.getClient().getUI().selectPlayer();
             stateMessage = message.getClient().getResponseTo(Messages.SELECT_PLAYER_RESPONSE.setParam(selectedPlayer));
         }
         while ((Integer)stateMessage.getParam() != OK);
 
     });
 
-    public static final NetworkMessageClient<Void> SELECT_BLOCK = new NetworkMessageClient<>(message ->
+    public static final NetworkMessageClient<SerializableVoid> SELECT_BLOCK = new NetworkMessageClient<>(message ->
     {
         NetworkMessageClient<?> stateMessage;
         do
         {
-            Block selectedBlock = message.getClient().getUI().selectBlock();
+            String selectedBlock = message.getClient().getUI().selectBlock();
             stateMessage = message.getClient().getResponseTo(Messages.SELECT_BLOCK_RESPONSE.setParam(selectedBlock));
         }
         while ((Integer)stateMessage.getParam() != OK);
 
     });
 
-    public static final NetworkMessageClient<Void> GAME_IS_STARTING = new NetworkMessageClient<>(message ->
+    public static final NetworkMessageClient<SerializableVoid> GAME_IS_STARTING = new NetworkMessageClient<>(message ->
             message.getClient().getUI().gameIsStarting());
 
-    public static final NetworkMessageClient<Void> GAME_IS_STARTED = new NetworkMessageClient<>(message ->
+    public static final NetworkMessageClient<SerializableVoid> GAME_IS_STARTED = new NetworkMessageClient<>(message ->
             message.getClient().getUI().gameStarted());
 
     public static final NetworkMessageClient<Integer> TIMER_SECONDS = new NetworkMessageClient<>(message ->
@@ -83,27 +84,44 @@ public class Messages
         message.getClient().sendMessageToServer(Messages.CHOOSER_RESPONSE.setParam(res));
     });
 
+    public static final NetworkMessageClient<Bundle<PowerUpCard, PowerUpCard>> CHOOSE_SPAWN_POINT = new NetworkMessageClient<>(message ->
+    {
+        PowerUpCard chosen = message.getClient().getUI().chooseSpawnPoint(message.getParam().getFirst(), message.getParam().getSecond());
+        message.getClient().sendMessageToServer(Messages.CHOSEN_SPAWN_POINT.setParam(chosen));
+    });
+
+    public static final NetworkMessageClient<SerializableVoid> IS_YOUR_ROUND = new NetworkMessageClient<>(message ->
+    {
+        message.getClient().getUI().handle(new GameEvent(GameEvent.IS_YOUR_ROUND));
+        message.getClient().sendMessageToServer(Messages.STATE_MESSAGE_SERVER.setParam(OK));
+    });
+
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////MESSAGES EXECUTED ON SERVER///////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public static final NetworkMessageServer<Integer> STATE_MESSAGE_SERVER = new NetworkMessageServer<>();
+
+    public static final NetworkMessageServer<PowerUpCard> CHOSEN_SPAWN_POINT = new NetworkMessageServer<>();
+
     public static final NetworkMessageServer<String> CHOOSER_RESPONSE = new NetworkMessageServer<>();
 
-    public static final NetworkMessageServer<Player> SELECT_PLAYER_RESPONSE = new NetworkMessageServer<>();
+    public static final NetworkMessageServer<String> SELECT_PLAYER_RESPONSE = new NetworkMessageServer<>();
 
-    public static final NetworkMessageServer<Block> SELECT_BLOCK_RESPONSE = new NetworkMessageServer<>();
+    public static final NetworkMessageServer<String> SELECT_BLOCK_RESPONSE = new NetworkMessageServer<>();
 
     public static final NetworkMessageServer<String> LOGIN_RESPONSE = new NetworkMessageServer<>(message ->
     {
         if(ClientsManager.getInstance().getConnectedClientsUsername().contains((String) message.getParam()))
         {
-            message.getClientConnection().sendMessageToClient(Messages.STATE_MESSAGE.setParam(INVALID_USER));
+            message.getClientConnection().sendMessageToClient(Messages.STATE_MESSAGE_CLIENT.setParam(INVALID_USER));
         }
         else
         {
-            message.getClientConnection().sendMessageToClient(Messages.STATE_MESSAGE.setParam(OK));
+            message.getClientConnection().sendMessageToClient(Messages.STATE_MESSAGE_CLIENT.setParam(OK));
             message.getClientConnection().setUsername(message.param);
             message.getClientConnection().setLogged(true);
             if(ClientsManager.getInstance().getDisconnectedClientsUsername().contains((String) message.getParam()))
@@ -116,7 +134,7 @@ public class Messages
 
     });
 
-    public static final NetworkMessageServer<Block> MOVE_PLAYER = new NetworkMessageServer<>(message ->
-            message.getClientConnection().getGameController().movePlayer(message.getClientConnection().getPlayer(), message.getParam()));
+    /*public static final NetworkMessageServer<String> MOVE_PLAYER = new NetworkMessageServer<>(message ->
+            message.getClientConnection().getGameController().movePlayer(message.getClientConnection().getPlayer(), message.getParam()));*/
 
 }

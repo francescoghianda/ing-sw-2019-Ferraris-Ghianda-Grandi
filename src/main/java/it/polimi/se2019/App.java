@@ -1,8 +1,7 @@
 package it.polimi.se2019;
 
-import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.ui.cli.CLI;
-import it.polimi.se2019.ui.gui.GUI;
+import it.polimi.se2019.ui.UI;
 
 public class App 
 {

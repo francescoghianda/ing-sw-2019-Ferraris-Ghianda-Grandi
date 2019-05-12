@@ -1,0 +1,180 @@
+<xsd:schema elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+    <xsd:element name="line" type="xsd:string"/>
+    <xsd:element name="blue" type="xsd:positiveInteger"/>
+    <xsd:element name="yellow" type="xsd:positiveInteger"/>
+    <xsd:element name="red" type="xsd:positiveInteger"/>
+
+    <xsd:element name="cardscript">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="line" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="cost">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="blue" minOccurs="0"/>
+                <xsd:element ref="red" minOccurs="0"/>
+                <xsd:element ref="yellow" minOccurs="0"/>
+            </xsd:all>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="enabled" type="xsd:boolean"/>
+
+    <xsd:element name="name" type="xsd:string"/>
+
+    <xsd:element name="description">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="line" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="buy_cost">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="blue" minOccurs="0"/>
+                <xsd:element ref="red" minOccurs="0"/>
+                <xsd:element ref="yellow" minOccurs="0"/>
+            </xsd:all>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="reload_cost">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="blue" minOccurs="0"/>
+                <xsd:element ref="red" minOccurs="0"/>
+                <xsd:element ref="yellow" minOccurs="0"/>
+            </xsd:all>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="basic_mode">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="cardscript"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="optional_effect">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="cost" minOccurs="0"/>
+                <xsd:element ref="enabled"/>
+                <xsd:element ref="cardscript"/>
+            </xsd:all>
+            <xsd:attribute type="xsd:string" name="name" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="alternate_mode">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="cost"/>
+                <xsd:element ref="cardscript"/>
+            </xsd:all>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="weapon_card">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="name"/>
+                <xsd:element ref="description"/>
+                <xsd:element ref="buy_cost"/>
+                <xsd:element ref="reload_cost"/>
+                <xsd:element ref="basic_mode"/>
+                <xsd:element ref="optional_effects" minOccurs="0"/>
+                <xsd:element ref="alternate_mode" minOccurs="0"/>
+            </xsd:all>
+            <xsd:attribute type="xsd:positiveInteger" name="id" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="optional_effects">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="optional_effect" maxOccurs="unbounded" minOccurs="0"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="use" type="powerUpUseType"/>
+
+    <xsd:element name="power_up_card">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="name"/>
+                <xsd:element ref="use"/>
+                <xsd:element ref="description"/>
+                <xsd:element ref="cardscript"/>
+            </xsd:all>
+            <xsd:attribute type="xsd:string" name="id" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="value">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="blue" minOccurs="0"/>
+                <xsd:element ref="red" minOccurs="0"/>
+                <xsd:element ref="yellow" minOccurs="0"/>
+            </xsd:all>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="pickUpPowerUp" type="xsd:boolean"/>
+
+    <xsd:element name="ammo_card">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="value"/>
+                <xsd:element ref="pickUpPowerUp"/>
+            </xsd:all>
+            <xsd:attribute type="xsd:positiveInteger" name="id" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="deck">
+        <xsd:complexType>
+            <xsd:choice>
+                <xsd:element ref="weapon_card" maxOccurs="unbounded" minOccurs="0"/>
+                <xsd:element ref="power_up_card" maxOccurs="unbounded" minOccurs="0"/>
+                <xsd:element ref="ammo_card" maxOccurs="unbounded" minOccurs="0"/>
+            </xsd:choice>
+            <xsd:attribute type="deckType" name="type" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="decks">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="deck" maxOccurs="unbounded" minOccurs="0"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:simpleType name="deckType" final="restriction" >
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="weaponCards" />
+            <xsd:enumeration value="powerUpCards" />
+            <xsd:enumeration value="ammoCards" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="powerUpUseType" final="restriction">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="always" />
+            <xsd:enumeration value="onFire" />
+            <xsd:enumeration value="onDamage" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>

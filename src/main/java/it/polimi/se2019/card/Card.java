@@ -1,6 +1,8 @@
 package it.polimi.se2019.card;
 
-public abstract class Card
+import java.io.Serializable;
+
+public abstract class Card implements Serializable
 {
 	private String name;
 	private String description;
@@ -11,7 +13,7 @@ public abstract class Card
 
 	}
 
-	public final void setId(String id)
+	public void setId(String id)
 	{
 		this.id = id;
 	}

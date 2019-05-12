@@ -1,13 +1,13 @@
 package it.polimi.se2019.player;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
  * Defines the gameboard of the game
  */
-public class GameBoard
+public class GameBoard implements Serializable
 {
-    private Player player;
     private HashMap<Player, Integer> receivedDamage;
     private HashMap<Player, Integer> markers;
     private int redAmmo;

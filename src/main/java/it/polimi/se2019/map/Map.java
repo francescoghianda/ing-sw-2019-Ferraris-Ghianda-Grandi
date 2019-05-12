@@ -27,7 +27,7 @@ public class Map
 		this.rooms = new ArrayList<>();
 	}
 
-	public List<Room> getMap()
+	public List<Room> getRooms()
 	{
 		return rooms;
 	}
@@ -36,6 +36,7 @@ public class Map
 	{
 		return new Map().initMap();
 	}
+
 
 
 	/**
@@ -117,8 +118,8 @@ public class Map
 		for(String door : doors)
 		{
 			String[] blocks = door.split("-");
-			Room room1 = findByColor(GameColor.parseColor(blocks[0].charAt(0)));
-			Room room2 = findByColor(GameColor.parseColor(blocks[1].charAt(0)));
+			Room room1 = findRoomByColor(GameColor.parseColor(blocks[0].charAt(0)));
+			Room room2 = findRoomByColor(GameColor.parseColor(blocks[1].charAt(0)));
 			if(room1 != null && room2 != null)
 			{
 				Block block1 = room1.getBlockAt(Integer.parseInt(""+blocks[0].charAt(1)));
@@ -141,7 +142,7 @@ public class Map
 
 	private void createBlock(GameColor color, boolean spawnPoint, int x, int y)
 	{
-		Room room = findByColor(color);
+		Room room = findRoomByColor(color);
 		if(room == null)room = createRoom(color);
 		room.addBlock(new Block(spawnPoint, x, y, room));
 	}
@@ -163,7 +164,7 @@ public class Map
 	 * @param color color of the room
 	 * @return null if the room doesn't exist
 	 */
-	private Room findByColor(GameColor color)
+	public Room findRoomByColor(GameColor color)
 	{
 		for(Room room : rooms)if(room.getColor().equals(color))return room;
 		return null;

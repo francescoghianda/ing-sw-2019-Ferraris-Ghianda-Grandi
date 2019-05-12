@@ -1,11 +1,11 @@
 package it.polimi.se2019.ui.cli;
 
-import it.polimi.se2019.map.Block;
+import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.network.message.Bundle;
-import it.polimi.se2019.player.Player;
+import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.ui.UI;
-import it.polimi.se2019.utils.logging.Logger;
+import it.polimi.se2019.utils.network.NetworkUtils;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -28,18 +28,18 @@ public class CLI implements UI
     @Override
     public synchronized void startUI()
     {
-        Logger.getInstance().enableGameMode(true);
-        Logger.cli(CliString.TITLE);
+        GameConsole.startConsole();
+        GameConsole.out.println(CliString.TITLE);
         Option<Integer> serverModeOption = new Options<Integer>(CliString.GET_CONNECTION_MODE, true).addOption("Socket", "S", NetworkInterface.SOCKET_MODE).addOption("RMI", "R", NetworkInterface.RMI_MODE).show();
-        String serverIp = new FormattedInput(CliString.GET_SERVER_IP, FormattedInput.IP_REGEX).show();
-        int serverPort = Integer.parseInt(new FormattedInput(CliString.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, port -> Integer.parseInt(port) >= 1024 && Integer.parseInt(port) <= 65535).show());
-        Logger.cli(CliString.CONNECTING);
+        String serverIp = new FormattedInput(CliString.GET_SERVER_IP, NetworkUtils::isIp).show();
+        int serverPort = Integer.parseInt(new FormattedInput(CliString.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, s -> NetworkUtils.isValidPort(Integer.parseInt(s))).show());
+        GameConsole.out.println(CliString.CONNECTING);
         client.connect(serverIp, serverPort, serverModeOption.getValue());
     }
 
     private String input(String question)
     {
-        Logger.inputCli(question);
+        GameConsole.nextLine(question);
         return scanner.nextLine();
     }
 
@@ -52,18 +52,18 @@ public class CLI implements UI
     @Override
     public void logged()
     {
-        Logger.cli(CliString.LOGGED);
+        GameConsole.out.println(CliString.LOGGED);
     }
 
     @Override
-    public Player selectPlayer()
+    public String selectPlayer()
     {
         //TODO
         return null;
     }
 
     @Override
-    public Block selectBlock()
+    public String selectBlock()
     {
         //TODO
         return null;
@@ -72,7 +72,7 @@ public class CLI implements UI
     @Override
     public void gameIsStarting()
     {
-        Logger.cli(CliString.GAME_STARTING);
+        GameConsole.out.println(CliString.GAME_STARTING);
     }
 
     @Override
@@ -84,19 +84,19 @@ public class CLI implements UI
     @Override
     public void showTimerCountdown(int remainSeconds)
     {
-        Logger.cli(remainSeconds);
+        GameConsole.out.println(remainSeconds);
     }
 
     @Override
     public void youAreFirstPlayer()
     {
-        Logger.cli(CliString.YOU_ARE_FIRST_PLAYER);
+        GameConsole.out.println(CliString.YOU_ARE_FIRST_PLAYER);
     }
 
     @Override
     public void firstPlayerIs(String firstPlayerUsername)
     {
-        Logger.cli(String.format(CliString.FIRST_PLAYER_IS, firstPlayerUsername));
+        GameConsole.out.printf(CliString.FIRST_PLAYER_IS+"\n", firstPlayerUsername);
     }
 
     @Override
@@ -114,8 +114,25 @@ public class CLI implements UI
     }
 
     @Override
+    public PowerUpCard chooseSpawnPoint(PowerUpCard option1, PowerUpCard option2)
+    {
+        Options<PowerUpCard> powerUpCardOptions = new Options<>(CliString.CHOOSE_SPAWN_POINT, false);
+        powerUpCardOptions.addOption(option1.toString(), "1", option1).addOption(option2.toString(), "2", option2);
+        return powerUpCardOptions.show().getValue();
+    }
+
+    @Override
     public void update()
     {
 
+    }
+
+    @Override
+    public void handle(GameEvent event)
+    {
+        if(event.getEventCode() == GameEvent.IS_YOUR_ROUND)
+        {
+            GameConsole.out.println(CliString.IS_YOUR_ROUND);
+        }
     }
 }

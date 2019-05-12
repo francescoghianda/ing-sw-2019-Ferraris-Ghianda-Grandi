@@ -1,8 +1,10 @@
 package it.polimi.se2019.ui.gui;
 
+import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.map.Block;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Player;
+import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.ui.gui.dialogs.CloseDialog;
 import javafx.application.Application;
@@ -45,11 +47,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
         window.centerOnScreen();
 
 
-        //gameStarted();
-        /////TEST
-        //sceneManager.setScene(SceneManager.MATCH_SCENE);
-        //window.centerOnScreen();
-        ///////
+        gameStarted();
 
     }
 
@@ -79,13 +77,13 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     }
 
     @Override
-    public Player selectPlayer()
+    public String selectPlayer()
     {
         return null;
     }
 
     @Override
-    public Block selectBlock()
+    public String selectBlock()
     {
         return null;
     }
@@ -149,6 +147,12 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
         return null;
     }
 
+    @Override
+    public PowerUpCard chooseSpawnPoint(PowerUpCard option1, PowerUpCard option2)
+    {
+        return null;
+    }
+
 
     public static double getStageWidth()
     {
@@ -173,22 +177,14 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     @Override
     public void handle(WindowEvent event)
     {
-        /*ButtonType yesButton = new ButtonType("Si", ButtonBar.ButtonData.YES);
-        ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
-        Dialog<ButtonType> closeDialog = new Dialog<>();
-        closeDialog.setContentText("Sei sicuro di voler uscire?");
-        closeDialog.getDialogPane().getStylesheets().add("css/CloseDialogStyle.css");
-        String bgUrl = "img/close_dialog_bg/close_dialog_bg_"+ (new Random().nextInt(5) + 1)+".png";
-        closeDialog.getDialogPane().setBackground(new Background(new BackgroundImage(new Image(bgUrl), null, null, BackgroundPosition.CENTER, new BackgroundSize(300, 300, false, false, true, true))));
-        closeDialog.getDialogPane().setMinSize(300, 300);
-        closeDialog.getDialogPane().getButtonTypes().addAll(yesButton, noButton);
-        Optional<ButtonType> result = closeDialog.showAndWait();
-        if(!(result.isPresent() && result.get().equals(yesButton)))event.consume();*/
-
         CloseDialog closeDialog = new CloseDialog(window);
         Optional<ButtonType> result = closeDialog.showAndWait();
         if(!(result.isPresent() && result.get().equals(ButtonType.YES)))event.consume();
+    }
 
+    @Override
+    public void handle(GameEvent event)
+    {
 
     }
 }

@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Network message that can be executed by a client
  * @param <T> The type of the parameter
  */
-public class NetworkMessageClient<T> extends NetworkMessage<T> implements Serializable
+public class NetworkMessageClient<T extends Serializable> extends NetworkMessage<T> implements Serializable
 {
     private final MessageExecutor<NetworkMessageClient<T>> executor;
     private transient NetworkClient client;

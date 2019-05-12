@@ -1,13 +1,16 @@
 package it.polimi.se2019.controller;
 
-import it.polimi.se2019.card.PowerUpCard;
+import it.polimi.se2019.card.ammo.AmmoCard;
+import it.polimi.se2019.card.deck.Deck;
+import it.polimi.se2019.card.deck.DeckFactory;
+import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.card.weapon.OptionalEffect;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.map.Block;
 import it.polimi.se2019.map.Map;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
-import it.polimi.se2019.network.message.Chooser;
+import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.network.message.Messages;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.GameColor;
@@ -15,6 +18,7 @@ import it.polimi.se2019.utils.constants.GameMode;
 import it.polimi.se2019.utils.logging.Logger;
 import it.polimi.se2019.utils.timer.Timer;
 import it.polimi.se2019.utils.timer.TimerListener;
+import it.polimi.se2019.utils.xml.NotValidXMLException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +37,10 @@ public class GameController implements TimerListener
     private ClientsManager clientsManager;
     private Timer timer;
 
+    private Deck<AmmoCard> ammoCardDeck;
+    private Deck<WeaponCard> weaponCardDeck;
+    private Deck<PowerUpCard> powerUpCardDeck;
+
     private RoundManager roundManager;
 
     private int playersForStart = 2;
@@ -46,6 +54,19 @@ public class GameController implements TimerListener
         random = new Random();
         map = Map.createMap();
         players = new ArrayList<>();
+
+        try
+        {
+            DeckFactory deckFactory = DeckFactory.newInstance("/xml/decks/decks.xml");
+            ammoCardDeck = deckFactory.createAmmoDeck();
+            weaponCardDeck = deckFactory.createWeaponDeck();
+            powerUpCardDeck = deckFactory.createPowerUpDeck();
+        }
+        catch (NotValidXMLException e)
+        {
+            Logger.exception(e);
+            System.exit(1);
+        }
     }
 
     /*public static GameController getInstance()
@@ -58,16 +79,34 @@ public class GameController implements TimerListener
     {
         Player currentPlayer = roundManager.next();
 
-        Chooser chooser = new Chooser("Come stai?", "Bene", "Male");
 
-        Logger.info(chooser.getResponse(currentPlayer));
+
+        if(roundManager.isFirstRound())firstRound(currentPlayer);
+
+    }
+
+    private void firstRound(Player player)
+    {
+        PowerUpCard first = powerUpCardDeck.getFirstCard();
+        PowerUpCard second = powerUpCardDeck.getFirstCard();
+        PowerUpCard chosen = (PowerUpCard) player.getResponseTo(Messages.CHOOSE_SPAWN_POINT.setParam(new Bundle<>(first, second))).getParam();
+        Block spawnPoint = map.findRoomByColor(chosen.getColor()).getSpawnPoint();
+        player.setBlock(spawnPoint);
     }
 
     public void startGame()
     {
         if(players.isEmpty())throw new StartGameWithoutPlayerException();
         selectStartingPlayer();
+        shuffleDecks();
         nextRound();
+    }
+
+    private void shuffleDecks()
+    {
+        ammoCardDeck.shuffle();
+        weaponCardDeck.shuffle();
+        powerUpCardDeck.shuffle();
     }
 
     private void startTimer()
