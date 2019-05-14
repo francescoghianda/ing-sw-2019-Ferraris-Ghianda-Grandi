@@ -3,15 +3,26 @@ package it.polimi.se2019.ui.gui;
 import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.ui.UI;
 import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class SceneManager
 {
-    public static final LoginScene LOGIN_SCENE = new LoginScene();
-    public static final StartMenuScene START_MENU_SCENE = new StartMenuScene();
-    public static final WaitScene WAIT_SCENE = new WaitScene();
-    public static final MatchScene MATCH_SCENE = new MatchScene();
+
+    public static final int LOGIN_SCENE = 1;
+    public static final int START_MENU_SCENE = 2;
+    public static final int WAIT_SCENE = 3;
+    public static final int MATCH_SCENE = 4;
+
+
+    public static LoginScene loginScene;
+    public static StartMenuScene startMenuScene;
+    public static WaitScene waitScene;
+    public static Scene matchScene;
 
     private static SceneManager instance;
     private final Stage stage;
@@ -27,7 +38,21 @@ public class SceneManager
     static SceneManager createSceneManager(Stage stage, UI ui)
     {
         instance = new SceneManager(stage, ui);
+        initScene();
         return instance;
+    }
+
+    public Stage getStage()
+    {
+        return this.stage;
+    }
+
+    private static void initScene()
+    {
+        loginScene = new LoginScene();
+        startMenuScene = new StartMenuScene();
+        waitScene = new WaitScene();
+        matchScene = new Scene(new MatchScene());
     }
 
     public static SceneManager getInstance()
@@ -35,10 +60,43 @@ public class SceneManager
         return instance;
     }
 
-    void setScene(Scene scene)
+    void setScene(int sceneNumber)
     {
-        if(!Platform.isFxApplicationThread())Platform.runLater(() -> stage.setScene(scene));
-        else stage.setScene(scene);
+        setScene(getScene(sceneNumber));
+    }
+
+    private void setScene(Scene scene)
+    {
+        if(!Platform.isFxApplicationThread())Platform.runLater(() -> select(scene));
+        else select(scene);
+    }
+
+    public static Scene getScene(int scene)
+    {
+        Scene selected = null;
+
+        switch (scene)
+        {
+            case LOGIN_SCENE:
+                selected = loginScene;
+                break;
+            case START_MENU_SCENE:
+                selected = startMenuScene;
+                break;
+            case WAIT_SCENE:
+                selected = waitScene;
+                break;
+            case MATCH_SCENE:
+                selected = matchScene;
+                break;
+        }
+
+        return selected;
+    }
+
+    private void select(Scene scene)
+    {
+        stage.setScene(scene);
     }
 
     Scene getScene()
@@ -54,10 +112,10 @@ public class SceneManager
 
     public String getUsername()
     {
-        if(getScene().equals(LOGIN_SCENE)) runOnFxThread(LOGIN_SCENE::invalidUsername);
-        else setScene(LOGIN_SCENE.reset());
+        if(getScene().equals(loginScene)) runOnFxThread(loginScene::invalidUsername);
+        else setScene(loginScene.reset());
 
-        return new Input<>(LOGIN_SCENE).getInput(LoginScene.INPUT_USERNAME);
+        return new Input<>(loginScene).getInput(LoginScene.INPUT_USERNAME);
     }
 
     public static void runOnFxThread(Runnable runnable)
@@ -75,6 +133,4 @@ public class SceneManager
     {
         return stage.getHeight();
     }
-
-
 }

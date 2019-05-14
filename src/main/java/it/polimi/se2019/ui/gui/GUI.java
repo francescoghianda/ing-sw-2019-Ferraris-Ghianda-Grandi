@@ -9,6 +9,7 @@ import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.ui.gui.dialogs.CloseDialog;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -27,6 +28,12 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     private SceneManager sceneManager;
 
     public GUI()
+    {
+
+    }
+
+    @Override
+    public void init()
     {
 
     }
@@ -93,7 +100,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     {
         SceneManager.runOnFxThread(()->
         {
-            if(!SceneManager.WAIT_SCENE.isTimerVisible())SceneManager.WAIT_SCENE.showTimer(true);
+            if(!SceneManager.waitScene.isTimerVisible())SceneManager.waitScene.showTimer(true);
         });
     }
 
@@ -110,17 +117,18 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
 
         sceneManager.setScene(SceneManager.MATCH_SCENE);
 
-        SceneManager.runOnFxThread(() ->
+        SceneManager.runOnFxThread(window::centerOnScreen);
+        /*SceneManager.runOnFxThread(() ->
         {
-            window.centerOnScreen();
+            window.centerOnScreen();ß
             maximizeStage();
-        });
+        });*/
     }
 
     @Override
     public void showTimerCountdown(int remainSeconds)
     {
-        SceneManager.runOnFxThread(()-> SceneManager.WAIT_SCENE.updateTimer(remainSeconds));
+        SceneManager.runOnFxThread(()-> SceneManager.waitScene.updateTimer(remainSeconds));
     }
 
     @Override
@@ -138,7 +146,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     @Override
     public void connectionRefused()
     {
-        SceneManager.START_MENU_SCENE.connectionRefused();
+        SceneManager.startMenuScene.connectionRefused();
     }
 
     @Override

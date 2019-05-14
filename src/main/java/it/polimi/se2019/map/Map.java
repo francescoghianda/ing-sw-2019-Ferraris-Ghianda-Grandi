@@ -3,21 +3,22 @@ package it.polimi.se2019.map;
 import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.logging.Logger;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Map
+public class Map implements Serializable
 {
 	private final char[][] cliMap;
 	final int mapWidth = 48;
 	final int mapHeight = 24;
 
 	private ArrayList<Room> rooms;
-	private Scanner scanner;
+	private transient Scanner scanner;
 
-	private Block[][] mapMatrix;
+	private transient Block[][] mapMatrix;
 
 	private int mapNumber;
 
@@ -36,7 +37,6 @@ public class Map
 	{
 		return new Map().initMap();
 	}
-
 
 
 	/**

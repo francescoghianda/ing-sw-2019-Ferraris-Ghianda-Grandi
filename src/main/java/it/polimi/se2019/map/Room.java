@@ -2,10 +2,11 @@ package it.polimi.se2019.map;
 
 import it.polimi.se2019.utils.constants.GameColor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Room
+public class Room implements Serializable
 {
 
 	private final GameColor color;

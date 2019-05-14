@@ -49,7 +49,7 @@ public class XMLDeckReader
 
         try
         {
-            if(!XMLValidator.isValid(filePath, "/xml/decks/validator.xds"))throw new NotValidXMLException(filePath+" - "+XMLValidator.getError());
+            if(!XMLValidator.isValid(filePath, "/xml/decks/validator.xsd"))throw new NotValidXMLException(filePath+" - "+XMLValidator.getError());
 
             InputStream is = getClass().getResourceAsStream(filePath);
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();

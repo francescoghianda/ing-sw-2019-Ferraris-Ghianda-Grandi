@@ -1,15 +1,18 @@
 package it.polimi.se2019.map;
 
 import it.polimi.se2019.card.Grabbable;
+import it.polimi.se2019.card.ammo.AmmoCard;
+import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.Ansi;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class Block
+public class Block implements Serializable
 {
 	public static final int UPPER_SIDE = 0;
 	public static final int LOWER_SIDE = 1;
@@ -18,10 +21,14 @@ public class Block
 
 	private Block[] doors;
 	private final Room room;
-	private Grabbable[] cards;
+	//private Grabbable[] cards;
+
+	private AmmoCard ammoCard;
+	private ArrayList<WeaponCard> weaponCards;
+
 	private final boolean spawnPoint;
 
-	private HashMap<Block, List<Path>> paths;
+	private transient HashMap<Block, List<Path>> paths;
 
 	private ArrayList<Player> players;
 
@@ -32,7 +39,7 @@ public class Block
 
 	public Block(boolean spawnPoint, int x, int y, Room room)
 	{
-		cards = new Grabbable[3];
+		//cards = new Grabbable[3];
 		doors = new Block[4];
 		paths = new HashMap<>();
 		this.spawnPoint = spawnPoint;
@@ -75,6 +82,39 @@ public class Block
 	public boolean isSpawnPoint()
 	{
 		return this.spawnPoint;
+	}
+
+	public boolean isAmmoCardPresent()
+	{
+		return ammoCard != null;
+	}
+
+	public boolean isAllWeaponsPresent()
+	{
+		return weaponCards.size() == 3;
+	}
+
+	public boolean addWeaponCard(WeaponCard weaponCard)
+	{
+		if(weaponCards.size() >= 3)return false;
+
+		weaponCards.add(weaponCard);
+		return true;
+	}
+
+	public void removeWeaponCard(WeaponCard weaponCard)
+	{
+		weaponCards.remove(weaponCard);
+	}
+
+	public void removeAmmoCard()
+	{
+		ammoCard = null;
+	}
+
+	public void setAmmoCard(AmmoCard ammoCard)
+	{
+		this.ammoCard = ammoCard;
 	}
 
 	/**
@@ -149,15 +189,15 @@ public class Block
 		return this.room;
 	}
 
-	public Grabbable getCard(int index)
+	/*public Grabbable getCard(int index)
 	{
 		return cards[index];
-	}
+	}*/
 
-	public void setCard(Grabbable card, int index)
+	/*public void setCard(Grabbable card, int index)
 	{
 		cards[index] = card;
-	}
+	}*/
 
 	public Block getBottomBlock()
 	{

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sides blockDimension="90">
+
+    <!--LEFT SIDE OF THE MAP-->
+
+    <left>
+        <part_1>
+            <point blockX="0" blockY="0">
+                <x>531</x>
+                <y>696</y>
+            </point>
+            <point blockX="1" blockY="0">
+                <x>912</x>
+                <y>475</y>
+            </point>
+            <point blockX="1" blockY="1">
+                <x>877</x>
+                <y>1017</y>
+            </point>
+            <point blockX="0" blockY="2">
+                <x>535</x>
+                <y>1508</y>
+            </point>
+            <point blockX="1" blockY="2">
+                <x>887</x>
+                <y>1508</y>
+            </point>
+        </part_1>
+
+        <part_2>
+            <point blockX="0" blockY="0">
+                <x>519</x>
+                <y>487</y>
+            </point>
+            <point blockX="1" blockY="0">
+                <x>911</x>
+                <y>680</y>
+            </point>
+            <point blockX="1" blockY="1">
+                <x>876</x>
+                <y>1002</y>
+            </point>
+            <point blockX="1" blockY="2">
+                <x>890</x>
+                <y>1505</y>
+            </point>
+        </part_2>
+    </left>
+
+    <!--RIGHT SIDE OF THE MAP-->
+    <!--The x coordinates is relative to the part of the map-->
+
+    <right>
+        <part_1>
+            <point blockX="2" blockY="1">
+                <x>177</x>
+                <y>1060</y>
+            </point>
+            <point blockX="3" blockY="1">
+                <x>753</x>
+                <y>1060</y>
+            </point>
+            <point blockX="2" blockY="2">
+                <x>128</x>
+                <y>1508</y>
+            </point>
+        </part_1>
+
+        <part_2>
+            <point blockX="3" blockY="0">
+                <x>754</x>
+                <y>675</y>
+            </point>
+            <point blockX="2" blockY="1">
+                <x>173</x>
+                <y>1138</y>
+            </point>
+            <point blockX="3" blockY="1">
+                <x>553</x>
+                <y>1138</y>
+            </point>
+            <point blockX="2" blockY="2">
+                <x>198</x>
+                <y>1497</y>
+            </point>
+        </part_2>
+    </right>
+
+</sides>

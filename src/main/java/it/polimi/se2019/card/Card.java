@@ -33,7 +33,7 @@ public abstract class Card implements Serializable
 		return name;
 	}
 
-	public final String getDescriprion()
+	public final String getDescription()
 	{
 		return description;
 	}

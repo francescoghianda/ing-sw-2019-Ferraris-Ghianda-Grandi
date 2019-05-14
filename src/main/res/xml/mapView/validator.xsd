@@ -1,0 +1,68 @@
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="x" type="xs:positiveInteger"/>
+    <xs:element name="y" type="xs:positiveInteger"/>
+    <xs:element name="point">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="x"/>
+                <xs:element ref="y"/>
+            </xs:all>
+            <xs:attribute type="block_x_type" name="blockX" use="required"/>
+            <xs:attribute type="block_y_type" name="blockY" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="part_1">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="point" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="part_2">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="point" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="left">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="part_1"/>
+                <xs:element ref="part_2"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="right">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="part_1"/>
+                <xs:element ref="part_2"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="sides">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="left"/>
+                <xs:element ref="right"/>
+            </xs:all>
+            <xs:attribute type="xs:positiveInteger" name="blockDimension" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="block_x_type" final="restriction">
+        <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="3"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="block_y_type" final="restriction">
+        <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

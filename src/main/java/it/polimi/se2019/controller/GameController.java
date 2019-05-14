@@ -52,9 +52,18 @@ public class GameController implements TimerListener
         availablePlayerColors.remove(GameColor.RED);
         gameMode = GameMode.NORMAL;
         random = new Random();
-        map = Map.createMap();
         players = new ArrayList<>();
+        createDecks();
+    }
 
+    /*public static GameController getInstance()
+    {
+        if(instance == null)instance = new GameController();
+        return instance;
+    }*/
+
+    private void createDecks()
+    {
         try
         {
             DeckFactory deckFactory = DeckFactory.newInstance("/xml/decks/decks.xml");
@@ -69,19 +78,13 @@ public class GameController implements TimerListener
         }
     }
 
-    /*public static GameController getInstance()
-    {
-        if(instance == null)instance = new GameController();
-        return instance;
-    }*/
-
     private void nextRound()
     {
         Player currentPlayer = roundManager.next();
 
-
-
         if(roundManager.isFirstRound())firstRound(currentPlayer);
+
+
 
     }
 
@@ -97,9 +100,30 @@ public class GameController implements TimerListener
     public void startGame()
     {
         if(players.isEmpty())throw new StartGameWithoutPlayerException();
-        selectStartingPlayer();
+        map = Map.createMap();
         shuffleDecks();
+        refillMap();
+        selectStartingPlayer();
         nextRound();
+    }
+
+    private void refillMap()
+    {
+        List<Block> blocks = map.getAllBlocks();
+        blocks.forEach(block ->
+        {
+            if(block.isSpawnPoint())
+            {
+                while(!block.isAllWeaponsPresent() && !weaponCardDeck.isEmpty())
+                {
+                    block.addWeaponCard(weaponCardDeck.getFirstCard());
+                }
+            }
+            else
+            {
+                if(!block.isAmmoCardPresent())block.setAmmoCard(ammoCardDeck.getFirstCard());
+            }
+        });
     }
 
     private void shuffleDecks()
@@ -138,7 +162,6 @@ public class GameController implements TimerListener
      */
     public Player createPlayer(ClientConnection server)
     {
-
         if(availablePlayerColors.isEmpty())throw new TooManyPlayerException();
         GameColor color = availablePlayerColors.get(random.nextInt(availablePlayerColors.size()));
         Player player = new Player(color, this, server);

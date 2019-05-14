@@ -50,10 +50,9 @@
     </dependencies>
 
     <build>
-
         <resources>
             <resource>
-                <directory>src/res</directory>
+                <directory>src/main/res</directory>
             </resource>
         </resources>
 
@@ -81,7 +80,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>it.polimi.se2019.ServerApp</mainClass>
+                            <mainClass>it.polimi.se2019.App</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

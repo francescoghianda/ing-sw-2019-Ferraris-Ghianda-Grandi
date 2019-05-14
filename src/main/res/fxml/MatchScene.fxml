@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import it.polimi.se2019.ui.gui.components.*?>
+
+<fx:root fx:id="borderPane" type="GridPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+
+    <HBox alignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BASELINE" GridPane.halignment="CENTER"
+          GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
+        <BoardView fx:id="board" color="GREEN"/>
+    </HBox>
+
+    <MapView fx:id="mapView" GridPane.rowIndex="0" GridPane.halignment="CENTER" GridPane.valignment="TOP"
+             GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS" maxHeight="1000"/>
+</fx:root>

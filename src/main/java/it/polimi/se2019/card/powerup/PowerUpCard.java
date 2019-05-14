@@ -5,7 +5,9 @@ import it.polimi.se2019.card.Grabbable;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.GameColor;
 
-public class PowerUpCard extends Card implements Grabbable
+import java.io.Serializable;
+
+public class PowerUpCard extends Card implements Grabbable, Serializable
 {
 	private transient String originalId;
 	private transient String script;
@@ -70,7 +72,7 @@ public class PowerUpCard extends Card implements Grabbable
 		cloned.color = color;
 		cloned.setId(originalId);
 		cloned.setName(getName());
-		cloned.setDescription(getDescriprion());
+		cloned.setDescription(getDescription());
 		return cloned;
 	}
 
