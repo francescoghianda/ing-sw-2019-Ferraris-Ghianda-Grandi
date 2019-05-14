@@ -9,6 +9,7 @@
     <HBox alignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BASELINE" GridPane.halignment="CENTER"
           GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
         <BoardView fx:id="board" color="GREEN"/>
+        <ActionPane/>
     </HBox>
 
     <MapView fx:id="mapView" GridPane.rowIndex="0" GridPane.halignment="CENTER" GridPane.valignment="TOP"

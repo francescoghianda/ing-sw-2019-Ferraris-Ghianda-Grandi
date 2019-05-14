@@ -24,6 +24,8 @@ public class MapTest
     @Test
     public void doorTest()
     {
+        System.out.println(map.drawMap());
+
         List<Block> blocks = map.getAllBlocks();
         blocks.forEach(block ->
         {

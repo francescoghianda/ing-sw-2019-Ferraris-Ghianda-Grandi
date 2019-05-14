@@ -39,6 +39,7 @@ public class Map implements Serializable
 	}
 
 
+
 	/**
 	 * initializes the rooms with a random selection
 	 * @return return the rooms generated

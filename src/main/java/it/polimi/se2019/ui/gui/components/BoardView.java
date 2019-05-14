@@ -9,7 +9,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.net.URL;
@@ -79,9 +82,12 @@ public class BoardView extends StackPane implements Initializable
     public void initialize(URL location, ResourceBundle resources)
     {
         this.background = backgrounds.get(color);
+
         backgroundImage.setImage(background);
 
         backgroundImage.setPreserveRatio(true);
         backgroundImage.setFitHeight(GUI.getScreenHeight()/5);
+        setPrefHeight(GUI.getScreenHeight()/5);
+        setPrefWidth(backgroundImage.getBoundsInParent().getWidth());
     }
 }

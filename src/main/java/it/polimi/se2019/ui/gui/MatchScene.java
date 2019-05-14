@@ -56,7 +56,7 @@ public class MatchScene extends GridPane implements Initializable, EventHandler<
         CardView card = new CardView();
 
         mapView.setMap(MapNumber.MAP_1);
-
+        
 
         SceneManager.getInstance().getStage().addEventHandler(KeyEvent.KEY_PRESSED, this);
 
