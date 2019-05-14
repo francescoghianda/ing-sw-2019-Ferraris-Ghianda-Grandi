@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <entry key="playerToStart">2</entry>
+    <entry key="matchRound">2</entry>
+    <entry key="finalFrenzy">true</entry>
+
+</properties>
