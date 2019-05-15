@@ -8,10 +8,13 @@
 
     <HBox alignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BASELINE" GridPane.halignment="CENTER"
           GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
+        <ActionPane fx:id="actionPane"/>
         <BoardView fx:id="board" color="GREEN"/>
-        <ActionPane/>
+
     </HBox>
 
     <MapView fx:id="mapView" GridPane.rowIndex="0" GridPane.halignment="CENTER" GridPane.valignment="TOP"
              GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS" maxHeight="1000"/>
+
+    <CardPane fx:id="cardPane" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 </fx:root>

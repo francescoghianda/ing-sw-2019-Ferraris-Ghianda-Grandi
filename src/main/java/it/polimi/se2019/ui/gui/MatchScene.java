@@ -1,9 +1,7 @@
 package it.polimi.se2019.ui.gui;
 
-import it.polimi.se2019.ui.gui.components.BoardView;
-import it.polimi.se2019.ui.gui.components.CardView;
-import it.polimi.se2019.ui.gui.components.MapNumber;
-import it.polimi.se2019.ui.gui.components.MapView;
+import it.polimi.se2019.ui.gui.components.*;
+import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.logging.Logger;
 
 import javafx.event.EventHandler;
@@ -26,6 +24,9 @@ public class MatchScene extends GridPane implements Initializable, EventHandler<
 
     @FXML
     private MapView mapView;
+
+    @FXML
+    private ActionPane actionPane;
 
     private int map;
 
@@ -53,10 +54,14 @@ public class MatchScene extends GridPane implements Initializable, EventHandler<
     {
         setStyle("-fx-background-image: url('/img/texture_background.png')");
 
+        //setGridLinesVisible(true);
+
         CardView card = new CardView();
 
         mapView.setMap(MapNumber.MAP_1);
-        
+
+        actionPane.setColor(GameColor.BLUE);
+
 
         SceneManager.getInstance().getStage().addEventHandler(KeyEvent.KEY_PRESSED, this);
 

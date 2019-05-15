@@ -6,9 +6,9 @@
 
 <fx:root type="TilePane" alignment="CENTER" hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="179.0" prefWidth="260.0" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml">
    <children>
-      <Button fx:id="moveButton" maxHeight="7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="64.0" prefWidth="104.0" text="Muoviti" />
-      <Button fx:id="fireButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Spara" />
-      <Button fx:id="grabButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Raccogli" />
-      <Button fx:id="reloadButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Ricarica" />
+      <Button fx:id="moveButton" maxHeight="7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="64.0" prefWidth="104.0" text="" />
+      <Button fx:id="fireButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="" />
+      <Button fx:id="grabButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="" />
+      <Button fx:id="reloadButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="" />
    </children>
 </fx:root>
