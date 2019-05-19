@@ -2,6 +2,9 @@ package it.polimi.se2019.utils.xml;
 
 
 import it.polimi.se2019.card.ammo.AmmoCard;
+import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.cost.Cost;
+import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.card.weapon.OptionalEffect;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.utils.constants.GameColor;
@@ -157,9 +160,9 @@ public class XMLDeckReader
 
         cards.forEach(card -> setBasicCardAttribute(cardElement, card));
 
-        blueCard.setId(ids[0]);
-        redCard.setId(ids[1]);
-        yellowCard.setId(ids[2]);
+        blueCard.setId(ids[0]+"_1");
+        redCard.setId(ids[1]+"_1");
+        yellowCard.setId(ids[2]+"_1");
 
         String useStr = cardElement.getElementsByTagName(XMLTags.USE).item(0).getTextContent();
         PowerUpCard.Use use;
@@ -176,10 +179,12 @@ public class XMLDeckReader
                 use = PowerUpCard.Use.ALWAYS;
         }
 
+        String description = parseMultilineElement(((Element)cardElement.getElementsByTagName(XMLTags.DESCRIPTION).item(0)));
         String script = parseMultilineElement((Element) cardElement.getElementsByTagName(XMLTags.CARD_SCRIPT).item(0));
 
         cards.forEach(card ->
         {
+            card.setDescription(description);
             card.setUse(use);
             card.setScript(script);
         });

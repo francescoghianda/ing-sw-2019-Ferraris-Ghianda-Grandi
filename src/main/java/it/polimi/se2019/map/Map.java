@@ -238,4 +238,20 @@ public class Map implements Serializable
 		return stringBuilder.toString();
 	}
 
+	public MapData getData()
+	{
+		Block[][] mapMatrix = getMapMatrix();
+		BlockData[][] blocksData = new BlockData[mapMatrix.length][mapMatrix[0].length];
+
+		for(int i = 0; i < mapMatrix.length; i++)
+		{
+			for(int j = 0; j < mapMatrix[i].length; j++)
+			{
+				blocksData[i][j] = mapMatrix[i][j] == null ? null : mapMatrix[i][j].getData();
+			}
+		}
+
+		return new MapData(mapNumber, blocksData);
+	}
+
 }

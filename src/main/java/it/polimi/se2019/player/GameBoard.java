@@ -1,6 +1,9 @@
 package it.polimi.se2019.player;
 
+import it.polimi.se2019.utils.constants.GameColor;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -124,5 +127,16 @@ public class GameBoard implements Serializable
         this.yellowAmmo += yellowAmmo;
     }
 
+
+    public GameBoardData getData()
+    {
+        HashMap<GameColor, Integer> damages = new HashMap<>();
+        HashMap<GameColor, Integer> markers = new HashMap<>();
+
+        receivedDamage.forEach((player, integer) -> damages.put(player.getColor(), integer));
+        this.markers.forEach(((player, integer) -> markers.put(player.getColor(), integer)));
+
+        return new GameBoardData(redAmmo, blueAmmo, yellowAmmo, skulls, damages, markers);
+    }
 
 }

@@ -1,6 +1,10 @@
 package it.polimi.se2019.player;
 
+import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
+import it.polimi.se2019.controller.GameController;
+import it.polimi.se2019.map.Block;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;
@@ -170,6 +174,7 @@ public class Player implements Serializable
 	public void setBlock(Block block)
 	{
 		this.block = block;
+		block.addPlayer(this);
 	}
 
 	public NetworkMessageServer getResponseTo(NetworkMessageClient<?> message)
@@ -185,6 +190,13 @@ public class Player implements Serializable
 	public void notifyOtherClients(NetworkMessageClient<?> message)
 	{
 		clientConnection.notifyOtherClients(message);
+	}
+
+	public PlayerData getData()
+	{
+		ArrayList<Card> powerUpsCards = new ArrayList<>(powerUps);
+		ArrayList<Card> weaponsCards = new ArrayList<>(weapons);
+		return new PlayerData(color, weaponsCards, powerUpsCards, gameBoard.getData());
 	}
 
 }
