@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
 
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.image.ImageView?>
 <fx:root type="StackPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefHeight="400.0" prefWidth="600.0">
+    <Canvas fx:id="canvas"/>
     <VBox fx:id="vBox">
-
+        <Label fx:id="titleLabel" textFill="white"/>
+        <HBox fx:id="hBox" minWidth="0" minHeight="0">
+            <StackPane fx:id="slot1" alignment="TOP_CENTER">
+                <ImageView fx:id="emptySlot1" preserveRatio="true"/>
+                <VBox fx:id="cardSlot1" alignment="TOP_CENTER"/>
+            </StackPane>
+            <StackPane fx:id="slot2" alignment="TOP_CENTER">
+                <ImageView fx:id="emptySlot2" preserveRatio="true"/>
+                <VBox fx:id="cardSlot2" alignment="TOP_CENTER"/>
+            </StackPane>
+            <StackPane fx:id="slot3" alignment="TOP_CENTER">
+                <ImageView fx:id="emptySlot3" preserveRatio="true"/>
+                <VBox fx:id="cardSlot3" alignment="TOP_CENTER"/>
+            </StackPane>
+        </HBox>
     </VBox>
 </fx:root>

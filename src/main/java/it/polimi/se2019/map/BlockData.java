@@ -1,7 +1,9 @@
 package it.polimi.se2019.map;
 
+import it.polimi.se2019.card.Card;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.PlayerData;
+import javafx.geometry.Point2D;
 
 import java.io.Serializable;
 import java.util.ArrayList;

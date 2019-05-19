@@ -1,44 +1,42 @@
 package it.polimi.se2019.ui.gui.components;
 
+import it.polimi.se2019.ui.gui.GUI;
 import it.polimi.se2019.utils.constants.GameColor;
-import javafx.animation.FadeTransition;
-import javafx.animation.ScaleTransition;
-import javafx.event.EventHandler;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.effect.Bloom;
-import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.TilePane;
-import javafx.util.Duration;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class ActionPane extends TilePane implements Initializable, EventHandler<MouseEvent>
+public class ActionPane extends TilePane implements Initializable
 {
-    @FXML
-    private Button moveButton;
+    public static final int MOVE_ACTION = 0;
+    public static final int FIRE_ACTION = 1;
+    public static final int GRAB_ACTION = 2;
+    public static final int RELOAD_ACTION = 3;
 
     @FXML
-    private Button fireButton;
+    private ColoredButton moveButton;
 
     @FXML
-    private Button grabButton;
+    private ColoredButton fireButton;
 
     @FXML
-    private Button reloadButton;
+    private ColoredButton grabButton;
 
-    private FadeTransition transition;
+    @FXML
+    private ColoredButton reloadButton;
 
+    private OnActionClickListener clickListener;
 
     public ActionPane()
     {
@@ -60,42 +58,26 @@ public class ActionPane extends TilePane implements Initializable, EventHandler<
         }
     }
 
+    public void setOnActionClickListener(OnActionClickListener listener)
+    {
+        this.clickListener = listener;
+    }
+
     public void setColor(GameColor color)
     {
-        String colorStr;
+        Color backgroundColor = Color.web(color.getColor(), 0.1);
+        setBackground(new Background(new BackgroundFill(backgroundColor, null, null)));
 
-        switch (color)
-        {
-            case BLUE:
-                colorStr = "#006466";
-                break;
-            case YELLOW:
-                colorStr = "gold";
-                break;
-            case PURPLE:
-                colorStr = "purple";
-                break;
-            case GREEN:
-                colorStr = "#38471f";
-                break;
-            default:
-                colorStr = "#666666";
-        }
-
-        moveButton.setStyle("-fx-background-color: "+colorStr);
-        fireButton.setStyle("-fx-background-color: "+colorStr);
-        grabButton.setStyle("-fx-background-color: "+colorStr);
-        reloadButton.setStyle("-fx-background-color: "+colorStr);
+        moveButton.setColor(color);
+        fireButton.setColor(color);
+        grabButton.setColor(color);
+        reloadButton.setColor(color);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        String stylePath = "/css/ActionButtonStyle.css";
-        moveButton.getStylesheets().add(stylePath);
-        fireButton.getStylesheets().add(stylePath);
-        grabButton.getStylesheets().add(stylePath);
-        reloadButton.getStylesheets().add(stylePath);
+        setPrefHeight(GUI.getScreenHeight()/5);
 
         ImageView moveImageView = new ImageView(new Image(getClass().getResourceAsStream("/img/action_button/move.png")));
         moveImageView.setPreserveRatio(true);
@@ -117,42 +99,20 @@ public class ActionPane extends TilePane implements Initializable, EventHandler<
         fireButton.setGraphic(fireImageView);
         grabButton.setGraphic(grabImageView);
         reloadButton.setGraphic(reloadImageView);
-
-        moveButton.setEffect(new Bloom());
-        fireButton.setEffect(new Bloom());
-        grabButton.setEffect(new Bloom());
-        reloadButton.setEffect(new Bloom());
-
-
-        transition = new FadeTransition();
-        transition.setDuration(Duration.millis(100));
-
-
-        moveButton.setOnMousePressed(this);
-        moveButton.setOnMouseReleased(this);
-        fireButton.setOnMousePressed(this);
-        fireButton.setOnMouseReleased(this);
-        grabButton.setOnMousePressed(this);
-        grabButton.setOnMouseReleased(this);
-        reloadButton.setOnMousePressed(this);
-        reloadButton.setOnMouseReleased(this);
-
     }
 
-    @Override
-    public void handle(MouseEvent event)
+    @FXML
+    public void onAction(ActionEvent event)
     {
-        if(event.getEventType() == MouseEvent.MOUSE_PRESSED)
-        {
-            transition.setNode((Node)event.getSource());
-            transition.setToValue(0.5);
-            transition.playFromStart();
-        }
-        else if(event.getEventType() == MouseEvent.MOUSE_RELEASED)
-        {
-            transition.setNode((Node)event.getSource());
-            transition.setToValue(1);
-            transition.playFromStart();
-        }
+        int action = RELOAD_ACTION;
+        if(event.getSource().equals(moveButton))action = MOVE_ACTION;
+        else if(event.getSource().equals(fireButton))action = FIRE_ACTION;
+        else if(event.getSource().equals(grabButton))action = GRAB_ACTION;
+        if(clickListener != null)clickListener.onActionClick(action);
+    }
+
+    public interface OnActionClickListener
+    {
+        void onActionClick(int action);
     }
 }

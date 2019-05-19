@@ -1,22 +1,24 @@
 package it.polimi.se2019.ui.gui;
 
+import it.polimi.se2019.card.Card;
+import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.ui.gui.components.*;
 import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.logging.Logger;
 
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class MatchScene extends GridPane implements Initializable, EventHandler<KeyEvent>
+public class MatchScene extends GridPane implements Initializable, CardView.OnCardViewClickListener, MapView.OnBlockClickListener, ActionPane.OnActionClickListener, ChoosePane.OnOptionChosenListener
 {
 
     @FXML
@@ -28,7 +30,24 @@ public class MatchScene extends GridPane implements Initializable, EventHandler<
     @FXML
     private ActionPane actionPane;
 
-    private int map;
+    @FXML
+    private CardPane weaponsCardPane;
+
+    @FXML
+    private CardPane powerUpsCardPane;
+
+    @FXML
+    private GridPane cardGridPane;
+
+    @FXML
+    private ChoosePane choosePane;
+
+    @FXML
+    private Label cardDescriptionLabel;
+
+
+    private boolean firstUpdate;
+    final ObservableValue<String> selectedPowerUpId;
 
     public MatchScene()
     {
@@ -45,46 +64,89 @@ public class MatchScene extends GridPane implements Initializable, EventHandler<
         {
             Logger.exception(e);
         }
+
+        selectedPowerUpId = new ObservableValue<>();
+
+        firstUpdate = true;
     }
 
+    public void update(GameData data)
+    {
+        if(firstUpdate)
+        {
+            actionPane.setColor(data.getPlayer().getColor());
+            board.setColor(data.getPlayer().getColor());
+            choosePane.setColor(data.getPlayer().getColor());
+            firstUpdate = false;
+        }
+        mapView.update(data.getMap());
+        mapView.setRemainingSkulls(data.getRemainingSkulls(), data.getDeaths());
+        weaponsCardPane.updateCards(data.getPlayer().getWeapons(), this);
+        powerUpsCardPane.updateCards(data.getPlayer().getPowerUps(), this);
+        board.update(data.getPlayer());
+    }
+
+    public void addCard(Card card)
+    {
+        if(card.getId().startsWith("PUC"))powerUpsCardPane.addCard(card, this);
+        else weaponsCardPane.addCard(card, this);
+    }
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        setStyle("-fx-background-image: url('/img/texture_background.png')");
+        setStyle("-fx-background-image: url('/img/texture3.png')");
 
-        //setGridLinesVisible(true);
+        cardGridPane.setMaxHeight(GUI.getScreenHeight()/1.4);
+        mapView.setOnBlockClickListener(this);
+        actionPane.setOnActionClickListener(this);
+        choosePane.setOnOptionChosenListener(this);
+        weaponsCardPane.setDescriptionLabel(cardDescriptionLabel);
+        powerUpsCardPane.setDescriptionLabel(cardDescriptionLabel);
+        cardDescriptionLabel.setFont(new Font(15));
+        cardDescriptionLabel.setStyle("-fx-text-fill: white");
+        cardDescriptionLabel.setPadding(new Insets(0, 0, 0, 20));
 
-        CardView card = new CardView();
+        //TEST
 
-        mapView.setMap(MapNumber.MAP_1);
+        choosePane.setText("Chi vuoi colpire?");
+        choosePane.addOption("Fra");
+        choosePane.addOption("Simo");
+        choosePane.addOption("Silvia");
 
-        actionPane.setColor(GameColor.BLUE);
-
-
-        SceneManager.getInstance().getStage().addEventHandler(KeyEvent.KEY_PRESSED, this);
-
+        choosePane.setColor(GameColor.BLUE);
 
     }
 
     @Override
-    public void handle(KeyEvent event)
+    public void onCardClick(CardView cardView)
     {
-        if(event.getEventType().equals(KeyEvent.KEY_PRESSED) && event.getCode().isArrowKey())
+        if(cardView.getCardType() == CardView.WEAPON_CARD)
         {
-            if(event.getCode() == KeyCode.DOWN)
-            {
-                map--;
-                if(map < 0)map = 4;
-            }
-            else if(event.getCode() == KeyCode.UP)
-            {
-                map++;
-                if(map > 4)map = 0;
-            }
-            mapView.setMap(map);
-            mapView.paint();
+
         }
+        else if(cardView.getCardType() == CardView.POWER_UP_CARD)
+        {
+            selectedPowerUpId.setValue(cardView.getCardId());
+        }
+    }
+
+    @Override
+    public void onBlockClick(int blockX, int blockY)
+    {
+        System.out.println(blockX+" - "+blockY);
+    }
+
+    @Override
+    public void onActionClick(int action)
+    {
+        System.out.println(action);
+    }
+
+    @Override
+    public void onOptionChosen(String chosenOption)
+    {
+        System.out.println(chosenOption);
     }
 }

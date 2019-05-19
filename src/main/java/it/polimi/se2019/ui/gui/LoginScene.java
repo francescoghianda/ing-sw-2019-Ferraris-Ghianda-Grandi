@@ -9,11 +9,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
-public class LoginScene extends Scene implements EventHandler<MouseEvent>, InputHandler<String>
+public class LoginScene extends Scene implements EventHandler<MouseEvent>
 {
     public static final String INPUT_USERNAME = "username";
 
-    private String username;
+    public static final ObservableValue<String> username = new ObservableValue<>();
 
     private Label messageLabel;
     private Label usernameLabel;
@@ -61,20 +61,12 @@ public class LoginScene extends Scene implements EventHandler<MouseEvent>, Input
 
     public LoginScene reset()
     {
-        username = null;
         usernameTextFiled.setText("");
         return this;
     }
 
-    public String getUsername()
-    {
-        if(username == null || username.isEmpty())return null;
-        return username;
-    }
-
     public void invalidUsername()
     {
-        username = null;
         formBg.setMaxHeight(70);
         if(!gridPane.getChildren().contains(messageLabel))gridPane.add(messageLabel, 1, 1);
     }
@@ -87,14 +79,6 @@ public class LoginScene extends Scene implements EventHandler<MouseEvent>, Input
             invalidUsername();
             return;
         }
-        this.username = usernameTextFiled.getText();
-        Input.notifyAllInputs();
-    }
-
-    @Override
-    public String getInput(String inputName)
-    {
-        if(inputName.equals(INPUT_USERNAME))return getUsername();
-        return null;
+        this.username.setValue(usernameTextFiled.getText());
     }
 }

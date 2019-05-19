@@ -1,5 +1,6 @@
 package it.polimi.se2019.network.socket.server;
 
+import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
@@ -126,13 +127,14 @@ public class SocketClientConnection implements Runnable, ClientConnection
         if(!connected)return;
         try
         {
+            oos.reset();
             oos.writeObject(message);
             oos.flush();
         }
         catch (IOException e)
         {
             lostConnection();
-            //Logger.exception(e);
+            Logger.exception(e);
         }
     }
 

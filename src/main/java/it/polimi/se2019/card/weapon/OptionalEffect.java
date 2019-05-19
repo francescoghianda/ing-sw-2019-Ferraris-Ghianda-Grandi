@@ -1,5 +1,7 @@
 package it.polimi.se2019.card.weapon;
 
+import it.polimi.se2019.card.cost.Cost;
+
 public class OptionalEffect
 {
     private final String name;

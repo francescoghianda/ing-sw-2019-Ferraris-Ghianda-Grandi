@@ -1,9 +1,8 @@
 package it.polimi.se2019.ui.cli;
 
-import java.util.List;
 
 /**
- * containes the default stringsOLD printed by the CLI
+ * containes the default strings printed by the CLI
  */
 public class CliString
 {

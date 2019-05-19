@@ -1,6 +1,11 @@
 package it.polimi.se2019.ui.cli;
 
+import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.powerup.PowerUpCard;
+import it.polimi.se2019.controller.GameData;
+import it.polimi.se2019.map.Map;
 import it.polimi.se2019.network.message.Bundle;
+import it.polimi.se2019.player.Player;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.ui.UI;
@@ -113,15 +118,15 @@ public class CLI implements UI
     }
 
     @Override
-    public PowerUpCard chooseSpawnPoint(PowerUpCard option1, PowerUpCard option2)
+    public String chooseSpawnPoint(Card option1, Card option2)
     {
-        Options<PowerUpCard> powerUpCardOptions = new Options<>(CliString.CHOOSE_SPAWN_POINT, false);
+        Options<Card> powerUpCardOptions = new Options<>(CliString.CHOOSE_SPAWN_POINT, false);
         powerUpCardOptions.addOption(option1.toString(), "1", option1).addOption(option2.toString(), "2", option2);
-        return powerUpCardOptions.show().getValue();
+        return powerUpCardOptions.show().getValue().getId();
     }
 
     @Override
-    public void update()
+    public void update(GameData data)
     {
 
     }

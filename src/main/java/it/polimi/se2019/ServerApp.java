@@ -1,5 +1,6 @@
 package it.polimi.se2019;
 
+import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.rmi.server.RmiServer;
 import it.polimi.se2019.network.socket.server.SocketServer;
@@ -16,6 +17,7 @@ import org.fusesource.jansi.AnsiConsole;
 
 import java.io.*;
 import java.rmi.RemoteException;
+import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
 public class ServerApp
@@ -88,11 +90,31 @@ public class ServerApp
     private void startServerCli() throws IOException
     {
         Properties settings = new Properties();
-        settings.loadFromXML(new FileInputStream("settings/serverSettings.xml"));
+        File settingsFile = new File("settings/serverSettings.xml");
 
-        String socketPortStr = settings.getProperty("socketPort");
-        String rmiPortStr = settings.getProperty("rmiPort");
-        String modeStr = settings.getProperty("mode", ".");
+        String socketPortStr = "";
+        String rmiPortStr = "";
+        String modeStr = "";
+
+        if(!settingsFile.exists())
+        {
+            settingsFile.getParentFile().mkdirs();
+            settingsFile.createNewFile();
+            PrintWriter pw = new PrintWriter(new FileWriter(settingsFile));
+            pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
+            pw.println("<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">");
+            pw.println("<properties>");
+            pw.println("</properties>");
+            pw.flush();
+            pw.close();
+        }
+
+        settings.loadFromXML(new FileInputStream(settingsFile));
+
+
+        socketPortStr = settings.getProperty("socketPort");
+        rmiPortStr = settings.getProperty("rmiPort");
+        modeStr = settings.getProperty("mode", ".");
 
         boolean input = false;
 

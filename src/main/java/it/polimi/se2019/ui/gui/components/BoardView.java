@@ -1,5 +1,7 @@
 package it.polimi.se2019.ui.gui.components;
 
+import it.polimi.se2019.player.Player;
+import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.gui.GUI;
 import it.polimi.se2019.utils.constants.GameColor;
 import javafx.beans.NamedArg;
@@ -9,10 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.net.URL;
@@ -59,6 +58,24 @@ public class BoardView extends StackPane implements Initializable
         }
     }
 
+    public void setColor(GameColor color)
+    {
+        this.color = color;
+        this.background = backgrounds.get(color);
+
+        backgroundImage.setImage(background);
+
+        backgroundImage.setPreserveRatio(true);
+        backgroundImage.setFitHeight(GUI.getScreenHeight()/5);
+        setPrefHeight(GUI.getScreenHeight()/5);
+        setPrefWidth(backgroundImage.getBoundsInParent().getWidth());
+    }
+
+    public void update(PlayerData player)
+    {
+
+    }
+
     public GameColor getColor()
     {
         return this.color;
@@ -81,13 +98,13 @@ public class BoardView extends StackPane implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        this.background = backgrounds.get(color);
+        /*this.background = backgrounds.get(color);
 
         backgroundImage.setImage(background);
 
         backgroundImage.setPreserveRatio(true);
         backgroundImage.setFitHeight(GUI.getScreenHeight()/5);
         setPrefHeight(GUI.getScreenHeight()/5);
-        setPrefWidth(backgroundImage.getBoundsInParent().getWidth());
+        setPrefWidth(backgroundImage.getBoundsInParent().getWidth());*/
     }
 }

@@ -1,6 +1,7 @@
 package it.polimi.se2019.card.cardscript;
 
 import it.polimi.se2019.card.weapon.WeaponCard;
+import it.polimi.se2019.map.Block;
 import it.polimi.se2019.network.message.Messages;
 import it.polimi.se2019.network.message.NetworkMessageServer;
 import it.polimi.se2019.player.Player;

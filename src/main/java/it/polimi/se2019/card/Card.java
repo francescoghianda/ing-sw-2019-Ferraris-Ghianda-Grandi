@@ -1,4 +1,4 @@
-package it.polimi.se2019.card.weapon;
+package it.polimi.se2019.card;
 
 import java.io.Serializable;
 

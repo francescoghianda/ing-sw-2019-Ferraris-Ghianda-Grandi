@@ -3,11 +3,7 @@ package it.polimi.se2019.ui.gui;
 import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.ui.UI;
 import javafx.application.Platform;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class SceneManager
@@ -53,6 +49,11 @@ public class SceneManager
         startMenuScene = new StartMenuScene();
         waitScene = new WaitScene();
         matchScene = new Scene(new MatchScene());
+    }
+
+    public MatchScene getMatchScene()
+    {
+        return (MatchScene)matchScene.getRoot();
     }
 
     public static SceneManager getInstance()
@@ -115,7 +116,7 @@ public class SceneManager
         if(getScene().equals(loginScene)) runOnFxThread(loginScene::invalidUsername);
         else setScene(loginScene.reset());
 
-        return new Input<>(loginScene).getInput(LoginScene.INPUT_USERNAME);
+        return new ValueObserver<String>().getValue(LoginScene.username);
     }
 
     public static void runOnFxThread(Runnable runnable)

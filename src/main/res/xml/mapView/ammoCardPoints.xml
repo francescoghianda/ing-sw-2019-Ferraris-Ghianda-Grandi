@@ -48,7 +48,7 @@
     </left>
 
     <!--RIGHT SIDE OF THE MAP-->
-    <!--The x coordinates is relative to the part of the map-->
+    <!--The x coordinates is relative to the part of the mapNumber-->
 
     <right>
         <part_1>

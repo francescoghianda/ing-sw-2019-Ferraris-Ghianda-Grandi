@@ -1,5 +1,7 @@
 package it.polimi.se2019.ui;
 
+import it.polimi.se2019.card.Card;
+import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.network.message.Bundle;
 
 import java.util.ArrayList;
@@ -10,7 +12,7 @@ import java.util.ArrayList;
  */
 public interface UI extends GameEventHandler
 {
-    void update();
+    void update(GameData data);
     void startUI();
 
     String getUsername();
@@ -25,7 +27,5 @@ public interface UI extends GameEventHandler
     void connectionRefused();
 
     String choose(Bundle<String, ArrayList<String>> options);
-    PowerUpCard chooseSpawnPoint(PowerUpCard option1, PowerUpCard option2);
-
-
+    String chooseSpawnPoint(Card option1, Card option2);
 }

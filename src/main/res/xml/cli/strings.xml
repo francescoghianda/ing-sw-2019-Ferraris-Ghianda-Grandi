@@ -3,7 +3,7 @@
 <properties>
     <entry key="title">     _       _                      _ _             \n    / \   __| |_ __ ___ _ __   __ _| (_)_ __   __ _ \n   / _ \ / _` | '__/ _ \ '_ \ / _` | | | '_ \ / _` |\n  / ___ \ (_| | | |  __/ | | | (_| | | | | | | (_| |\n /_/   \_\__,_|_|  \___|_| |_|\__,_|_|_|_| |_|\__,_|\n                                                    \n</entry>
     <entry key="get_server_ip">Inserisci l'indirizzo ip del server: </entry>
-    <entry key="get_server_port">Inserisci la porta del server ip del server [1024- 65535]: </entry>
+    <entry key="get_server_port">Inserisci la porta del server [1024- 65535]: </entry>
     <entry key="get_connection_mode">Inserisci la modalità di connessione: </entry>
     <entry key="connecting">Cerco server adrenalina...</entry>
     <entry key="logged">Sei connesso!</entry>

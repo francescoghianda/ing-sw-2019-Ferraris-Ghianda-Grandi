@@ -1,15 +1,13 @@
 package it.polimi.se2019.utils.constants;
 
-import java.awt.*;
-
 public enum GameColor
 {
 
-	RED(Color.RED), WHITE(Color.WHITE), YELLOW(Color.YELLOW), GREEN(Color.GREEN), BLUE(Color.BLUE), PURPLE(new Color(174, 0, 255));
+	RED("#FF0000"), WHITE("#666666"), YELLOW("#ffd700"), GREEN("#38471f"), BLUE("#006466"), PURPLE("#800080");
 
-	private final Color color;
+	private final String color;
 
-	GameColor(Color color)
+	GameColor(String color)
 	{
 		this.color = color;
 	}
@@ -35,7 +33,7 @@ public enum GameColor
 		}
 	}
 
-	public Color getColor()
+	public String getColor()
 	{
 		return this.color;
 	}

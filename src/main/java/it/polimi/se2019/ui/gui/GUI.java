@@ -1,10 +1,13 @@
 package it.polimi.se2019.ui.gui;
 
+import it.polimi.se2019.card.Card;
+import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.ui.gui.dialogs.CloseDialog;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Screen;
@@ -49,14 +52,14 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
         window.centerOnScreen();
 
 
-        gameStarted();
+        //gameStarted();
 
     }
 
     @Override
-    public void update()
+    public void update(GameData data)
     {
-
+        SceneManager.runOnFxThread(() -> sceneManager.getMatchScene().update(data));
     }
 
     @Override
@@ -99,25 +102,11 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
         });
     }
 
-    private void maximizeStage()
-    {
-        window.setResizable(true);
-        window.setMaximized(true);
-        //window.setResizable(false);
-    }
-
     @Override
     public void gameStarted()
     {
-
         sceneManager.setScene(SceneManager.MATCH_SCENE);
-
         SceneManager.runOnFxThread(window::centerOnScreen);
-        /*SceneManager.runOnFxThread(() ->
-        {
-            window.centerOnScreen();ß
-            maximizeStage();
-        });*/
     }
 
     @Override
@@ -151,9 +140,14 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     }
 
     @Override
-    public PowerUpCard chooseSpawnPoint(PowerUpCard option1, PowerUpCard option2)
+    public String chooseSpawnPoint(Card option1, Card option2)
     {
-        return null;
+        SceneManager.runOnFxThread(() ->
+        {
+            sceneManager.getMatchScene().addCard(option1);
+            sceneManager.getMatchScene().addCard(option2);
+        });
+        return new ValueObserver<String>().getValue(sceneManager.getMatchScene().selectedPowerUpId);
     }
 
 
@@ -182,7 +176,15 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     {
         CloseDialog closeDialog = new CloseDialog(window);
         Optional<ButtonType> result = closeDialog.showAndWait();
-        if(!(result.isPresent() && result.get().equals(ButtonType.YES)))event.consume();
+        if(!(result.isPresent() && result.get().equals(ButtonType.YES)))
+        {
+            event.consume();
+        }
+        else
+        {
+            Platform.exit();
+            System.exit(0);
+        }
     }
 
     @Override

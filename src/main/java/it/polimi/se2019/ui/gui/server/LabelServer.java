@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 public class LabelServer extends javax.swing.JFrame {
 
@@ -25,7 +26,16 @@ public class LabelServer extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
 
-        BufferedImage myPicture = ImageIO.read(new File("it/polimi/se2019/ui/gui/server/GreenIcon.png"));
+        BufferedImage myPicture = null;
+        try
+        {
+            //myPicture = ImageIO.read(new File("/it/polimi/se2019/ui/gui/server/GreenIcon.png"));
+            myPicture = ImageIO.read(getClass().getResourceAsStream("/img/server_gui/GreenIcon.png"));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
         JLabel picLabel = new JLabel(new ImageIcon(myPicture));
         add(picLabel);
 

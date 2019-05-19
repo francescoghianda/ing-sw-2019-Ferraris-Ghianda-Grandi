@@ -1,6 +1,7 @@
 package it.polimi.se2019.card.deck;
 
 import it.polimi.se2019.card.ammo.AmmoCard;
+import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.utils.xml.NotValidXMLException;
 import it.polimi.se2019.utils.xml.XMLDeckReader;

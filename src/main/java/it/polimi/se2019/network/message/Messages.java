@@ -1,6 +1,11 @@
 package it.polimi.se2019.network.message;
 
+import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.powerup.PowerUpCard;
+import it.polimi.se2019.controller.GameData;
+import it.polimi.se2019.map.Map;
 import it.polimi.se2019.network.ClientsManager;
+import it.polimi.se2019.player.Player;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.utils.logging.Logger;
 import it.polimi.se2019.utils.network.SerializableVoid;
@@ -83,9 +88,9 @@ public class Messages
         message.getClient().sendMessageToServer(Messages.CHOOSER_RESPONSE.setParam(res));
     });
 
-    public static final NetworkMessageClient<Bundle<PowerUpCard, PowerUpCard>> CHOOSE_SPAWN_POINT = new NetworkMessageClient<>(message ->
+    public static final NetworkMessageClient<Bundle<Card, Card>> CHOOSE_SPAWN_POINT = new NetworkMessageClient<>(message ->
     {
-        PowerUpCard chosen = message.getClient().getUI().chooseSpawnPoint(message.getParam().getFirst(), message.getParam().getSecond());
+        String chosen = message.getClient().getUI().chooseSpawnPoint(message.getParam().getFirst(), message.getParam().getSecond());
         message.getClient().sendMessageToServer(Messages.CHOSEN_SPAWN_POINT.setParam(chosen));
     });
 
@@ -94,6 +99,9 @@ public class Messages
         message.getClient().getUI().handle(new GameEvent(GameEvent.IS_YOUR_ROUND));
         message.getClient().sendMessageToServer(Messages.STATE_MESSAGE_SERVER.setParam(OK));
     });
+
+    public static final NetworkMessageClient<GameData> UPDATE_DATA = new NetworkMessageClient<>(message ->
+            message.getClient().getUI().update(message.getParam()));
 
 
 
@@ -104,7 +112,7 @@ public class Messages
 
     public static final NetworkMessageServer<Integer> STATE_MESSAGE_SERVER = new NetworkMessageServer<>();
 
-    public static final NetworkMessageServer<PowerUpCard> CHOSEN_SPAWN_POINT = new NetworkMessageServer<>();
+    public static final NetworkMessageServer<String> CHOSEN_SPAWN_POINT = new NetworkMessageServer<>();
 
     public static final NetworkMessageServer<String> CHOOSER_RESPONSE = new NetworkMessageServer<>();
 
