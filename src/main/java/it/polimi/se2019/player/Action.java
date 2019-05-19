@@ -1,7 +1,6 @@
 package it.polimi.se2019.player;
 
 import it.polimi.se2019.card.weapon.WeaponCard;
-import it.polimi.se2019.map.Block;
 
 public class Action
 {

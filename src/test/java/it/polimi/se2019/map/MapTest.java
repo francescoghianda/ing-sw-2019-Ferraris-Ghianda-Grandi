@@ -1,7 +1,5 @@
 package it.polimi.se2019.map;
 
-import it.polimi.se2019.map.Block;
-import it.polimi.se2019.map.Map;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

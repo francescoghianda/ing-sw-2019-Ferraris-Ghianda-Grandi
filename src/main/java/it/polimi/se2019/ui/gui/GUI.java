@@ -1,22 +1,17 @@
 package it.polimi.se2019.ui.gui;
 
-import it.polimi.se2019.card.powerup.PowerUpCard;
-import it.polimi.se2019.map.Block;
 import it.polimi.se2019.network.message.Bundle;
-import it.polimi.se2019.player.Player;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.ui.gui.dialogs.CloseDialog;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class GUI extends Application implements UI, EventHandler<WindowEvent>

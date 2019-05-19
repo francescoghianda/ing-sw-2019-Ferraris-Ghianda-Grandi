@@ -1,6 +1,5 @@
 package it.polimi.se2019.card;
 
-import it.polimi.se2019.card.cost.Cost;
 import it.polimi.se2019.card.cost.CostTooHighException;
 import it.polimi.se2019.card.cost.NegativeCostException;
 import org.junit.Assert;

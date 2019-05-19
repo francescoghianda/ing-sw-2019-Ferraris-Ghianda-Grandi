@@ -1,9 +1,6 @@
 package it.polimi.se2019.player;
 
-import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
-import it.polimi.se2019.controller.GameController;
-import it.polimi.se2019.map.Block;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.message.NetworkMessageClient;
 import it.polimi.se2019.network.message.NetworkMessageServer;

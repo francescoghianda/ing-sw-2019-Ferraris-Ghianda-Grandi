@@ -3,7 +3,6 @@ package it.polimi.se2019.card;
 import it.polimi.se2019.card.ammo.AmmoCard;
 import it.polimi.se2019.card.deck.Deck;
 import it.polimi.se2019.card.deck.DeckFactory;
-import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.utils.xml.NotValidXMLException;
 import org.junit.Before;

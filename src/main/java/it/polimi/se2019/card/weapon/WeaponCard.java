@@ -1,8 +1,6 @@
 package it.polimi.se2019.card.weapon;
 
-import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.cardscript.CardScriptExecutor;
-import it.polimi.se2019.card.cost.Cost;
 import it.polimi.se2019.card.Grabbable;
 import it.polimi.se2019.player.Player;
 

@@ -3,7 +3,6 @@ package it.polimi.se2019.controller;
 import it.polimi.se2019.card.ammo.AmmoCard;
 import it.polimi.se2019.card.deck.Deck;
 import it.polimi.se2019.card.deck.DeckFactory;
-import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.card.weapon.OptionalEffect;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.map.Block;
@@ -28,7 +27,6 @@ import java.util.Random;
 
 public class GameController implements TimerListener
 {
-    //private static GameController instance;
     private Random random;
     private List<GameColor> availablePlayerColors;
     private List<Player> players;
@@ -41,9 +39,12 @@ public class GameController implements TimerListener
     private Deck<WeaponCard> weaponCardDeck;
     private Deck<PowerUpCard> powerUpCardDeck;
 
+    private int deaths;
+    private int remainingSkulls;
+
     private RoundManager roundManager;
 
-    private int playersForStart = 2;
+    private int playersForStart = 1;
 
     public GameController()
     {
@@ -51,16 +52,13 @@ public class GameController implements TimerListener
         availablePlayerColors = new ArrayList<>(Arrays.asList(GameColor.values()));
         availablePlayerColors.remove(GameColor.RED);
         gameMode = GameMode.NORMAL;
+        remainingSkulls = 8;
+        deaths = 0;
+        map = Map.createMap();
         random = new Random();
         players = new ArrayList<>();
         createDecks();
     }
-
-    /*public static GameController getInstance()
-    {
-        if(instance == null)instance = new GameController();
-        return instance;
-    }*/
 
     private void createDecks()
     {
@@ -82,9 +80,10 @@ public class GameController implements TimerListener
     {
         Player currentPlayer = roundManager.next();
 
-        if(roundManager.isFirstRound())firstRound(currentPlayer);
+        //System.out.println(roundManager.isFirstRound());
+        firstRound(currentPlayer);
 
-
+        //if(roundManager.isFirstRound())firstRound(currentPlayer);
 
     }
 
@@ -92,17 +91,23 @@ public class GameController implements TimerListener
     {
         PowerUpCard first = powerUpCardDeck.getFirstCard();
         PowerUpCard second = powerUpCardDeck.getFirstCard();
-        PowerUpCard chosen = (PowerUpCard) player.getResponseTo(Messages.CHOOSE_SPAWN_POINT.setParam(new Bundle<>(first, second))).getParam();
+        String chosenId = (String) player.getResponseTo(Messages.CHOOSE_SPAWN_POINT.setParam(new Bundle<>(first, second))).getParam();
+
+        PowerUpCard chosen = first.getId().equals(chosenId) ? first : second;
+
         Block spawnPoint = map.findRoomByColor(chosen.getColor()).getSpawnPoint();
+        powerUpCardDeck.addCard(chosen);
+        player.addPowerUpCard(chosen.equals(first) ? second : first);
         player.setBlock(spawnPoint);
+        sendBroadcastUpdate();
     }
 
     public void startGame()
     {
         if(players.isEmpty())throw new StartGameWithoutPlayerException();
-        map = Map.createMap();
         shuffleDecks();
         refillMap();
+        sendBroadcastUpdate();
         selectStartingPlayer();
         nextRound();
     }
@@ -168,9 +173,26 @@ public class GameController implements TimerListener
         players.add(player);
         availablePlayerColors.remove(color);
 
+        sendUpdate(player);
+
         if(players.size() >= playersForStart) startTimer();
 
         return player;
+    }
+
+    public void sendUpdate(Player player)
+    {
+        player.sendMessageToClient(Messages.UPDATE_DATA.setParam(getData(player)));
+    }
+
+    public GameData getData(Player player)
+    {
+        return new GameData(map.getData(), player.getData(), remainingSkulls, deaths);
+    }
+
+    public void sendBroadcastUpdate()
+    {
+        players.forEach(this::sendUpdate);
     }
 
     public void movePlayer(Player player, Block block)

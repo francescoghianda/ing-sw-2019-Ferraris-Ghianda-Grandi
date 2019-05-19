@@ -1,6 +1,5 @@
 package it.polimi.se2019.card.powerup;
 
-import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.Grabbable;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.GameColor;
@@ -66,11 +65,13 @@ public class PowerUpCard extends Card implements Grabbable, Serializable
 	@Override
 	public PowerUpCard clone()
 	{
+		int cloneNumber = Integer.parseInt(originalId.split("_")[1]) + 1;
+
 		PowerUpCard cloned = new PowerUpCard();
 		cloned.script = script;
 		cloned.use = use;
 		cloned.color = color;
-		cloned.setId(originalId);
+		cloned.setId(originalId.split("_")[0]+"_"+cloneNumber);
 		cloned.setName(getName());
 		cloned.setDescription(getDescription());
 		return cloned;

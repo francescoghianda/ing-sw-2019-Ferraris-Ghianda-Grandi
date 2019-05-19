@@ -1,6 +1,5 @@
 package it.polimi.se2019.network.socket.server;
 
-import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.NetworkServer;

@@ -1,6 +1,5 @@
 package it.polimi.se2019.card.ammo;
 
-import it.polimi.se2019.card.Card;
 import it.polimi.se2019.player.Player;
 
 import java.io.Serializable;

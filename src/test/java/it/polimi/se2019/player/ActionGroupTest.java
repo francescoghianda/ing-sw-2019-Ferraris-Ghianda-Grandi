@@ -1,9 +1,6 @@
 package it.polimi.se2019.player;
 
-import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.rmi.server.RmiClientConnection;
-import it.polimi.se2019.player.ActionsGroup;
-import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.GameColor;
 import org.junit.Assert;
 import org.junit.Before;

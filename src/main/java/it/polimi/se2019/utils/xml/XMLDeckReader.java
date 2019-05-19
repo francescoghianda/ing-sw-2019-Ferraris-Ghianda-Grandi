@@ -2,9 +2,6 @@ package it.polimi.se2019.utils.xml;
 
 
 import it.polimi.se2019.card.ammo.AmmoCard;
-import it.polimi.se2019.card.Card;
-import it.polimi.se2019.card.cost.Cost;
-import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.card.weapon.OptionalEffect;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.utils.constants.GameColor;

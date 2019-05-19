@@ -1,6 +1,5 @@
 package it.polimi.se2019.ui.cli;
 
-import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.NetworkInterface;

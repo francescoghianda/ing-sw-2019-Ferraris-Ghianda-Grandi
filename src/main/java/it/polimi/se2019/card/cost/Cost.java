@@ -1,6 +1,8 @@
 package it.polimi.se2019.card.cost;
 
-public class Cost
+import java.io.Serializable;
+
+public class Cost implements Serializable
 {
     private final int red, blue, yellow;
 

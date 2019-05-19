@@ -1,4 +1,4 @@
-package it.polimi.se2019.card;
+package it.polimi.se2019.card.weapon;
 
 import java.io.Serializable;
 
@@ -10,7 +10,9 @@ public abstract class Card implements Serializable
 
 	protected Card()
 	{
-
+		name = "";
+		description = "";
+		id = "";
 	}
 
 	public void setId(String id)
@@ -40,7 +42,23 @@ public abstract class Card implements Serializable
 
 	public final String getId()
 	{
+		return id;
+	}
+
+	public final String getIdIgnoreClone()
+	{
+		if(id.startsWith("PUC"))
+		{
+			return this.id.split("_")[0];
+		}
 		return this.id;
+	}
+
+	@Override
+	public final boolean equals(Object obj)
+	{
+		if(!(obj instanceof Card))return false;
+		return ((Card)obj).getId().equals(id);
 	}
 
 	public abstract String toString();

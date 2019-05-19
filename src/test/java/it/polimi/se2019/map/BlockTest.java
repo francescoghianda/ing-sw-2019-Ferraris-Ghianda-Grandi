@@ -1,8 +1,5 @@
 package it.polimi.se2019.map;
 
-import it.polimi.se2019.map.Block;
-import it.polimi.se2019.map.Map;
-import it.polimi.se2019.map.NotNearBlockException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

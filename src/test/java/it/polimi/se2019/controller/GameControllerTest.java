@@ -1,8 +1,5 @@
 package it.polimi.se2019.controller;
 
-import it.polimi.se2019.controller.GameController;
-import it.polimi.se2019.controller.StartGameWithoutPlayerException;
-import it.polimi.se2019.controller.TooManyPlayerException;
 import it.polimi.se2019.network.rmi.server.RmiClientConnection;
 import org.junit.Test;
 

@@ -1,9 +1,10 @@
 package it.polimi.se2019.map;
 
-import it.polimi.se2019.card.Grabbable;
 import it.polimi.se2019.card.ammo.AmmoCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
+import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Player;
+import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.utils.constants.Ansi;
 
 import java.io.Serializable;
@@ -42,10 +43,13 @@ public class Block implements Serializable
 		//cards = new Grabbable[3];
 		doors = new Block[4];
 		paths = new HashMap<>();
+		this.weaponCards = new ArrayList<>();
+		this.players = new ArrayList<>();
 		this.spawnPoint = spawnPoint;
 		this.x = x;
 		this.y = y;
 		this.room = room;
+
 	}
 
 	public void addPathsTo(Block block, List<Path> paths)
@@ -187,6 +191,11 @@ public class Block implements Serializable
 	public Room getRoom()
 	{
 		return this.room;
+	}
+
+	public AmmoCard getAmmoCard()
+	{
+		return this.ammoCard;
 	}
 
 	/*public Grabbable getCard(int index)
@@ -417,6 +426,19 @@ public class Block implements Serializable
 		else if(!isInSameRoom(bottomBlock) && isInSameRoom(rightBlock)) canvas[7][11] = '┷';
 		else if(isInSameRoom(bottomBlock) && isInSameRoom(rightBlock) && isInSameRoom(bottomBlock.getRightBlock())) canvas[7][11] = '┼';
 		else if(isInSameRoom(bottomBlock) && !isInSameRoom(rightBlock)) canvas[7][11] = '┨';
+	}
+
+	public BlockData getData()
+	{
+		HashMap<Bundle<Integer, Integer>, Integer> distances = new HashMap<>();
+		ArrayList<PlayerData> playersData = new ArrayList<>();
+
+		paths.forEach((block, path) -> distances.put(new Bundle<>(block.x, block.y), path.get(0).getLength()));
+		players.forEach(player -> playersData.add(player.getData()));
+
+		String ammoCardId = ammoCard == null ? null : ammoCard.getId();
+
+		return new BlockData(x, y, ammoCardId, new ArrayList<>(weaponCards), distances, playersData);
 	}
 
 }
