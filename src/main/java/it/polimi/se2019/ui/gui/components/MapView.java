@@ -1,8 +1,10 @@
 package it.polimi.se2019.ui.gui.components;
 
+import it.polimi.se2019.card.Card;
 import it.polimi.se2019.map.BlockData;
 import it.polimi.se2019.map.MapData;
 import it.polimi.se2019.ui.gui.GUI;
+import it.polimi.se2019.utils.logging.Logger;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,6 +17,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.transform.Rotate;
 
 import java.io.IOException;
 import java.net.URL;
@@ -37,6 +41,9 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
 
     @FXML
     private HBox hBox;
+
+    @FXML
+    private Pane pane;
 
     private HashMap<String, Image> ammoCardImages;
 
@@ -106,7 +113,8 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
 
     private void doAfterScaleComputed(Runnable task)
     {
-        afterScale.add(task);
+        if(scaleComputed)task.run();
+        else afterScale.add(task);
     }
 
     double getScale()
@@ -120,12 +128,51 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         {
             setMapNumber(map.getMapNumber());
             this.map = map;
-            if(scaleComputed)initMapBlocks();
-            else doAfterScaleComputed(this::initMapBlocks);
+            doAfterScaleComputed(this::initMapBlocks);
         }
         this.map = map;
         updateAmmoImages();
+        doAfterScaleComputed(this::updateWeapons);
         updatePlayers();
+    }
+
+    private void updateWeapons()
+    {
+        pane.getChildren().clear();
+        map.getBlocksAsList().forEach(block ->
+        {
+            if(block.isSpawnPoint())
+            {
+                List<Card> weapons = block.getWeaponCards();
+                for(int i = 0; i < weapons.size(); i++)
+                {
+                    CardView cardView = new CardView(weapons.get(i), null, CardView.FADE_TRANSITION);
+                    cardView.setOnCardViewClickListener(getBlock(block.getX(), block.getY()));
+
+                    cardView.setMaxWidth(237*scale);
+
+                    if(block.getX() == 0 && block.getY() == 1)
+                    {
+                        cardView.setLayoutX(0);
+                        cardView.setLayoutY((702*scale)+40*scale*i+cardView.getMaxWidth()*i+cardView.getMaxWidth());
+                        cardView.getTransforms().add(new Rotate(-90, 0, 0));
+                    }
+                    else if(block.getY() == 0 && block.getX() == 2)
+                    {
+                        cardView.setLayoutX(getLeftImageWidth()+40*scale*i+150*scale+cardView.getMaxWidth()*i);
+                        cardView.setLayoutY(0);
+                    }
+                    else
+                    {
+                        cardView.setLayoutX(getLeftImageWidth()+1002*scale);
+                        cardView.setLayoutY(1100*scale+40*scale+cardView.getWidth()*i+cardView.getMaxWidth());
+                        cardView.getTransforms().add(new Rotate(90, 0, 0));
+                    }
+
+                    pane.getChildren().add(cardView);
+                }
+            }
+        });
     }
 
     private void updatePlayers()
@@ -156,9 +203,6 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
 
     private void updateAmmoImages()
     {
-        //HashMap<Point2D, Rectangle2D> ammoMap = mapNumber.getLeftAmmoPosition();
-        //ammoMap.putAll(mapNumber.getRightAmmoPosition());
-
         List<BlockData> blocks = map.getBlocksAsList();
 
         blocks.forEach(blockData ->
@@ -167,17 +211,6 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
             String ammoCardId = blockData.getAmmoCardId();
             if(mapBlock != null)mapBlock.setAmmoCard(ammoCardImages.get(ammoCardId));
         });
-
-        /*for(Point2D coords : ammoMap.keySet())
-        {
-            MapBlock blockPane = findBlockByCoordinates((int)coords.getX(), (int)coords.getY());
-            String ammoCardId = blocks[(int)coords.getY()][(int)coords.getX()].getAmmoCardId();
-
-            if(blockPane != null && ammoCardId != null)
-            {
-                blockPane.setAmmoCard(ammoCardImages.get(ammoCardId));
-            }
-        }*/
     }
 
     private void initMapBlocks()
@@ -199,7 +232,6 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
             {
                 if(blocks[i][j] == null)continue;
                 Rectangle2D ammoRect = getAmmoRect(ammoMap, j, i);
-                System.out.println(ammoRect);
                 mapBlocks.add(new MapBlock(this, (xm + size * j * 1.05) * scale, (ym + size * i * 1.03) * scale, size * scale, size * scale, blockStartXScaled, blockStartYScaled, ammoRect));
             }
         }
@@ -258,6 +290,11 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         }
     }
 
+    public Pane getPane()
+    {
+        return this.pane;
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
@@ -276,6 +313,9 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         canvas.setOnMouseMoved(this);
         canvas.setOnMouseClicked(this);
 
+        setPickOnBounds(false);
+        pane.setPickOnBounds(false);
+
         hBox.widthProperty().addListener((observable, oldValue, newValue) ->
                 canvas.setWidth(leftImage.getBoundsInParent().getWidth()+rightImage.getBoundsInParent().getWidth()));
 
@@ -287,12 +327,14 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
                     blockStartXScaled = blockStartX*scale;
                     blockStartYScaled = blockStartY*scale;
                     leftImageWidth = leftImage.getImage().getWidth()*scale;
-
+                    Logger.debug("SCALE COMPUTED");
                     afterScale.forEach(Runnable::run);
-
-                    System.out.println("SCALE COMPUTED");
                     paintSkulls(4, 4);
                 });
+
+        pane.maxWidthProperty().bind(canvas.widthProperty());
+        pane.prefWidthProperty().bind(canvas.widthProperty());
+        pane.prefHeightProperty().bind(canvas.heightProperty());
 
         if(mapNumber != null)
         {

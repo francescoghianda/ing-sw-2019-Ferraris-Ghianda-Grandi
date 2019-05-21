@@ -95,7 +95,7 @@ public class CardPane extends StackPane implements Initializable
         cardNumber++;
         if(cardNumber > 3)throw new CardPaneOutOfBoundsException();
 
-        CardView cardView = new CardView(card, this);
+        CardView cardView = new CardView(card, descriptionLabel, CardView.SCALE_TRANSITION);
         cardView.setMaxWidth(getMaxWidth()/4.5);
 
         cardView.setOnCardViewClickListener(listener);
@@ -144,15 +144,12 @@ public class CardPane extends StackPane implements Initializable
         return cardSlot3;
     }
 
-
-    public void setDescription(String description)
-    {
-        if(descriptionLabel != null)descriptionLabel.setText(description);
-    }
-
     public void setDescriptionLabel(Label descriptionLabel)
     {
         this.descriptionLabel = descriptionLabel;
+        if(!cardSlot1.getChildren().isEmpty())((CardView)cardSlot1.getChildren()).setDescriptionLabel(descriptionLabel);
+        if(!cardSlot2.getChildren().isEmpty())((CardView)cardSlot2.getChildren()).setDescriptionLabel(descriptionLabel);
+        if(!cardSlot3.getChildren().isEmpty())((CardView)cardSlot3.getChildren()).setDescriptionLabel(descriptionLabel);
     }
 
     private void initSlots(Image image)

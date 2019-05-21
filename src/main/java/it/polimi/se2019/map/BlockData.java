@@ -13,18 +13,18 @@ public class BlockData implements Serializable
 {
     private final int x;
     private final int y;
+    private final boolean spawnPoint;
 
     private final String ammoCardId;
     private final ArrayList<Card> weaponCards;
-
     private final HashMap<Bundle<Integer, Integer>, Integer> distances;
-
     private final ArrayList<PlayerData> players;
 
-    public BlockData(int x, int y, String ammoCardId, ArrayList<Card> weaponCards, HashMap<Bundle<Integer, Integer>, Integer> distances, ArrayList<PlayerData> players)
+    public BlockData(int x, int y, boolean spawnPoint, String ammoCardId, ArrayList<Card> weaponCards, HashMap<Bundle<Integer, Integer>, Integer> distances, ArrayList<PlayerData> players)
     {
         this.x = x;
         this.y = y;
+        this.spawnPoint = spawnPoint;
         this.ammoCardId = ammoCardId;
         this.weaponCards = weaponCards;
         this.distances = distances;
@@ -39,6 +39,11 @@ public class BlockData implements Serializable
     public int getY()
     {
         return y;
+    }
+
+    public boolean isSpawnPoint()
+    {
+        return this.spawnPoint;
     }
 
     public String getAmmoCardId()

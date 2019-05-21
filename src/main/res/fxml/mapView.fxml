@@ -11,6 +11,8 @@
         <ImageView fx:id="rightImage"/>
     </HBox>
 
+
     <Canvas fx:id="canvas" StackPane.alignment="CENTER_RIGHT"/>
+    <Pane fx:id="pane" StackPane.alignment="CENTER_RIGHT"/>
 
 </fx:root>

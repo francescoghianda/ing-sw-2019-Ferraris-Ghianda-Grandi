@@ -441,7 +441,7 @@ public class Block implements Serializable
 
 		String ammoCardId = ammoCard == null ? null : ammoCard.getId();
 
-		return new BlockData(x, y, ammoCardId, new ArrayList<>(weaponCards), distances, playersData);
+		return new BlockData(x, y, spawnPoint, ammoCardId, new ArrayList<>(weaponCards), distances, playersData);
 	}
 
 }

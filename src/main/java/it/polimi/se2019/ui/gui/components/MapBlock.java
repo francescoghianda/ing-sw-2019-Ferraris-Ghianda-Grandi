@@ -1,6 +1,6 @@
 package it.polimi.se2019.ui.gui.components;
 
-import it.polimi.se2019.map.Map;
+import it.polimi.se2019.card.Card;
 import it.polimi.se2019.map.MapData;
 import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.utils.constants.GameColor;
@@ -14,7 +14,7 @@ import javafx.scene.paint.Color;
 import java.util.*;
 
 
-public class MapBlock extends Rectangle2D
+public class MapBlock extends Rectangle2D implements CardView.OnCardViewClickListener
 {
     private static final EnumMap<GameColor, Image> playersPawn = loadPlayersPawn();
 
@@ -54,12 +54,6 @@ public class MapBlock extends Rectangle2D
 
         computePlayerPosition();
     }
-
-    /*private void computePlayerPosition()
-    {
-        double pawnSize = getWidth()/4;
-        for(int i = 0; i < 5; i++)playerPositions.add(getRandomRectangle(pawnSize, pawnSize));
-    }*/
 
     private void computePlayerPosition()
     {
@@ -137,27 +131,19 @@ public class MapBlock extends Rectangle2D
 
     private void paintPlayers(GraphicsContext gc)
     {
-        /*players.forEach(player ->
-        {
-            Image pawnImage = playersPawn.get(player.getColor());
-            double pawnSize = getWidth()*0.4;
-            gc.drawImage(pawnImage, getMinX()+(getWidth()/2)-pawnSize/2, getMinY()+(getHeight()/2)-pawnSize/2, pawnSize, pawnSize);
-        });*/
         for(int i = 0; i < players.size(); i++)
         {
             Image pawnImage = playersPawn.get(players.get(i).getColor());
-            //double pawnSize = getWidth()*0.4;
             Rectangle2D rect = playerPositions.get(i);
             gc.drawImage(pawnImage, rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
         }
 
-        playerPositions.forEach(rect ->
+        /*playerPositions.forEach(rect ->
         {
             gc.setFill(new Color(Math.random(), Math.random(), Math.random(), 1));
             gc.fillRect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
-        });
+        });*/
     }
-
 
     public void updatePlayers(List<PlayerData> players)
     {
@@ -207,5 +193,11 @@ public class MapBlock extends Rectangle2D
         playersPawn.put(GameColor.GREEN, new Image(MapBlock.class.getResourceAsStream("/img/pawns/green_pawn.png")));
 
         return playersPawn;
+    }
+
+    @Override
+    public void onCardClick(CardView cardView)
+    {
+        System.out.println(this.mapX+" "+this.mapY);
     }
 }
