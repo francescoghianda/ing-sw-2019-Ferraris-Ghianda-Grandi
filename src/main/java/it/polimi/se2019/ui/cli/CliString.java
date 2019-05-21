@@ -26,6 +26,6 @@ public class CliString
     public static final String FIRST_PLAYER_IS = StringLoader.getString("first_player_is");
     public static final String IS_YOUR_ROUND = StringLoader.getString("is_your_round");
     public static final String CHOOSE_SPAWN_POINT = StringLoader.getString("choose_spawn_point");
-
-
+    public static final String GAME_STARTED = StringLoader.getString("game_started");
+    public static final String CONNECTION_REFUSED = StringLoader.getString("connection_refused");
 }

@@ -112,7 +112,7 @@
             </optional_effects>
         </weapon_card>
 
-        <weapon_card id="17">
+        <weapon_card id="16">
             <name>Torpedine</name>
             <description>
                 <line>effetto base: Dai 2 danni a 1 bersaglio che puoi vedere.</line>
@@ -230,7 +230,466 @@
             </basic_mode>
         </weapon_card>
 
-    </deck>
+        <weapon_card id="9">
+            <name>Cannone Vortex</name>
+            <description>
+                <line> effetto base: Scegli un quadrato che puoi vedere ad almeno</line>
+                <line>1 movimento di distanza dove si apre un vortice. Lì scegli</line>
+                <line>un bersaglio(o distante un movimento) e dopo muovilo nel quadrato</line>
+                <line>del vortice dandogli 2 danni.</line>
+                <line>buco nero: Scegli altri 2 bersagli(max) nel quadrato del vortice o</line>
+                <line>distanti 1 movimento,muovili nel quadrato del vortice,dai 1 danno</line>
+                <line>ciascuno.</line>
+                <line>Nota: I 3 bersagli devono essere diversi, anche se alcuni possono</line>
+                <line>partire dallo stesso quadrato (anche nel quadrato in cui ti trovi tu)</line>
+                <line>finendo sullo stesso quadrato col vortice. Non hai bisogno di vedere</line>
+                <line>i bersagli. Spari al quadrato che puoi vedere, crei un vortice lì</line>
+                <line>che risucchierà i tuoi bersagli.</line>
+            </description>
+            <buy_cost>
+                <red>1</red>
+            </buy_cost>
+            <reload_cost>
+                <red>1</red>
+                <blue>1</blue>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line></line>
+                </cardscript>
+            </basic_mode>
+            <optional_effects>
+                <optional_effect name="buco_nero">
+                    <cost>
+                        <red>1</red>
+                    </cost>
+                    <enabled>false</enabled>
+                    <cardscript>
+                        <line></line>
+                    </cardscript>
+                </optional_effect>
+            </optional_effects>
+        </weapon_card>
+
+
+        <weapon_card id ="14">
+            <name>Vulcanizzatore</name>
+            <description>
+                <line>modalità base: Scegli una stanza che puoi vedere, ma</line>
+                <line>non la stanza in cui ti trovi. Dai 1 danno a ognuno in quella</line>
+                <line>stanza.</line>
+                <line>modalità fuoco confortevole: Scegli un quadrato distante</line>
+                <line>esattamente 1 movimento. Dai 1 danno e 1 marchio a</line>
+                <line>ognuno in quel quadrato.</line>
+             </description>
+            <buy_cost>
+                <red>1</red>
+            </buy_cost>
+            <reload_cost>
+                <red>1</red>
+                <blue>1</blue>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line></line>
+                </cardscript>
+            </basic_mode>
+            <alternate_mode>
+                <cost></cost>
+                <cardscript>
+                    <line>
+                    </line>
+                </cardscript>
+            </alternate_mode>
+        </weapon_card>
+
+        <weapon_card id="10">
+            <name>Razzo Termico</name>
+            <description>
+                <line>effetto: Scegli 1 bersaglio che non puoi vedere e dagli</line>
+                <line>3 danni.</line>
+                <line>Nota: Si, può colpire solo bersagli che non puoi vedere.</line>
+            </description>
+            <buy_cost>
+                <red>1</red>
+            </buy_cost>
+            <reload_cost>
+                <red>2</red>
+                <yellow>1</yellow>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line></line>
+                </cardscript>
+            </basic_mode>
+        </weapon_card>
+
+        <weapon_card id="15">
+            <name>Raggio solare</name>
+            <description>
+            <line>modalità base: Dai 1 danno a 1 bersaglio che puoi vedere</line>
+            <line>distante almeno 1 movimento. Poi dai un marchio a quel</line>
+            <line>bersaglio e a chiunque altro in quel quadrato.</line>
+            <line>modalità nano-traccianti: Dai 1 danno a 1 bersaglio</line>
+            <line>che puoi vedere e distante almeno 1 movimento. Poi dai</line>
+            <line>2 marchi a quel bersaglio e a chiunque altro in quel</line>
+            <line>quadrato.</line>
+        </description>
+            <buy_cost>
+                <red>1</red>
+            </buy_cost>
+            <reload_cost>
+                <red>1</red>
+                <yellow>1</yellow>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line></line>
+                </cardscript>
+            </basic_mode>
+            <alternate_mode>
+                <cost>
+                    <red>1</red>
+                </cost>
+                <cardscript>
+                <line>
+                </line>
+            </cardscript>
+        </alternate_mode>
+        </weapon_card>
+
+        <weapon_card id="13">
+            <name>Lanciafiamme</name>
+            <description>
+                <line>modalità base: Scegli 1 quadrato distante 1 movimento e un 2^</line>
+                <line>distante ancora 1 movimento,stessa direzione.In ogni quadrato puoi</line>
+                <line>scegliere 1 bersaglio, dai 1 danno.</line>
+                <line>modalità barbecue: Scegli 2 quadrati come prima,dai 2 danni</line>
+                <line>a tutti quelli nel 1^ quadrato,1 danno a quelli nel 2^ quadrato.</line>
+                <line>Nota: Quest'arma non danneggia nessuno nel tuo quadrato, ma a volte</line>
+                <line>danneggi un bersaglio che non vedi. Le fiamme non passano attraverso</line>
+                <line>i muri ma si attraverso le porte(tipo un un'esplosione di fuoco)</line>
+            </description>
+            <buy_cost>
+                <red>1</red>
+            </buy_cost>
+            <reload_cost>
+                <red>1</red>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line></line>
+                </cardscript>
+            </basic_mode>
+            <alternate_mode>
+                <cost>
+                    <yellow>2</yellow>
+                </cost>
+                <cardscript>
+                    <line></line>
+                </cardscript>
+            </alternate_mode>
+        </weapon_card>
+
+        <weapon_card id="12">
+            <name>Lancia Granate</name>
+            <description>
+                <line>Effetto base: Dai 1 danno a 1 bersaglio che puoi vedere. Poi puoi</line>
+                <line>muovere il bersaglio di 1 quadrato.</line>
+                <line>granata extra: Dai 1 danno a ogni giocatore in quadrato che puoi vedere.</line>
+                <line>Puoi usare questo effetto prima o dopo il movimento dell'effetto base.</line>
+                <line>Nota: Per esempio puoi sparare a un bersaglio, muoverlo in un quadrato</line>
+                <line>con altri bersagli e danneggiare chiunque, incluso il primo bersaglio.</line>
+                <line>Oppure puoi dare 2 danni a un bersaglio principale e 1 a tutti gli</line>
+                <line>altri in quel quadrato, e poi muovere il bersaglio principale. Oppure</line>
+                <line>puoi dare 1 danno a un bersaglio isolato e 1 a chiunque in quadrato</line>
+                <line>diverso. Se bersagli il quadrato in cui ti trovi non potrai essere mosso</line>
+                <line>o danneggiato.</line>
+            </description>
+            <buy_cost>
+                <red>1</red>
+            </buy_cost>
+            <reload_cost>
+                <red>1</red>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line></line>
+                </cardscript>
+            </basic_mode>
+            <optional_effects>
+                <optional_effect name="granata_extra">
+                    <cost>
+                        <red>1</red>
+                    </cost>
+                    <enabled>true</enabled>
+                    <cardscript>
+                        <line></line>
+                    </cardscript>
+                </optional_effect>
+            </optional_effects>
+        </weapon_card>
+
+        <weapon_card id="11">
+            <name>Lanciarazzi</name>
+            <description>
+                <line>Effetto base: Dai 2 danni a 1 bersaglio che puoi vedere in un altro</line>
+                <line>quadrato,puoi muoverlo poi di 1 quadrato.</line>
+                <line>razzi portatili: Muovi di 1 o 2 quadrati. Questo effetto può essere usato</line>
+                <line>prima o dopo l'effetto base. Se lo usi prima dell'effetto base considera</line>
+                <line>il tuo nuovo quadrato per determinare se il bersaglio è valido.Puoi</line>
+                <line>spostarti di 1 quadrato per potergli sparare.</line>
+                <line>testata a frammentazione: Durante l'effetto base, dai 1 danno al bersaglio,</line>
+                <line>anche se lo hai mosso,ed a tutti i giocatori nel quadrato d'origine del bersaglio.</line>
+                <line>Il bersaglio riceve 3 danni in tutto</line>
+            </description>
+            <buy_cost>
+                <red>1</red>
+            </buy_cost>
+            <reload_cost>
+                <red>2</red>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line></line>
+                </cardscript>
+            </basic_mode>
+            <optional_effects>
+                <optional_effect name ="razzi_potatili">
+                    <enabled>true</enabled>
+                    <cost>
+                        <blue>1</blue>
+                    </cost>
+                    <cardscript>
+                        <line></line>
+                    </cardscript>
+                </optional_effect>
+                <optional_effect name="testata_a_frammentazione">
+                    <enabled>false</enabled>
+                    <cost>
+                        <yellow>1</yellow>
+                    </cost>
+                    <cardscript>
+                        <line></line>
+                    </cardscript>
+                </optional_effect>
+            </optional_effects>
+        </weapon_card>
+
+        <weapon_card id="6">
+            <name>Fucile Laser</name>
+            <description>
+                <line>modalità base:Scegli una direzione cardinale e 1 bersaglio in quella</line>
+                <line>direzione. Dagli 3 danni.</line>
+                <line>modalità perforazione: Scegli una direzione cardinale e 1 o 2 bersagli in</line>
+                <line>quella direzione.Dai 2 danni a ciascuno.</line>
+                <line>Nota: In pratica spari in linea retta ignorando i muri. Ci sono solo 4 direzioni cardinali.</line>
+                <line>e chi si trova in quella direzione (anche nel tuo quadrato) è un bersaglio valido.</line>
+                <line>In modalità perforazione i 2 bersagli sono nello stesso quadrato o in quadrati diversi.</line>
+            </description>
+            <buy_cost>
+                <yellow>1</yellow>
+            </buy_cost>
+            <reload_cost>
+                <yellow>2</yellow>
+                <blue>1</blue>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line></line>
+                </cardscript>
+            </basic_mode>
+            <alternate_mode>
+                <cost></cost>
+                <cardscript>
+                    <line></line>
+                </cardscript>
+            </alternate_mode>
+        </weapon_card>
+
+        <weapon_card id="3">
+            <name>Spada Fotonica</name>
+            <description>
+                <line>effetto base: Dai 2 danni a 1 bersaglio nel quadrato in cui sei tu.</line>
+                <line>passo d'ombra: Muovi di 1 quadrato prima o dopo l'effetto base/mod sminuzzare.</line>
+                <line>mod sminuzzare: Dai 2 danni a un bersaglio diverso nel quadrato in cui sei.</line>
+            </description>
+            <buy_cost>
+                <yellow>1</yellow>
+            </buy_cost>
+            <reload_cost>
+                <yellow>1</yellow>
+                <red>1</red>
+            </reload_cost>
+            <basic_mode>
+                <cardscript>
+                    <line></line>
+                </cardscript>
+            </basic_mode>
+            <optional_effects>
+                <optional_effect name="passo_d'ombra">
+                    <enabled>true</enabled>
+                    <cardscript>
+                        <line></line>
+                    </cardscript>
+                </optional_effect>
+                <optional_effect name="sminuzzare">
+                    <cost>
+                    <yellow>1</yellow>
+                    </cost>
+                    <enabled>false</enabled>
+                    <cardscript>
+                        <line></line>
+                    </cardscript>
+                </optional_effect>
+            </optional_effects>
+        </weapon_card>
+
+    <weapon_card id="7">
+        <name>ZX-2</name>
+        <description>
+            <line>modalità base: Dai 1 danno e 2 marchi a 1 bersaglio che puoi vedere.</line>
+            <line>modalità scanner: Scegli fino a 3 bersagli che puoi vedere e </line>
+            <line>dai 1 marchio a ciascuno.</line>
+            <line>Nota: Ricorda che i 3 bersagli possono anche essere in 3 stanze diverse.</line>
+        </description>
+        <buy_cost>
+            <yellow>1</yellow>
+        </buy_cost>
+        <reload_cost>
+            <yellow>1</yellow>
+            <red>1</red>
+        </reload_cost>
+        <basic_mode>
+            <cardscript>
+                <line></line>
+            </cardscript>
+        </basic_mode>
+        <alternate_mode>
+            <cost></cost>
+            <cardscript>
+                <line></line>
+            </cardscript>
+        </alternate_mode>
+    </weapon_card>
+
+    <weapon_card id="5">
+        <name>Fucile a pompa</name>
+        <description>
+            <line>modalità base: Dai 3 danni a 1 bersaglio nel</line>
+            <line>quadrato in cui sei, muovendolo di 1 quadrato se vuoi</line>
+            <line>modalità canna lunga: Dai 2 danni a 1 bersaglio in un quadrato ad</line>
+            <line>esattamente 1 movimento.</line>
+        </description>
+        <buy_cost>
+            <yellow>1</yellow>
+        </buy_cost>
+        <reload_cost>
+            <yellow>2</yellow>
+        </reload_cost>
+        <basic_mode>
+            <cardscript>
+                <line></line>
+            </cardscript>
+        </basic_mode>
+        <alternate_mode>
+            <cost></cost>
+            <cardscript>
+                <line></line>
+            </cardscript>
+        </alternate_mode>
+    </weapon_card>
+
+    <weapon_card id="4">
+        <name>Cyberguanto</name>
+        <description>
+            <line>modalità base: Scegli 1 bersaglio in un quadrato ad esattamente 1</line>
+            <line>movimento, muovilo in quel quadrato e dagli 1 danno e 2 marchi.</line>
+            <line>modalità cento pugni: Scegli un quadrato ad 1 movimento esatto.Qui voli</line>
+            <line>per 2 quadrati in linea retta, prendendo a pugni 1 persona per quadrato.</line>
+            <line>Muovi in quel quadrato. Puoi dare 2 danni a 1 bersaglio in quel quadrato.</line>
+            <line>Se è un movimento valido, puoi muovere ancora di 1 quadrato nella</line>
+            <line>stessa direzione. Puoi dare 2 danni a un bersaglio anche in quel quadrato.</line>
+        </description>
+        <buy_cost>
+            <yellow>1</yellow>
+        </buy_cost>
+        <reload_cost>
+            <yellow>1</yellow>
+            <blue>1</blue>
+        </reload_cost>
+        <basic_mode>
+            <cardscript>
+                <line></line>
+            </cardscript>
+        </basic_mode>
+        <alternate_mode>
+            <cost>
+                <blue>1</blue>
+            </cost>
+            <cardscript>
+                <line></line>
+            </cardscript>
+        </alternate_mode>
+    </weapon_card>
+
+    <weapon_card id="8">
+        <name>Onda d'urto</name>
+        <description>
+            <line>modalità base: Scegli fino a 3 bersagli su quadrati diversi, ognuno ad 1 movimento esatto.</line>
+            <line>Dai 1 danno a ogni bersaglio.</line>
+            <line>modalità tsunami: Dai 1 danno a tutti i bersagli distanti 1 movimento.</line>
+        </description>
+        <buy_cost>
+            <yellow>1</yellow>
+        </buy_cost>
+        <reload_cost>
+            <yellow>1</yellow>
+        </reload_cost>
+        <basic_mode>
+            <cardscript>
+                <line></line>
+            </cardscript>
+        </basic_mode>
+        <alternate_mode>
+            <cost>
+                <yellow>1</yellow>
+            </cost>
+            <cardscript>
+                <line></line>
+            </cardscript>
+        </alternate_mode>
+    </weapon_card>
+
+    <weapon_card id="2">
+        <name>Martello ionico</name>
+        <description>
+            <line>modalità base: Dai 2 danni a 1 bersaglio nel tuo quadrato.</line>
+            <line>modalità polverizzare: Dai 3 danni a 1 bersaglio nel tuo quadrato e</line>
+            <line>muovilo di 0, 1 o 2 quadrati in una direzione.</line>
+            <line>Nota: I movimenti passano attraverso le porte, non per le pareti.</line>
+        </description>
+        <buy_cost>
+            <yellow>1</yellow>
+        </buy_cost>
+        <reload_cost>
+            <yellow>1</yellow>
+        </reload_cost>
+        <basic_mode>
+            <cardscript>
+                <line></line>
+            </cardscript>
+        </basic_mode>
+        <alternate_mode>
+            <cost>
+                <red>1</red>
+            </cost>
+            <cardscript>
+                <line></line>
+            </cardscript>
+        </alternate_mode>
+    </weapon_card>
+</deck>
 
     <deck type="powerUpCards">
 
@@ -263,6 +722,30 @@
             </cardscript>
         </power_up_card>
 
+        <power_up_card id="2,3,4">
+            <name>Granata Venom</name>
+            <use>onDamage</use>
+            <description>
+                <line>Puoi giocare questa carta quando ricevi un danno da un</line>
+                <line>giocatore che puoi vedere. Dai 1 marchio a quel giocatore.</line>
+            </description>
+            <cardscript>
+                <line></line>
+            </cardscript>
+        </power_up_card>
+
+        <power_up_card id="11,12,13">
+            <name>Teletrasporto</name>
+            <use>always</use>
+            <description>
+                <line></line>
+            </description>
+            <cardscript>
+                <line>Puoi giocare questa carta nel tuo turno in ogni momento. Prendi la tua</line>
+                <line>pedina e piazzala in un qualsiasi quadrato. Non puoi usare questo potenziamento</line>
+                <line>dopo che hai visto dove un altro giocatore si rigenera alla fine del tuo turno.</line>
+            </cardscript>
+        </power_up_card>
     </deck>
 
     <deck type="ammoCards">
