@@ -146,7 +146,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
                 List<Card> weapons = block.getWeaponCards();
                 for(int i = 0; i < weapons.size(); i++)
                 {
-                    CardView cardView = new CardView(weapons.get(i), null, CardView.FADE_TRANSITION);
+                    CardView cardView = new CardView(weapons.get(i), CardView.FADE_TRANSITION);
                     cardView.setOnCardViewClickListener(getBlock(block.getX(), block.getY()));
 
                     cardView.setMaxWidth(237*scale);

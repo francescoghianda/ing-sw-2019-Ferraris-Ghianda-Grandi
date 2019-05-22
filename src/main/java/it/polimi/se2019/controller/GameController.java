@@ -80,13 +80,10 @@ public class GameController implements TimerListener
     private void nextRound()
     {
         Player currentPlayer = roundManager.next();
-
-        //System.out.println(roundManager.isFirstRound());
-        firstRound(currentPlayer);
-
-        //if(roundManager.isFirstRound())firstRound(currentPlayer);
+        if(roundManager.isFirstRound())firstRound(currentPlayer);
 
     }
+
 
     private void firstRound(Player player)
     {
@@ -173,6 +170,10 @@ public class GameController implements TimerListener
         Player player = new Player(color, this, server);
         players.add(player);
         availablePlayerColors.remove(color);
+
+        player.getGameBoard().setRedAmmo(3);
+        player.getGameBoard().setBlueAmmo(3);
+        player.getGameBoard().setYellowAmmo(3);
 
         sendUpdate(player);
 

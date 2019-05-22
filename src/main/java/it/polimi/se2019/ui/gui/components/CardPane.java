@@ -61,7 +61,6 @@ public class CardPane extends StackPane implements Initializable
     @FXML
     private VBox cardSlot3;
 
-    private Label descriptionLabel;
     private String title;
     private DoubleProperty fontSize;
     private String type;
@@ -95,7 +94,7 @@ public class CardPane extends StackPane implements Initializable
         cardNumber++;
         if(cardNumber > 3)throw new CardPaneOutOfBoundsException();
 
-        CardView cardView = new CardView(card, descriptionLabel, CardView.SCALE_TRANSITION);
+        CardView cardView = new CardView(card, CardView.SCALE_TRANSITION);
         cardView.setMaxWidth(getMaxWidth()/4.5);
 
         cardView.setOnCardViewClickListener(listener);
@@ -142,14 +141,6 @@ public class CardPane extends StackPane implements Initializable
         if(cardSlot1.getChildren().isEmpty())return cardSlot1;
         if(cardSlot2.getChildren().isEmpty())return cardSlot2;
         return cardSlot3;
-    }
-
-    public void setDescriptionLabel(Label descriptionLabel)
-    {
-        this.descriptionLabel = descriptionLabel;
-        if(!cardSlot1.getChildren().isEmpty())((CardView)cardSlot1.getChildren()).setDescriptionLabel(descriptionLabel);
-        if(!cardSlot2.getChildren().isEmpty())((CardView)cardSlot2.getChildren()).setDescriptionLabel(descriptionLabel);
-        if(!cardSlot3.getChildren().isEmpty())((CardView)cardSlot3.getChildren()).setDescriptionLabel(descriptionLabel);
     }
 
     private void initSlots(Image image)

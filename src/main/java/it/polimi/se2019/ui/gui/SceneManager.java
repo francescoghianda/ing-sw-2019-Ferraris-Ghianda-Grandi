@@ -48,7 +48,7 @@ public class SceneManager
         loginScene = new LoginScene();
         startMenuScene = new StartMenuScene();
         waitScene = new WaitScene();
-        matchScene = new Scene(new MatchScene());
+        matchScene = new Scene(MatchScene.getInstance());
     }
 
     public MatchScene getMatchScene()

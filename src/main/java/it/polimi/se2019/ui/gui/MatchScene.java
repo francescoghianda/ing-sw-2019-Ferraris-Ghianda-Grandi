@@ -21,6 +21,8 @@ import java.util.ResourceBundle;
 public class MatchScene extends GridPane implements Initializable, CardView.OnCardViewClickListener, MapView.OnBlockClickListener, ActionPane.OnActionClickListener, ChoosePane.OnOptionChosenListener
 {
 
+    private static  MatchScene instance;
+
     @FXML
     private BoardView board;
 
@@ -49,7 +51,7 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     private boolean firstUpdate;
     final ObservableValue<String> selectedPowerUpId;
 
-    public MatchScene()
+    private MatchScene()
     {
         super();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MatchScene.fxml"));
@@ -68,6 +70,17 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         selectedPowerUpId = new ObservableValue<>();
 
         firstUpdate = true;
+    }
+
+    public static MatchScene getInstance()
+    {
+        if(instance == null)instance = new MatchScene();
+        return instance;
+    }
+
+    public Label getCardDescriptionLabel()
+    {
+        return cardDescriptionLabel;
     }
 
     public void update(GameData data)
@@ -102,8 +115,6 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         mapView.setOnBlockClickListener(this);
         actionPane.setOnActionClickListener(this);
         choosePane.setOnOptionChosenListener(this);
-        weaponsCardPane.setDescriptionLabel(cardDescriptionLabel);
-        powerUpsCardPane.setDescriptionLabel(cardDescriptionLabel);
         cardDescriptionLabel.setFont(new Font(15));
         cardDescriptionLabel.setStyle("-fx-text-fill: white");
         cardDescriptionLabel.setPadding(new Insets(0, 0, 0, 20));

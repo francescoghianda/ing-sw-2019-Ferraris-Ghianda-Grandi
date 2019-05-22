@@ -1,6 +1,7 @@
 package it.polimi.se2019.ui.gui.components;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.ui.gui.MatchScene;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
@@ -31,7 +32,6 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
     @FXML
     private ImageView imageView;
 
-    private Label descriptionLabel;
     private final Card card;
     private ScaleTransition scaleTransition;
     private FadeTransition fadeTransition;
@@ -41,14 +41,13 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
 
     private final int transition;
 
-    public CardView(Card card, Label descriptionLabel, int transition)
+    public CardView(Card card, int transition)
     {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/card.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 
         this.card = card;
-        this.descriptionLabel = descriptionLabel;
 
         String idTypePart = card.getId().substring(0, 3);
         String cardId = card.getIdIgnoreClone().substring(3);
@@ -70,11 +69,6 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
         }
 
         load(fxmlLoader);
-    }
-
-    public void setDescriptionLabel(Label descriptionLabel)
-    {
-        this.descriptionLabel = descriptionLabel;
     }
 
     public String getCardId()
@@ -132,11 +126,11 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
 
         if(event.getEventType().equals(MouseEvent.MOUSE_ENTERED))
         {
-            if(descriptionLabel != null)descriptionLabel.setText(card.getDescription());
+            if(MatchScene.getInstance().getCardDescriptionLabel() != null)MatchScene.getInstance().getCardDescriptionLabel().setText(card.getDescription());
         }
         else if(event.getEventType().equals(MouseEvent.MOUSE_EXITED))
         {
-            if(descriptionLabel != null)descriptionLabel.setText("");
+            if(MatchScene.getInstance().getCardDescriptionLabel() != null)MatchScene.getInstance().getCardDescriptionLabel().setText("");
         }
         else if(event.getEventType().equals(MouseEvent.MOUSE_CLICKED))
         {
