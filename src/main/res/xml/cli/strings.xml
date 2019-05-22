@@ -13,5 +13,7 @@
     <entry key="you_are_first_player">Sei il giocatore iniziale!</entry>
     <entry key="first_player_is">Il giocatore iniziale è: %s</entry>
     <entry key="is_your_round">È il tuo turno!</entry>
+    <entry key="game_started">La partita è iniziata!</entry>
+    <entry key="connection_refused">Connessione fallita.</entry>
     <entry key="choose_spawn_point">Scegli la carta che vuoi scartare per generarti nella stanza del colore corrispondente: </entry>
 </properties>

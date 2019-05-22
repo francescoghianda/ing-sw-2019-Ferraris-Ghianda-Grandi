@@ -82,7 +82,7 @@ public class CLI implements UI
     @Override
     public void gameStarted()
     {
-
+        GameConsole.out.println(CliString.GAME_STARTED);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class CLI implements UI
     @Override
     public void connectionRefused()
     {
-
+        GameConsole.out.println(CliString.CONNECTION_REFUSED);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class CLI implements UI
     @Override
     public void update(GameData data)
     {
-
+        //TODO
     }
 
     @Override

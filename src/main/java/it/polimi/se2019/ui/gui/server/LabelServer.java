@@ -29,7 +29,7 @@ public class LabelServer extends javax.swing.JFrame {
         BufferedImage myPicture = null;
         try
         {
-            //myPicture = ImageIO.read(new File("/it/polimi/se2019/ui/gui/server/GreenIcon.png"));
+
             myPicture = ImageIO.read(getClass().getResourceAsStream("/img/server_gui/GreenIcon.png"));
         }
         catch (IOException e)
@@ -95,7 +95,6 @@ public class LabelServer extends javax.swing.JFrame {
 
     private void ImagePanel() {
     }
-
 
 
 
