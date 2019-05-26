@@ -4,10 +4,9 @@ import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
-import it.polimi.se2019.network.message.Messages;
-import it.polimi.se2019.network.message.NetworkMessageClient;
-import it.polimi.se2019.network.message.NetworkMessageServer;
+import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.player.Player;
+import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.*;
@@ -32,7 +31,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
     private OnClientDisconnectionListener clientDisconnectionListener;
 
     private volatile boolean getResponse;
-    private volatile NetworkMessageServer response;
+    private volatile Response response;
 
     SocketClientConnection(Socket client, SocketServer server, GameController controller)
     {
@@ -60,6 +59,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
             this.userThread = new Thread(this);
             this.running = true;
             this.userThread.start();
+            login();
         }
     }
 
@@ -82,26 +82,22 @@ public class SocketClientConnection implements Runnable, ClientConnection
 
     public void run()
     {
-
-        login();
-
         while(running)
         {
             try
             {
 
-                NetworkMessageServer message = (NetworkMessageServer)ois.readObject();
+                Message message = (Message) ois.readObject();
 
-                if(!getResponse)
+                if(message.getType() == Message.Type.ASYNC_MESSAGE)
                 {
-                    Thread thread = new Thread(() -> message.setClientConnection(this).execute());
-                    thread.start();
+
                 }
-                else
+                else if(message.getType() == Message.Type.RESPONSE && getResponse)
                 {
                     synchronized (this)
                     {
-                        response = message;
+                        response = (Response) message;
                         getResponse = false;
                         this.notifyAll();
                     }
@@ -119,10 +115,38 @@ public class SocketClientConnection implements Runnable, ClientConnection
 
     private void login()
     {
-        sendMessageToClient(Messages.LOGIN_REQUEST);
+        String username = (String) getResponseTo(new Request("username", UI::getUsername)).getContent();
+
+        while(ClientsManager.getInstance().getConnectedClientsUsername().contains(username))
+        {
+            username = (String) getResponseTo(new Request("invalid_username", UI::getUsername)).getContent();
+        }
+
+        sendMessageToClient(new AsyncMessage("logged", UI::logged));
+        setUsername(username);
+        setLogged(true);
+        if(ClientsManager.getInstance().getDisconnectedClientsUsername().contains(username))
+        {
+            getServer().clientReconnected(this);
+            Logger.warning("Client "+username+" has reconnected!");
+        }
     }
 
-    public void sendMessageToClient(NetworkMessageClient<?> message)
+    public void sendMessageToClient(AsyncMessage message)
+    {
+        sendMessageToClient((Message) message);
+    }
+
+    @Override
+    public void notifyOtherClients(AsyncMessage message)
+    {
+        clientsManager.getConnectedClients().forEach(clientConnection ->
+        {
+            if(!clientConnection.equals(this))clientConnection.sendMessageToClient(message);
+        });
+    }
+
+    private void sendMessageToClient(Message message)
     {
         if(!connected)return;
         try
@@ -139,21 +163,12 @@ public class SocketClientConnection implements Runnable, ClientConnection
     }
 
     @Override
-    public void notifyOtherClients(NetworkMessageClient<?> message)
-    {
-        clientsManager.getConnectedClients().forEach(clientConnection ->
-        {
-            if(!clientConnection.equals(this))clientConnection.sendMessageToClient(message);
-        });
-    }
-
-    @Override
-    public synchronized NetworkMessageServer getResponseTo(NetworkMessageClient<?> messageToClient)
+    public synchronized Response getResponseTo(Request request)
     {
         try
         {
             getResponse = true;
-            sendMessageToClient(messageToClient);
+            sendMessageToClient(request);
             while (getResponse)
             {
                 this.wait();

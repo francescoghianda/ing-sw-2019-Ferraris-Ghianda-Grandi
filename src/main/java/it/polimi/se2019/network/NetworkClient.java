@@ -1,7 +1,5 @@
 package it.polimi.se2019.network;
 
-import it.polimi.se2019.network.message.NetworkMessageClient;
-import it.polimi.se2019.network.message.NetworkMessageServer;
 import it.polimi.se2019.ui.UI;
 
 public interface NetworkClient
@@ -14,18 +12,7 @@ public interface NetworkClient
      */
     boolean connect(String serverIp, int serverPort);
 
-    /**
-     * Send a message to server
-     * @param message The message to send
-     */
-    void sendMessageToServer(NetworkMessageServer<?> message);
 
-    /**
-     * Send a message to the server and wait for a response
-     * @param messageToServer Message to send
-     * @return The response message
-     */
-    NetworkMessageClient getResponseTo(NetworkMessageServer<?> messageToServer);
     String getUsername();
     void invalidNickname();
     void setLogged(boolean logged);

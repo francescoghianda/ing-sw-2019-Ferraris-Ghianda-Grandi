@@ -1,7 +1,5 @@
 package it.polimi.se2019.network;
 
-import it.polimi.se2019.network.message.NetworkMessageClient;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,11 +45,6 @@ public class ClientsManager
     public List<ClientConnection> getConnectedClients()
     {
         return this.connectedClients;
-    }
-
-    public void sendBroadcastMessage(NetworkMessageClient<?> message)
-    {
-        connectedClients.forEach(clientConnection -> clientConnection.sendMessageToClient(message));
     }
 
     public List<String> getConnectedClientsUsername()

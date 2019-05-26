@@ -5,9 +5,10 @@ import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
-import it.polimi.se2019.network.message.Messages;
-import it.polimi.se2019.network.message.NetworkMessageServer;
+import it.polimi.se2019.network.message.AsyncMessage;
+import it.polimi.se2019.network.message.Request;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
+import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.net.InetAddress;
@@ -71,12 +72,6 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
         //TODO
     }
 
-    @Override
-    public synchronized void sendMessage(NetworkMessageServer<?> message) throws RemoteException
-    {
-        Thread threadMessage = new Thread(() -> message.setClientConnection(clients.get(message.getSender())).execute());
-        threadMessage.start();
-    }
 
     @Override
     public synchronized void registerClient(CallbackInterface clientStub) throws RemoteException
@@ -86,7 +81,27 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
         clients.put(clientStub, clientConnection);
         clientsManager.registerClient(clientConnection);
         new ConnectionController(clientConnection).setOnClientDisconnectionListener(this).start();
-        clients.get(clientStub).sendMessageToClient(Messages.LOGIN_REQUEST);
+        login(clientStub);
+    }
+
+    private void login(CallbackInterface clientStub)
+    {
+        ClientConnection client = clients.get(clientStub);
+        String username = (String) client.getResponseTo(new Request("username", UI::getUsername)).getContent();
+
+        while(ClientsManager.getInstance().getConnectedClientsUsername().contains(username))
+        {
+            username = (String) client.getResponseTo(new Request("invalid_username", UI::getUsername)).getContent();
+        }
+
+        client.sendMessageToClient(new AsyncMessage("logged", UI::logged));
+        client.setUsername(username);
+        client.setLogged(true);
+        if(ClientsManager.getInstance().getDisconnectedClientsUsername().contains(username))
+        {
+            client.getServer().clientReconnected(client);
+            Logger.warning("Client "+username+" has reconnected!");
+        }
     }
 
     @Override

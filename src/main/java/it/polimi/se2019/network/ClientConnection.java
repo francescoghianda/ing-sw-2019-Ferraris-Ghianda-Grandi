@@ -1,8 +1,10 @@
 package it.polimi.se2019.network;
 
 import it.polimi.se2019.controller.GameController;
-import it.polimi.se2019.network.message.NetworkMessageClient;
-import it.polimi.se2019.network.message.NetworkMessageServer;
+import it.polimi.se2019.network.message.AsyncMessage;
+import it.polimi.se2019.network.message.Message;
+import it.polimi.se2019.network.message.Request;
+import it.polimi.se2019.network.message.Response;
 import it.polimi.se2019.player.Player;
 
 public interface ClientConnection
@@ -12,20 +14,20 @@ public interface ClientConnection
      *  Send a message to all the clients connected, except this
      * @param message The message to send
      */
-    void notifyOtherClients(NetworkMessageClient<?> message);
+    void notifyOtherClients(AsyncMessage message);
 
     /**
      *  Send a message to the client
      * @param message The message to send
      */
-    void sendMessageToClient(NetworkMessageClient<?> message);
+    void sendMessageToClient(AsyncMessage message);
 
     /**
      * Send a message to the client and wait for a response
-     * @param messageToClient The message to send
+     * @param request The message to send
      * @return The response message
      */
-    NetworkMessageServer getResponseTo(NetworkMessageClient<?> messageToClient);
+    Response getResponseTo(Request request);
 
     /**
      * Close the connection with the client

@@ -5,8 +5,10 @@ import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
-import it.polimi.se2019.network.message.NetworkMessageClient;
-import it.polimi.se2019.network.message.NetworkMessageServer;
+import it.polimi.se2019.network.message.AsyncMessage;
+import it.polimi.se2019.network.message.Message;
+import it.polimi.se2019.network.message.Request;
+import it.polimi.se2019.network.message.Response;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
 import it.polimi.se2019.player.Player;
 
@@ -55,7 +57,7 @@ public class RmiClientConnection implements ClientConnection
     }
 
     @Override
-    public void notifyOtherClients(NetworkMessageClient<?> message)
+    public void notifyOtherClients(AsyncMessage message)
     {
         clientsManager.getConnectedClients().forEach(clientConnection ->
         {
@@ -64,11 +66,11 @@ public class RmiClientConnection implements ClientConnection
     }
 
     @Override
-    public synchronized void sendMessageToClient(NetworkMessageClient<?> message)
+    public synchronized void sendMessageToClient(AsyncMessage message)
     {
         try
         {
-            callback.sendMessage(message);
+            callback.sendAsyncMessage(message);
         }
         catch (RemoteException e)
         {
@@ -77,11 +79,11 @@ public class RmiClientConnection implements ClientConnection
     }
 
     @Override
-    public NetworkMessageServer getResponseTo(NetworkMessageClient<?> messageToClient)
+    public Response getResponseTo(Request request)
     {
         try
         {
-            return callback.ask(messageToClient);
+            return callback.sendRequest(request);
         }
         catch (RemoteException e)
         {

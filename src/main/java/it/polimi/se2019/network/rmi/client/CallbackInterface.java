@@ -1,7 +1,9 @@
 package it.polimi.se2019.network.rmi.client;
 
-import it.polimi.se2019.network.message.NetworkMessageClient;
-import it.polimi.se2019.network.message.NetworkMessageServer;
+import it.polimi.se2019.network.message.AsyncMessage;
+import it.polimi.se2019.network.message.Message;
+import it.polimi.se2019.network.message.Request;
+import it.polimi.se2019.network.message.Response;
 
 import java.io.Serializable;
 import java.rmi.Remote;
@@ -14,14 +16,14 @@ public interface CallbackInterface extends Serializable, Remote
      * @param message The message received
      * @throws RemoteException
      */
-    void sendMessage(NetworkMessageClient<?> message) throws RemoteException;
+    void sendAsyncMessage(AsyncMessage message) throws RemoteException;
     boolean isConnected() throws RemoteException;
 
     /**
      * Execute the message received from the server and return a response message
-     * @param message The message received
+     * @param request The message received
      * @return The response message
      * @throws RemoteException
      */
-    NetworkMessageServer ask(NetworkMessageClient<?> message) throws RemoteException;
+    Response sendRequest(Request request) throws RemoteException;
 }

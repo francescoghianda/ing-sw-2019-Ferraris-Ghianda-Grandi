@@ -1,8 +1,10 @@
 package it.polimi.se2019.network.rmi.client;
 
+import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.network.NetworkClient;
-import it.polimi.se2019.network.message.NetworkMessageClient;
-import it.polimi.se2019.network.message.NetworkMessageServer;
+import it.polimi.se2019.network.message.AsyncMessage;
+import it.polimi.se2019.network.message.Request;
+import it.polimi.se2019.network.message.Response;
 import it.polimi.se2019.network.rmi.server.RmiServer;
 import it.polimi.se2019.network.rmi.server.ServerInterface;
 import it.polimi.se2019.ui.UI;
@@ -25,8 +27,8 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     private transient volatile boolean getIncomeMessage;
     private transient volatile boolean incomeMessageReceived;
     private transient volatile boolean waitResponse;
-    private transient volatile NetworkMessageClient<?> message;
-    private transient volatile NetworkMessageServer<?> responseMessage;
+    //private transient volatile NetworkMessageClient<?> message;
+    //private transient volatile NetworkMessageServer<?> responseMessage;
 
     private boolean logged;
 
@@ -45,19 +47,9 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     }
 
     @Override
-    public synchronized void sendMessage(NetworkMessageClient<?> message) throws RemoteException
+    public synchronized void sendAsyncMessage(AsyncMessage message) throws RemoteException
     {
-        if(!getIncomeMessage)
-        {
-            Thread threadMessage = new Thread(() -> message.setClient(this).execute());
-            threadMessage.start();
-        }
-        else
-        {
-            this.message = message;
-            incomeMessageReceived = true;
-            this.notifyAll();
-        }
+        message.accept(getUI());
     }
 
     @Override
@@ -67,49 +59,22 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     }
 
     @Override
-    public synchronized NetworkMessageServer ask(NetworkMessageClient<?> message) throws RemoteException
+    public synchronized Response sendRequest(Request request) throws RemoteException
     {
         try
         {
-            waitResponse = true;
-            Thread threadMessage = new Thread(() -> message.setClient(this).execute());
-            threadMessage.start();
-            while (waitResponse)this.wait();
-            return responseMessage;
+            Serializable obj = request.apply(getUI());
+            return new Response("Response to "+request.getMessage(), obj, Response.Status.OK).setSender(stub);
         }
-        catch (InterruptedException e)
+        catch (CanceledActionException e)
         {
-            Logger.exception(e);
-            Thread.currentThread().interrupt();
-            throw new RemoteException();
+            return new Response("Response to "+request.getMessage(), null, Response.Status.ACTION_CANCELED).setSender(stub);
         }
     }
 
     public ServerInterface getServer()
     {
         return this.server;
-    }
-
-    @Override
-    public synchronized void sendMessageToServer(NetworkMessageServer<?> message)
-    {
-        if(waitResponse)
-        {
-            responseMessage = message.setSender(stub);
-            waitResponse = false;
-            this.notifyAll();
-        }
-        else
-        {
-            try
-            {
-                server.sendMessage(message.setSender(stub));
-            }
-            catch (RemoteException e)
-            {
-                Logger.exception(e);
-            }
-        }
     }
 
     @Override
@@ -137,27 +102,6 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
         return ui;
     }
 
-    @Override
-    public synchronized NetworkMessageClient<?> getResponseTo(NetworkMessageServer<?> messageServer)
-    {
-        try
-        {
-            getIncomeMessage = true;
-            sendMessageToServer(messageServer.setSender(stub));
-
-            while (!incomeMessageReceived) this.wait();
-
-            getIncomeMessage = false;
-            incomeMessageReceived = false;
-
-            return message;
-        }
-        catch (Exception e)
-        {
-            Logger.exception(e);
-        }
-        return null;
-    }
 
     @Override
     public boolean connect(String serverIp, int serverPort)

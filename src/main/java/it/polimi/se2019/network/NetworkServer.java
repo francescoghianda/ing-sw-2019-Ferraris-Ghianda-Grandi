@@ -1,10 +1,5 @@
 package it.polimi.se2019.network;
 
-import it.polimi.se2019.network.message.NetworkMessageClient;
-import it.polimi.se2019.network.rmi.client.CallbackInterface;
-
-import java.util.List;
-
 public interface NetworkServer
 {
     /**
@@ -18,21 +13,10 @@ public interface NetworkServer
      */
     void stopServer();
 
-    /**
-     * @return All the username of the connected clients
-     */
-    //List<String> getConnectedClientsUsername();
-
-    /**
-     * @return All the username of the client that has lost the connection
-     */
-    //List<String> getDisconnectedClientsUsername();
 
     /**
      * Restore the data of the client that reconnect after has lost the connection
      * @param clientConnection The client that has reconnected
      */
     void clientReconnected(ClientConnection clientConnection);
-    //void sendBroadcastMessage(NetworkMessageClient<?> message);
-
 }

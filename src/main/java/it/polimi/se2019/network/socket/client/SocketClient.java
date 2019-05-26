@@ -1,14 +1,18 @@
 package it.polimi.se2019.network.socket.client;
 
+import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.network.NetworkClient;
-import it.polimi.se2019.network.message.NetworkMessageClient;
-import it.polimi.se2019.network.message.NetworkMessageServer;
+import it.polimi.se2019.network.message.AsyncMessage;
+import it.polimi.se2019.network.message.Message;
+import it.polimi.se2019.network.message.Request;
+import it.polimi.se2019.network.message.Response;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -59,8 +63,24 @@ public class SocketClient implements Runnable, NetworkClient
         {
             while(running)
             {
-                NetworkMessageClient incomeMessage = (NetworkMessageClient) ois.readObject();
-                incomeMessage.setClient(this).execute();
+                Message incomeMessage = (Message) ois.readObject();
+                //incomeMessage.setClient(this).execute();
+                if(incomeMessage.getType() == Message.Type.REQUEST)
+                {
+                    try
+                    {
+                        Serializable obj = ((Request)incomeMessage).apply(getUI());
+                        sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), obj, Response.Status.OK));
+                    }
+                    catch (CanceledActionException e)
+                    {
+                        sendMessageToServer(new Response("ACTION_CANCELED", null, Response.Status.ACTION_CANCELED));
+                    }
+                }
+                else if(incomeMessage.getType() == Message.Type.ASYNC_MESSAGE)
+                {
+                    ((AsyncMessage)incomeMessage).accept(getUI());
+                }
             }
 
             oos.close();
@@ -98,7 +118,7 @@ public class SocketClient implements Runnable, NetworkClient
         return true;
     }
 
-    public void sendMessageToServer(NetworkMessageServer<?> message)
+    private void sendMessageToServer(Message message)
     {
         try
         {
@@ -136,13 +156,13 @@ public class SocketClient implements Runnable, NetworkClient
         return ui;
     }
 
-    @Override
-    public NetworkMessageClient<?> getResponseTo(NetworkMessageServer<?> messageServer)
+
+    public Response getResponseTo(Request messageServer)
     {
         try
         {
             sendMessageToServer(messageServer);
-            return (NetworkMessageClient) ois.readObject();
+            return (Response) ois.readObject();
         }
         catch (IOException | ClassNotFoundException e)
         {
