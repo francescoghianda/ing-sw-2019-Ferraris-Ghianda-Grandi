@@ -1,5 +1,7 @@
 package it.polimi.se2019.map;
 
+import it.polimi.se2019.network.message.Bundle;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,5 +38,17 @@ public class MapData implements Serializable
             }
         }
         return blocksList;
+    }
+
+    public BlockData getBlock(int x, int y)
+    {
+        return blocks[y][x];
+    }
+
+    public int getDistance(BlockData block1, BlockData block2)
+    {
+        if(block1.getCoordinates().equals(block2.getCoordinates()))return 0;
+        Integer dist = block1.getDistances().get(new Coordinates(block2.getX(), block2.getY()));
+        return dist == null ? 0 : dist;
     }
 }

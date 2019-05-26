@@ -6,8 +6,6 @@ import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.map.Block;
 import it.polimi.se2019.network.ClientConnection;
-import it.polimi.se2019.network.message.NetworkMessageClient;
-import it.polimi.se2019.network.message.NetworkMessageServer;
 import it.polimi.se2019.utils.constants.GameColor;
 
 import java.io.Serializable;
@@ -25,12 +23,14 @@ public class Player implements Serializable
 	private ArrayList<PowerUpCard> powerUps;
 	private Block block;
 	private GameBoard gameBoard;
-	private transient ArrayList<Integer> executedAction;
+	private transient ArrayList<Action> executedAction;
 	private transient GameController gameController;
 
 	private transient ArrayList<Player> damagedPlayers;
 
 	private final transient ClientConnection clientConnection;
+
+	private final transient VirtualView view;
 
 	/**
 	 * creates and initializes the features of the player
@@ -49,12 +49,23 @@ public class Player implements Serializable
 		this.color = color;
 		this.clientConnection = clientConnection;
 		this.gameController = gameController;
+		this.view = new VirtualView(clientConnection);
+	}
+
+	public VirtualView getView()
+	{
+		return this.view;
 	}
 
 	public void reset()
 	{
 		executedAction.clear();
 		damagedPlayers.clear();
+	}
+
+	public String getUsername()
+	{
+		return clientConnection.getUsername();
 	}
 
 	public GameController getGameController()
@@ -67,7 +78,7 @@ public class Player implements Serializable
 		return this.gameBoard;
 	}
 
-	public void addExecutedAction(Integer action)
+	public void addExecutedAction(Action action)
 	{
 		this.executedAction.add(action);
 	}
@@ -84,7 +95,7 @@ public class Player implements Serializable
 
 	public List<Player> getDamagedPlayers()
 	{
-		return this.damagedPlayers;
+		return new ArrayList<>(damagedPlayers);
 	}
 
 	public List<Block> getVisibleBlocks()
@@ -110,9 +121,9 @@ public class Player implements Serializable
 		return visiblePlayers;
 	}
 
-	public Integer[] getExecutedActions()
+	public Action[] getExecutedActions()
 	{
-		Integer[] executed = new Integer[executedAction.size()];
+		Action[] executed = new Action[executedAction.size()];
 		return executedAction.toArray(executed);
 	}
 
@@ -146,9 +157,24 @@ public class Player implements Serializable
 		}
 	}
 
-	public List<WeaponCard> getWeapons()
+	public int weaponsSize()
 	{
-		return this.weapons;
+		return weapons.size();
+	}
+
+	public void removeWeapon(WeaponCard weaponCard)
+	{
+		weapons.remove(weaponCard);
+	}
+
+	public int powerUpsSize()
+	{
+		return powerUps.size();
+	}
+
+	public void removePowerUp(PowerUpCard powerUpCard)
+	{
+		powerUps.remove(powerUpCard);
 	}
 
 	public GameColor getColor()
@@ -173,30 +199,18 @@ public class Player implements Serializable
 
 	public void setBlock(Block block)
 	{
+		if(this.block != null)this.block.removePlayer(this);
 		this.block = block;
 		block.addPlayer(this);
-	}
-
-	public NetworkMessageServer getResponseTo(NetworkMessageClient<?> message)
-	{
-		return clientConnection.getResponseTo(message);
-	}
-
-	public void sendMessageToClient(NetworkMessageClient<?> message)
-	{
-		clientConnection.sendMessageToClient(message);
-	}
-
-	public void notifyOtherClients(NetworkMessageClient<?> message)
-	{
-		clientConnection.notifyOtherClients(message);
 	}
 
 	public PlayerData getData()
 	{
 		ArrayList<Card> powerUpsCards = new ArrayList<>(powerUps);
 		ArrayList<Card> weaponsCards = new ArrayList<>(weapons);
-		return new PlayerData(color, weaponsCards, powerUpsCards, gameBoard.getData());
+		int x = block == null ? -1 : block.getX();
+		int y = block == null ? -1 : block.getY();
+		return new PlayerData(color, weaponsCards, powerUpsCards, gameBoard.getData(), x, y);
 	}
 
 }

@@ -1,9 +1,7 @@
 package it.polimi.se2019.map;
 
 import it.polimi.se2019.card.Card;
-import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.PlayerData;
-import javafx.geometry.Point2D;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,10 +15,10 @@ public class BlockData implements Serializable
 
     private final String ammoCardId;
     private final ArrayList<Card> weaponCards;
-    private final HashMap<Bundle<Integer, Integer>, Integer> distances;
+    private final HashMap<Coordinates, Integer> distances;
     private final ArrayList<PlayerData> players;
 
-    public BlockData(int x, int y, boolean spawnPoint, String ammoCardId, ArrayList<Card> weaponCards, HashMap<Bundle<Integer, Integer>, Integer> distances, ArrayList<PlayerData> players)
+    public BlockData(int x, int y, boolean spawnPoint, String ammoCardId, ArrayList<Card> weaponCards, HashMap<Coordinates, Integer> distances, ArrayList<PlayerData> players)
     {
         this.x = x;
         this.y = y;
@@ -56,9 +54,14 @@ public class BlockData implements Serializable
         return weaponCards;
     }
 
-    public HashMap<Bundle<Integer, Integer>, Integer> getDistances()
+    public HashMap<Coordinates, Integer> getDistances()
     {
         return distances;
+    }
+
+    public Coordinates getCoordinates()
+    {
+        return new Coordinates(x, y);
     }
 
     public ArrayList<PlayerData> getPlayers()

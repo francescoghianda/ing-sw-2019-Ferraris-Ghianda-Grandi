@@ -3,7 +3,7 @@ package it.polimi.se2019.player;
 import it.polimi.se2019.utils.constants.GameColor;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class GameBoardData implements Serializable
 {
@@ -11,11 +11,10 @@ public class GameBoardData implements Serializable
     private final int blueAmmo;
     private final int yellowAmmo;
     private final int skulls;
-    private final HashMap<GameColor, Integer> damages;
-    private final HashMap<GameColor, Integer> markers;
+    private final LinkedHashMap<GameColor, Integer> damages;
+    private final LinkedHashMap<GameColor, Integer> markers;
 
-
-    public GameBoardData(int redAmmo, int blueAmmo, int yellowAmmo, int skulls, HashMap<GameColor, Integer> damages, HashMap<GameColor, Integer> markers)
+    GameBoardData(int redAmmo, int blueAmmo, int yellowAmmo, int skulls, LinkedHashMap<GameColor, Integer> damages, LinkedHashMap<GameColor, Integer> markers)
     {
         this.redAmmo = redAmmo;
         this.blueAmmo = blueAmmo;
@@ -45,12 +44,12 @@ public class GameBoardData implements Serializable
         return skulls;
     }
 
-    public HashMap<GameColor, Integer> getDamages()
+    public LinkedHashMap<GameColor, Integer> getDamages()
     {
         return damages;
     }
 
-    public HashMap<GameColor, Integer> getMarkers()
+    public LinkedHashMap<GameColor, Integer> getMarkers()
     {
         return markers;
     }

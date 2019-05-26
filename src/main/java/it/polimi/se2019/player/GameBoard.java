@@ -1,18 +1,21 @@
 package it.polimi.se2019.player;
 
+import it.polimi.se2019.card.cost.Cost;
 import it.polimi.se2019.utils.constants.GameColor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Defines the gameboard of the game
  */
 public class GameBoard implements Serializable
 {
-    private HashMap<Player, Integer> receivedDamage;
-    private HashMap<Player, Integer> markers;
+    private LinkedHashMap<Player, Integer> receivedDamage;
+    private LinkedHashMap<Player, Integer> markers;
     private int redAmmo;
     private int blueAmmo;
     private int yellowAmmo;
@@ -24,8 +27,8 @@ public class GameBoard implements Serializable
      */
     public GameBoard()
     {
-        receivedDamage = new HashMap<>();
-        markers = new HashMap<>();
+        receivedDamage = new LinkedHashMap<>();
+        markers = new LinkedHashMap<>();
     }
 
     public int getTotalReceivedDamage()
@@ -60,8 +63,6 @@ public class GameBoard implements Serializable
         return yellowAmmo;
     }
 
-
-
     public int getSkulls()
     {
         return skulls;
@@ -87,7 +88,12 @@ public class GameBoard implements Serializable
     public void addMarker(Player player, int mark)
     {
         if(mark < 0)throw new NegativeValueException();
-        if(markers.containsKey(player)) markers.replace(player, markers.get(player)+mark);
+        if(mark > 3)mark = 3;
+        if(markers.containsKey(player))
+        {
+            if(markers.get(player)+mark <= 3) markers.replace(player, markers.get(player)+mark);
+            else markers.replace(player, 3);
+        }
         else markers.put(player, mark);
     }
 
@@ -115,23 +121,38 @@ public class GameBoard implements Serializable
     public void addRedAmmo(int redAmmo)
     {
         this.redAmmo += redAmmo;
+        if(this.redAmmo > 3)this.redAmmo = 3;
     }
 
     public void addBlueAmmo(int blueAmmo)
     {
         this.blueAmmo += blueAmmo;
+        if(this.blueAmmo > 3)this.blueAmmo = 3;
     }
 
     public void addYellowAmmo(int yellowAmmo)
     {
         this.yellowAmmo += yellowAmmo;
+        if(this.yellowAmmo > 3)this.yellowAmmo = 3;
     }
 
+    public boolean canPay(Cost cost)
+    {
+        return redAmmo >= cost.getRedAmmo() && blueAmmo >= cost.getBlueAmmo() && yellowAmmo >= cost.getYellowAmmo();
+    }
+
+    public void pay(Cost cost) throws NotEnoughAmmoException
+    {
+        if(!canPay(cost))throw new NotEnoughAmmoException();
+        redAmmo -= cost.getRedAmmo();
+        blueAmmo -= cost.getBlueAmmo();
+        yellowAmmo -= cost.getYellowAmmo();
+    }
 
     public GameBoardData getData()
     {
-        HashMap<GameColor, Integer> damages = new HashMap<>();
-        HashMap<GameColor, Integer> markers = new HashMap<>();
+        LinkedHashMap<GameColor, Integer> damages = new LinkedHashMap<>();
+        LinkedHashMap<GameColor, Integer> markers = new LinkedHashMap<>();
 
         receivedDamage.forEach((player, integer) -> damages.put(player.getColor(), integer));
         this.markers.forEach(((player, integer) -> markers.put(player.getColor(), integer)));

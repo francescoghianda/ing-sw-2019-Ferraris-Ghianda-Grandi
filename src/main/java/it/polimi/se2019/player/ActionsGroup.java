@@ -12,22 +12,22 @@ import java.util.stream.Collectors;
  */
 public class ActionsGroup
 {
-	public static final ActionsGroup RUN = new ActionsGroup(GameMode.NORMAL, 0, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.MOVE_ACTION);
-	public static final ActionsGroup MOVE_AND_GRAB = new ActionsGroup(GameMode.NORMAL, 0, Action.MOVE_ACTION, Action.GRAB_ACTION);
-	public static final ActionsGroup FIRE = new ActionsGroup(GameMode.NORMAL, 0, Action.FIRE_ACTION);
+	public static final ActionsGroup RUN = new ActionsGroup(GameMode.NORMAL, 0, Action.MOVE, Action.MOVE, Action.MOVE);
+	public static final ActionsGroup MOVE_AND_GRAB = new ActionsGroup(GameMode.NORMAL, 0, Action.MOVE, Action.GRAB);
+	public static final ActionsGroup FIRE = new ActionsGroup(GameMode.NORMAL, 0, Action.FIRE);
 
-	public static final ActionsGroup TWO_MOVES_AND_GRAB = new ActionsGroup(GameMode.NORMAL, 3, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.GRAB_ACTION);
-	public static final ActionsGroup MOVE_AND_SHOOT = new ActionsGroup(GameMode.NORMAL, 6, Action.MOVE_ACTION, Action.FIRE_ACTION);
+	public static final ActionsGroup TWO_MOVES_AND_GRAB = new ActionsGroup(GameMode.NORMAL, 3, Action.MOVE, Action.MOVE, Action.GRAB);
+	public static final ActionsGroup MOVE_AND_SHOOT = new ActionsGroup(GameMode.NORMAL, 6, Action.MOVE, Action.FIRE);
 
-	public static final ActionsGroup MOVE_RELOAD_SHOOT = new ActionsGroup(GameMode.FINAL_FRENZY_BEFORE_FP, 0, Action.MOVE_ACTION, Action.RELOAD_ACTION, Action.FIRE_ACTION);
-	public static final ActionsGroup FOUR_MOVES = new ActionsGroup(GameMode.FINAL_FRENZY_BEFORE_FP, 0, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.MOVE_ACTION);
-	public static final ActionsGroup TWO_MOVES_AND_GRAB_FINAL_FRENZY = new ActionsGroup(GameMode.FINAL_FRENZY_BEFORE_FP, 0, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.GRAB_ACTION);
+	public static final ActionsGroup MOVE_RELOAD_SHOOT = new ActionsGroup(GameMode.FINAL_FRENZY_BEFORE_FP, 0, Action.MOVE, Action.RELOAD, Action.FIRE);
+	public static final ActionsGroup FOUR_MOVES = new ActionsGroup(GameMode.FINAL_FRENZY_BEFORE_FP, 0, Action.MOVE, Action.MOVE, Action.MOVE, Action.MOVE);
+	public static final ActionsGroup TWO_MOVES_AND_GRAB_FINAL_FRENZY = new ActionsGroup(GameMode.FINAL_FRENZY_BEFORE_FP, 0, Action.MOVE, Action.MOVE, Action.GRAB);
 
-	public static final ActionsGroup TWO_MOVES_RELOAD_SHOOT = new ActionsGroup(GameMode.FINAL_FRENZY_AFTER_FP, 0, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.RELOAD_ACTION, Action.FIRE_ACTION);
-	public static final ActionsGroup THREE_MOVES_AND_GRAB = new ActionsGroup(GameMode.FINAL_FRENZY_AFTER_FP, 0, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.MOVE_ACTION, Action.GRAB_ACTION);
+	public static final ActionsGroup TWO_MOVES_RELOAD_SHOOT = new ActionsGroup(GameMode.FINAL_FRENZY_AFTER_FP, 0, Action.MOVE, Action.MOVE, Action.RELOAD, Action.FIRE);
+	public static final ActionsGroup THREE_MOVES_AND_GRAB = new ActionsGroup(GameMode.FINAL_FRENZY_AFTER_FP, 0, Action.MOVE, Action.MOVE, Action.MOVE, Action.GRAB);
 
 
-	private final ArrayList<Integer> actions;
+	private final ArrayList<Action> actions;
 	private final GameMode gameMode;
 	private final int damageToActivate;
 
@@ -37,7 +37,7 @@ public class ActionsGroup
 	 * @param damageToActivate damages that lead to a spec. group of actions
 	 * @param actions actions that can be included in the group
 	 */
-	private ActionsGroup(GameMode gameMode, int damageToActivate, Integer... actions)
+	private ActionsGroup(GameMode gameMode, int damageToActivate, Action... actions)
 	{
 		this.actions = new ArrayList<>();
 		this.actions.addAll(Arrays.asList(actions));
@@ -46,7 +46,7 @@ public class ActionsGroup
 		this.damageToActivate = damageToActivate;
 	}
 
-	public List<Integer> getActions() {
+	public List<Action> getActions() {
 		return this.actions;
 	}
 
@@ -81,7 +81,7 @@ public class ActionsGroup
 		GameMode gameMode = player.getGameController().getGameMode();
 		int totalDamage = player.getGameBoard().getTotalReceivedDamage();
 
-		Integer[] alreadyExecutedActions = player.getExecutedActions();
+		Action[] alreadyExecutedActions = player.getExecutedActions();
 
 		ArrayList<ActionsGroup> groups = new ArrayList<>(Arrays.asList(ActionsGroup.clonedValues()));
 
@@ -103,7 +103,7 @@ public class ActionsGroup
 					boolean found = false;
 					for(int i = 0; i < group.getActions().size();)
 					{
-						if(group.getActions().get(i) == alreadyExecutedActions[j].intValue())
+						if(group.getActions().get(i) == alreadyExecutedActions[j])
 						{
 							group.getActions().remove(i);
 							found = true;
@@ -122,15 +122,37 @@ public class ActionsGroup
 
 	}
 
+	public static int countActionInGroup(ActionsGroup group, Action actionToCount)
+	{
+		int actionCount = 0;
+		for(Action action : group.getActions())
+		{
+			if(action == actionToCount)actionCount++;
+		}
+		return actionCount;
+	}
+
+	public static  int getMaxMoves(Player player)
+	{
+		ActionsGroup[] groups = ActionsGroup.getPossibleActionGroups(player);
+		int maxMoves = 0;
+		for(ActionsGroup group : groups)
+		{
+			int moves = countActionInGroup(group, Action.MOVE);
+			if(moves > maxMoves)maxMoves = moves;
+		}
+		return maxMoves;
+	}
+
 	/**
 	 *
 	 * @param player The player for whom you want to know possible actions
 	 * @return The distinct possible actions for the player
 	 */
 
-	public static Integer[] getPossibleActions(Player player)
+	public static Action[] getPossibleActions(Player player)
 	{
-		ArrayList<Integer> possibleAction = new ArrayList<>();
+		ArrayList<Action> possibleAction = new ArrayList<>();
 		ActionsGroup[] groups = getPossibleActionGroups(player);
 
 		for(ActionsGroup group : groups)
@@ -140,7 +162,7 @@ public class ActionsGroup
 
 		possibleAction = possibleAction.stream().distinct().collect(Collectors.toCollection(ArrayList::new));
 
-		Integer[] intArray = new Integer[possibleAction.size()];
+		Action[] intArray = new Action[possibleAction.size()];
 
 		return possibleAction.toArray(intArray);
 	}
@@ -166,7 +188,7 @@ public class ActionsGroup
 	@Override
 	public ActionsGroup clone()
 	{
-		Integer[] clonedActions = new Integer[actions.size()];
+		Action[] clonedActions = new Action[actions.size()];
 		clonedActions = actions.toArray(clonedActions);
 		return new ActionsGroup(gameMode, damageToActivate, clonedActions);
 	}

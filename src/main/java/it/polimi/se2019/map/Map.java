@@ -39,7 +39,6 @@ public class Map implements Serializable
 	}
 
 
-
 	/**
 	 * initializes the rooms with a random selection
 	 * @return return the rooms generated
@@ -47,6 +46,11 @@ public class Map implements Serializable
 	private Map initMap()
 	{
 		mapNumber = 1 + new Random().nextInt(4);
+
+		//
+		mapNumber = 3;
+		//
+
 		Logger.debug("Map "+mapNumber+" selected");
 		scanner = new Scanner(getClass().getResourceAsStream("/maps"));
 		String line;
@@ -59,6 +63,7 @@ public class Map implements Serializable
 		readMap();
 		readDoors();
 		createPaths();
+
 		Logger.debug("Map ready!");
 		return this;
 	}
@@ -108,6 +113,11 @@ public class Map implements Serializable
 		List<Block> blocks = new ArrayList<>();
 		rooms.forEach(room -> blocks.addAll(room.getBlocks()));
 		return blocks;
+	}
+
+	public Block getBlock(int x, int y)
+	{
+		return getMapMatrix()[y][x];
 	}
 
 	/**
