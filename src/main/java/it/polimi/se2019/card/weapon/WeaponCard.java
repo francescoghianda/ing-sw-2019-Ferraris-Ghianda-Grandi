@@ -4,6 +4,7 @@ import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.cardscript.CardScriptExecutor;
 import it.polimi.se2019.card.Grabbable;
 import it.polimi.se2019.card.cost.Cost;
+import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.player.Player;
 
 import java.io.Serializable;
@@ -13,6 +14,8 @@ import java.util.stream.Collectors;
 
 public class WeaponCard extends Card implements Grabbable, Serializable
 {
+	private static final HashMap<String, WeaponCard> cards = new HashMap<>();
+
 	private Mode fireMode;
 
 	private boolean hasAlternateFireMode;
@@ -37,6 +40,16 @@ public class WeaponCard extends Card implements Grabbable, Serializable
 		fireMode = Mode.BASIC;
 	}
 
+	public static WeaponCard findCardById(String id)
+	{
+		return cards.get(id);
+	}
+
+	public static void addCard(String id, WeaponCard card)
+	{
+		cards.putIfAbsent(id, card);
+	}
+
 	@Override
 	public void setId(String id)
 	{
@@ -53,7 +66,7 @@ public class WeaponCard extends Card implements Grabbable, Serializable
 		this.isLoad = true;
 	}
 
-	public void fire(Player player)throws WeaponNotLoadException
+	public void fire(Player player)throws WeaponNotLoadException, CanceledActionException
 	{
 		if(!isLoad)throw new WeaponNotLoadException(this);
 		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))createScriptExecutor(player);
@@ -61,7 +74,7 @@ public class WeaponCard extends Card implements Grabbable, Serializable
 		scriptExecutor.execute();
 	}
 
-	public boolean useOptionalEffect(Player player, OptionalEffect effect)throws WeaponNotLoadException
+	public boolean useOptionalEffect(Player player, OptionalEffect effect)throws WeaponNotLoadException, CanceledActionException
 	{
 		if(!isLoad)throw new WeaponNotLoadException(this);
 		if(!effect.isEnabled())return false;
@@ -93,17 +106,17 @@ public class WeaponCard extends Card implements Grabbable, Serializable
 		return this.optionalEffects.values().stream().filter(OptionalEffect::isEnabled).collect(Collectors.toList());
 	}
 
-	Cost getBuyCost()
+	public Cost getBuyCost()
 	{
 		return buyCost;
 	}
 
-	Cost getReloadCost()
+	public Cost getReloadCost()
 	{
 		return reloadCost;
 	}
 
-	Cost getAlternateModeCost()
+	public Cost getAlternateModeCost()
 	{
 		return alternateModeCost;
 	}

@@ -1,26 +1,26 @@
 package it.polimi.se2019.ui.gui.components;
 
 import it.polimi.se2019.player.GameBoardData;
-import it.polimi.se2019.player.Player;
 import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.gui.GUI;
-import it.polimi.se2019.ui.gui.MatchScene;
 import it.polimi.se2019.utils.constants.GameColor;
+import it.polimi.se2019.utils.gui.BloodDropImageFactory;
 import javafx.beans.NamedArg;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.image.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.EnumMap;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.function.BinaryOperator;
 
 public class BoardView extends StackPane implements Initializable
 {
@@ -44,6 +44,9 @@ public class BoardView extends StackPane implements Initializable
 
     private Image background;
 
+
+    private BloodDropImageFactory bloodFactory;
+
     public BoardView(@NamedArg("color")GameColor color)
     {
         super();
@@ -51,6 +54,9 @@ public class BoardView extends StackPane implements Initializable
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         loadBackGrounds();
+
+        bloodFactory = BloodDropImageFactory.getInstance();
+
         this.color = color;
         load(fxmlLoader);
     }
@@ -83,8 +89,6 @@ public class BoardView extends StackPane implements Initializable
         canvas.setWidth(getPrefWidth());
 
         scale = canvas.getHeight()/background.getHeight();
-
-        System.out.println("h"+canvas.getHeight());
     }
 
     private void paint()
@@ -93,7 +97,100 @@ public class BoardView extends StackPane implements Initializable
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         paintAmmo(gc);
+        paintDamages(gc);
+        paintMarkers(gc);
     }
+
+    private void paintDamages(GraphicsContext gc)
+    {
+        LinkedHashMap<GameColor, Integer> damages = gameBoard.getDamages();
+
+        double x = 110*scale;
+        double y = 114*scale;
+        double space1 = 27*scale;
+        double space2 = 33*scale;
+
+        //
+        damages.put(GameColor.GREEN, 3);
+        damages.put(GameColor.WHITE, 4);
+        damages.put(GameColor.PURPLE, 4);
+        //
+
+        Set<GameColor> keys = damages.keySet();
+
+        final double width = 35*scale;
+        final double height = 50*scale;
+
+        double totSpace = 0;
+        int i = 0;
+        for(GameColor key : keys)
+        {
+            int blood = damages.get(key);
+            for(int j = 0; j < blood; j++, i++)
+            {
+                double space = space1;
+                if(i == 2 || i == 5 || i == 10)space = space2;
+                if(i == 0)space = 0;
+                Image image = bloodFactory.getBloodDropImage(key);
+                gc.drawImage(image, x+width*i+totSpace+space, y, width, height);
+                totSpace += space;
+            }
+        }
+    }
+
+    private void paintMarkers(GraphicsContext gc)
+    {
+        LinkedHashMap<GameColor, Integer> markers = gameBoard.getMarkers();
+
+        double xi = 542*scale;
+        double yi = 0;
+        double space = 8*scale;
+
+        //
+        markers.put(GameColor.BLUE, 2);
+        markers.put(GameColor.YELLOW, 3);
+        markers.put(GameColor.PURPLE, 2);
+        //
+
+        Set<GameColor> keys = markers.keySet();
+
+        final double width = 35*scale;
+        final double height = 50*scale;
+
+        if(markers.values().stream().reduce(0, Integer::sum) <= 7)
+        {
+            int i = 0;
+            for(GameColor key : keys)
+            {
+                int blood = markers.get(key);
+                for(int j = 0; j < blood; j++, i++)
+                {
+                    Image image = bloodFactory.getBloodDropImage(key);
+                    gc.drawImage(image, xi+width*i+space*i, yi, width, height);
+                }
+            }
+        }
+        else
+        {
+            gc.setFont(new Font(height/4.2));
+            int i = 0;
+            for(GameColor key : keys)
+            {
+                int blood = markers.get(key);
+                Image image = bloodFactory.getBloodDropImage(key);
+                double x = xi+width*i+space*i;
+                gc.drawImage(image, x, yi, width, height);
+                gc.setFill(Color.BLACK);
+
+                Text text = new Text("x"+blood);
+                text.setFont(gc.getFont());
+                double textWidth = text.getBoundsInParent().getWidth();
+                gc.fillText("x"+blood, x+width/2-textWidth/2, yi+height/1.5);
+                i++;
+            }
+        }
+    }
+
 
     private void paintAmmo(GraphicsContext gc)
     {
@@ -149,6 +246,7 @@ public class BoardView extends StackPane implements Initializable
             backgrounds.put(GameColor.YELLOW, new Image(BoardView.class.getResourceAsStream(path+"yellow/board.png")));
         }
     }
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources)

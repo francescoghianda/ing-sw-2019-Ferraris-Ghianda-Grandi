@@ -1,8 +1,10 @@
 package it.polimi.se2019.ui.gui.components;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.map.MapData;
 import it.polimi.se2019.player.PlayerData;
+import it.polimi.se2019.ui.gui.MatchScene;
 import it.polimi.se2019.utils.constants.GameColor;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -198,6 +200,11 @@ public class MapBlock extends Rectangle2D implements CardView.OnCardViewClickLis
     @Override
     public void onCardClick(CardView cardView)
     {
-        System.out.println(this.mapX+" "+this.mapY);
+        MatchScene matchScene = MatchScene.getInstance();
+
+        if(matchScene.getGameData().getPlayer().getCoordinates().equals(new Coordinates(mapX, mapY)))
+        {
+            matchScene.onCardClick(cardView);
+        }
     }
 }

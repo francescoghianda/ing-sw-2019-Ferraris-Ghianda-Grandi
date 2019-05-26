@@ -2,7 +2,9 @@ package it.polimi.se2019.ui;
 
 import it.polimi.se2019.card.Card;
 import it.polimi.se2019.controller.GameData;
+import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
+import it.polimi.se2019.player.Action;
 
 import java.util.ArrayList;
 
@@ -26,6 +28,12 @@ public interface UI extends GameEventHandler
     void firstPlayerIs(String firstPlayerUsername);
     void connectionRefused();
 
+    boolean notEnoughAmmo(boolean askToSellPowerUp);
     String choose(Bundle<String, ArrayList<String>> options);
     String chooseSpawnPoint(Card option1, Card option2);
+    Action chooseActionFrom(Action[] possibleActions);
+    Coordinates chooseBlock(int maxDistance);
+    Card chooseWeaponFromPlayer();
+    Card chooseWeaponFromBlock();
+    Card choosePowerUp();
 }

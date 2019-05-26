@@ -6,3 +6,7 @@
     -fx-font-size: 20;
     -fx-text-fill: black;
 }
+.button:disabled
+{
+    -fx-opacity: 0.4;
+}

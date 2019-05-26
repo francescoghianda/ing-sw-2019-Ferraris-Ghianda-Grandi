@@ -1,18 +1,17 @@
 package it.polimi.se2019.controller;
 
+import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.ammo.AmmoCard;
 import it.polimi.se2019.card.deck.Deck;
 import it.polimi.se2019.card.deck.DeckFactory;
 import it.polimi.se2019.card.powerup.PowerUpCard;
-import it.polimi.se2019.card.weapon.OptionalEffect;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.map.Block;
+import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.map.Map;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
-import it.polimi.se2019.network.message.Bundle;
-import it.polimi.se2019.network.message.Messages;
-import it.polimi.se2019.player.Player;
+import it.polimi.se2019.player.*;
 import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.constants.GameMode;
 import it.polimi.se2019.utils.logging.Logger;
@@ -20,10 +19,8 @@ import it.polimi.se2019.utils.timer.Timer;
 import it.polimi.se2019.utils.timer.TimerListener;
 import it.polimi.se2019.utils.xml.NotValidXMLException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.function.Consumer;
 
 
 public class GameController implements TimerListener
@@ -45,7 +42,7 @@ public class GameController implements TimerListener
 
     private RoundManager roundManager;
 
-    private int playersForStart = 1;
+    private int playersForStart = 2;
 
     public GameController()
     {
@@ -77,25 +74,87 @@ public class GameController implements TimerListener
         }
     }
 
+    public List<Player> getPlayers()
+    {
+        return this.players;
+    }
+
+    public Optional<Player> findPlayerByUsername(String username)
+    {
+        for(Player player : players)
+        {
+            if(player.getUsername().equals(username))return Optional.of(player);
+        }
+        return Optional.empty();
+    }
+
     private void nextRound()
     {
         Player currentPlayer = roundManager.next();
+        
         if(roundManager.isFirstRound())firstRound(currentPlayer);
 
+        Action[] possibleActions;
+
+        while ((possibleActions = ActionsGroup.getPossibleActions(currentPlayer)).length > 0)
+        {
+            Action chosen = currentPlayer.getView().chooseActionFrom(possibleActions);
+
+            if(chosen == Action.END_ROUND)break;
+
+            try
+            {
+                executeAction(chosen, currentPlayer);
+            }
+            catch (CanceledActionException e)
+            {
+                Logger.warning("Player "+currentPlayer.getUsername()+" has canceled action. "+e.getCanceledCause());
+                continue;
+            }
+
+            sendBroadcastUpdate();
+        }
+
+        currentPlayer.resetExecutedAction();
+
+        refillMap();
+        sendBroadcastUpdate();
+        nextRound();
     }
 
+    private void executeAction(Action action, Player player) throws CanceledActionException
+    {
+        switch (action)
+        {
+            case MOVE:
+                Block destinationBlock = selectBlock(player);
+                movePlayer(player, destinationBlock);
+                break;
+            case GRAB:
+                grab(player);
+                break;
+
+        }
+    }
+
+    private Block selectBlock(Player player)
+    {
+        int maxMoves = ActionsGroup.getMaxMoves(player);
+        Coordinates coords = player.getView().chooseBlock(maxMoves);
+        return map.getBlock(coords.getX(), coords.getY());
+    }
 
     private void firstRound(Player player)
     {
-        PowerUpCard first = powerUpCardDeck.getFirstCard();
-        PowerUpCard second = powerUpCardDeck.getFirstCard();
-        String chosenId = (String) player.getResponseTo(Messages.CHOOSE_SPAWN_POINT.setParam(new Bundle<>(first, second))).getParam();
+        PowerUpCard option1 = powerUpCardDeck.getFirstCard();
+        PowerUpCard option2 = powerUpCardDeck.getFirstCard();
+        String chosenId = player.getView().chooseSpawnPoint(option1, option2);
 
-        PowerUpCard chosen = first.getId().equals(chosenId) ? first : second;
+        PowerUpCard chosen = option1.getId().equals(chosenId) ? option1 : option2;
 
         Block spawnPoint = map.findRoomByColor(chosen.getColor()).getSpawnPoint();
         powerUpCardDeck.addCard(chosen);
-        player.addPowerUpCard(chosen.equals(first) ? second : first);
+        player.addPowerUpCard(chosen.equals(option1) ? option2 : option1);
         player.setBlock(spawnPoint);
         sendBroadcastUpdate();
     }
@@ -148,8 +207,9 @@ public class GameController implements TimerListener
     {
         Player firstPlayer = players.get(random.nextInt(players.size()));
         firstPlayer.setAsStartingPlayer(true);
-        firstPlayer.sendMessageToClient(Messages.YOU_ARE_FIRST_PLAYER);
-        firstPlayer.notifyOtherClients(Messages.FIRST_PLAYER_IS.setParam(firstPlayer.getClientConnection().getUsername()));
+        firstPlayer.getView().youAreFirstPlayer();
+        String username = firstPlayer.getClientConnection().getUsername();
+        notifyOtherClients(firstPlayer, view -> view.firstPlayerIs(username));
         roundManager = new RoundManager(players, firstPlayer);
     }
 
@@ -184,7 +244,7 @@ public class GameController implements TimerListener
 
     public void sendUpdate(Player player)
     {
-        player.sendMessageToClient(Messages.UPDATE_DATA.setParam(getData(player)));
+        player.getView().update(getData(player));
     }
 
     public GameData getData(Player player)
@@ -197,29 +257,111 @@ public class GameController implements TimerListener
         players.forEach(this::sendUpdate);
     }
 
+    public void notifyOtherClients(Player player, Consumer<VirtualView> consumer)
+    {
+        players.forEach(client ->
+        {
+            if(!client.equals(player))consumer.accept(client.getView());
+        });
+    }
+
+    public void sendBroadCastMessage(Consumer<VirtualView> consumer)
+    {
+        players.forEach(player -> consumer.accept(player.getView()));
+    }
+
     public void movePlayer(Player player, Block block)
     {
-
+        //TODO movimento tra i blocchi (path)
+        int distance = block.getDistanceFrom(player.getBlock());
+        player.setBlock(block);
+        for(int i = 0; i < distance; i++)player.addExecutedAction(Action.MOVE);
     }
 
-    public void useWeapon(Player player, WeaponCard weapon)
-    {
-        if(player.getWeapons().contains(weapon) && weapon.isLoad())
-        {
-            List<OptionalEffect> enabledFffects = weapon.getEnabledOptionalEffects();
-        }
-
-        weapon.setLoad(false);
-    }
 
     public void usePowerUp(Player player, PowerUpCard powerUp)
     {
 
     }
 
+    public WeaponCard selectWeaponFromPlayer(Player player)
+    {
+        Card chosen = player.getView().chooseWeaponFromPlayer();
+        return WeaponCard.findCardById(chosen.getId());
+    }
+
+    public WeaponCard selectWeaponFromBlock(Player player)
+    {
+        Card chosen = player.getView().chooseWeaponFromBlock();
+        return WeaponCard.findCardById(chosen.getId());
+    }
+
+    public void notEnoughAmmo(Player player)
+    {
+        if(player.powerUpsSize() > 0)
+        {
+            boolean sellPowerUp = player.getView().notEnoughAmmo(true);
+            if(!sellPowerUp)return;
+            Card chosen = player.getView().choosePowerUp();
+            PowerUpCard powerUpCard = PowerUpCard.findById(chosen.getId());
+
+            switch (powerUpCard.getColor())
+            {
+                case BLUE:
+                    player.getGameBoard().addBlueAmmo(1);
+                    break;
+                case RED:
+                    player.getGameBoard().addRedAmmo(1);
+                    break;
+                case YELLOW:
+                    player.getGameBoard().addYellowAmmo(1);
+                    break;
+            }
+            player.removePowerUp(powerUpCard);
+            powerUpCardDeck.addCard(powerUpCard);
+        }
+        else
+        {
+            player.getView().notEnoughAmmo(false);
+        }
+    }
+
     public void grab(Player player)
     {
+        Block playerBlock = player.getBlock();
+        if(playerBlock.isSpawnPoint() && playerBlock.isWeaponCardPresent())
+        {
+            WeaponCard weaponCard = selectWeaponFromBlock(player);
 
+            try
+            {
+                player.getGameBoard().pay(weaponCard.getBuyCost());
+                if(player.weaponsSize() >= 3)
+                {
+                    WeaponCard substituteWeapon = selectWeaponFromPlayer(player);
+                    player.removeWeapon(substituteWeapon);
+                    player.addWeaponCard(weaponCard);
+                    playerBlock.replaceWeaponCard(weaponCard, substituteWeapon);
+                }
+                else
+                {
+                    playerBlock.removeWeaponCard(weaponCard);
+                    player.addWeaponCard(weaponCard);
+                }
+                player.addExecutedAction(Action.GRAB);
+            }
+            catch (NotEnoughAmmoException e)
+            {
+                notEnoughAmmo(player);
+            }
+        }
+        else if(playerBlock.getAmmoCard() != null)
+        {
+            playerBlock.getAmmoCard().apply(player, powerUpCardDeck);
+            ammoCardDeck.addCard(playerBlock.getAmmoCard());
+            playerBlock.removeAmmoCard();
+            player.addExecutedAction(Action.GRAB);
+        }
     }
 
     public void reload(Player player, WeaponCard weapon)
@@ -235,13 +377,13 @@ public class GameController implements TimerListener
     @Override
     public void onTimerStart(String timerName)
     {
-        clientsManager.sendBroadcastMessage(Messages.GAME_IS_STARTING);
+        sendBroadCastMessage(VirtualView::gameIsStarting);
     }
 
     @Override
     public void onTimerTick(String timerName, int remainingTime)
     {
-        clientsManager.sendBroadcastMessage(Messages.TIMER_SECONDS.setParam(remainingTime));
+        sendBroadCastMessage((virtualView -> virtualView.showTimerCountdown(remainingTime)));
     }
 
     @Override
@@ -249,9 +391,9 @@ public class GameController implements TimerListener
     {
         try
         {
-            clientsManager.sendBroadcastMessage(Messages.TIMER_SECONDS.setParam(0));
+            sendBroadCastMessage((virtualView -> virtualView.showTimerCountdown(0)));
             Thread.sleep(1000);
-            clientsManager.sendBroadcastMessage(Messages.GAME_IS_STARTED);
+            sendBroadCastMessage(VirtualView::gameStarted);
         }
         catch (InterruptedException e)
         {

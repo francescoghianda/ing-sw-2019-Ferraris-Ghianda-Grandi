@@ -19,13 +19,13 @@ public class RoundManager
 
     public Player next()
     {
-        Player currentPlayer = players.get(index);
-        index++;
-        if(index > players.size())
+        if(index >= players.size())
         {
             index = 0;
             roundNumber++;
         }
+        Player currentPlayer = players.get(index);
+        index++;
         return currentPlayer;
     }
 

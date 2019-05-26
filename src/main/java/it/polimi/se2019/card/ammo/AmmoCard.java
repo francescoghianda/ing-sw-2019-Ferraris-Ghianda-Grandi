@@ -1,6 +1,9 @@
 package it.polimi.se2019.card.ammo;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.deck.Deck;
+import it.polimi.se2019.card.powerup.PowerUpCard;
+import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.player.Player;
 
 import java.io.Serializable;
@@ -28,11 +31,13 @@ public class AmmoCard extends Card implements Serializable
 		super.setId("AMC"+id);
 	}
 
-	public void apply(Player player)
+	public void apply(Player player, Deck<PowerUpCard> powerUpCardDeck)
 	{
 		player.getGameBoard().addRedAmmo(this.redAmmo);
 		player.getGameBoard().addYellowAmmo(this.yellowAmmo);
 		player.getGameBoard().addBlueAmmo(this.blueAmmo);
+
+		if(pickPowerUp && player.powerUpsSize() < 3) player.addPowerUpCard(powerUpCardDeck.getFirstCard());
 	}
 
 	public int getRedAmmo()

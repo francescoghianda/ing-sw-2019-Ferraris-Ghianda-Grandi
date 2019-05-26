@@ -86,6 +86,8 @@ public class XMLDeckReader
 
         for(int i = 0; i < cards.getLength(); i++)powerUpCards.addAll(parsePowerUpCard((Element)cards.item(i)));
 
+        powerUpCards.forEach(card -> PowerUpCard.addCard(card.getId(), card));
+
         return powerUpCards;
     }
 
@@ -98,6 +100,8 @@ public class XMLDeckReader
         if(cards == null)return weaponCards;
 
         for(int i = 0; i < cards.getLength(); i++) weaponCards.add(parseWeaponCard((Element) cards.item(i)));
+
+        weaponCards.forEach(card -> WeaponCard.addCard(card.getId(), card));
 
         return weaponCards;
     }

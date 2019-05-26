@@ -3,8 +3,10 @@ package it.polimi.se2019.ui.cli;
 import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.controller.GameData;
+import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.map.Map;
 import it.polimi.se2019.network.message.Bundle;
+import it.polimi.se2019.player.Action;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.NetworkInterface;
@@ -110,6 +112,12 @@ public class CLI implements UI
     }
 
     @Override
+    public boolean notEnoughAmmo(boolean askToSellPowerUp)
+    {
+        return false;
+    }
+
+    @Override
     public String choose(Bundle<String, ArrayList<String>> bundle)
     {
         Options<Void> options = new Options<>(bundle.getFirst(), true);
@@ -123,6 +131,37 @@ public class CLI implements UI
         Options<Card> powerUpCardOptions = new Options<>(CliString.CHOOSE_SPAWN_POINT, false);
         powerUpCardOptions.addOption(option1.toString(), "1", option1).addOption(option2.toString(), "2", option2);
         return powerUpCardOptions.show().getValue().getId();
+    }
+
+    @Override
+    public Action chooseActionFrom(Action[] possibleActions)
+    {
+        return null;
+    }
+
+    @Override
+    public Coordinates chooseBlock(int maxDistance)
+    {
+        return null;
+    }
+
+    @Override
+    public Card chooseWeaponFromPlayer()
+    {
+
+        return null;
+    }
+
+    @Override
+    public Card chooseWeaponFromBlock()
+    {
+        return null;
+    }
+
+    @Override
+    public Card choosePowerUp()
+    {
+        return null;
     }
 
     @Override

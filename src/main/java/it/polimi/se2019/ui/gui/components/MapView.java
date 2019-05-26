@@ -64,6 +64,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
     private double blockStartXScaled;
     private double blockStartYScaled;
     private double leftImageWidth;
+    private double rightImageWidth;
 
     private boolean scaleComputed;
     private final List<Runnable> afterScale;
@@ -164,8 +165,8 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
                     }
                     else
                     {
-                        cardView.setLayoutX(getLeftImageWidth()+1002*scale);
-                        cardView.setLayoutY(1100*scale+40*scale+cardView.getWidth()*i+cardView.getMaxWidth());
+                        cardView.setLayoutX(getLeftImageWidth()+rightImageWidth);
+                        cardView.setLayoutY(1100*scale+40*scale*i+cardView.getMaxWidth()*i);
                         cardView.getTransforms().add(new Rotate(90, 0, 0));
                     }
 
@@ -183,7 +184,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         {
             for(int j = 0; j < blocks[i].length; j++)
             {
-                if(blocks[i][j] != null && !blocks[i][j].getPlayers().isEmpty())
+                if(blocks[i][j] != null)
                 {
                     MapBlock mapBlock = getBlock(j, i);
                     if(mapBlock != null)mapBlock.updatePlayers(blocks[i][j].getPlayers());
@@ -290,11 +291,6 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         }
     }
 
-    public Pane getPane()
-    {
-        return this.pane;
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
@@ -327,6 +323,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
                     blockStartXScaled = blockStartX*scale;
                     blockStartYScaled = blockStartY*scale;
                     leftImageWidth = leftImage.getImage().getWidth()*scale;
+                    rightImageWidth = rightImage.getImage().getWidth()*scale;
                     Logger.debug("SCALE COMPUTED");
                     afterScale.forEach(Runnable::run);
                     paintSkulls(4, 4);

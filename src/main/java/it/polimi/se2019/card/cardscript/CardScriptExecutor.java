@@ -1,21 +1,23 @@
 package it.polimi.se2019.card.cardscript;
 
 import it.polimi.se2019.card.weapon.WeaponCard;
+import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.map.Block;
-import it.polimi.se2019.network.message.Messages;
-import it.polimi.se2019.network.message.NetworkMessageServer;
+import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class CardScriptExecutor
 {
-    private static final int MIN_DISTANCE = 0;
-    private static final int MAX_DISTANCE = 1;
 
     private HashMap<String, Method> commands;
 
@@ -62,6 +64,16 @@ public class CardScriptExecutor
         return this.contextPlayer;
     }
 
+    public HashMap<String, Player> getPlayers()
+    {
+        return this.players;
+    }
+
+    public HashMap<String, Block> getBlocks()
+    {
+        return this.blocks;
+    }
+
     public CardScriptExecutor setScript(String script)
     {
         currScript = script.split("\\r?\\n");
@@ -76,7 +88,7 @@ public class CardScriptExecutor
         updateContextBlock();
     }
 
-    public void execute()
+    public void execute() throws CanceledActionException
     {
         for (String line : currScript)
         {
@@ -86,9 +98,17 @@ public class CardScriptExecutor
                 {
                     executeLine(line);
                 }
-                catch (InvocationTargetException | IllegalAccessException e)
+                catch (InvocationTargetException e)
                 {
+                    if(e.getCause() instanceof CanceledActionException)
+                    {
+                        throw new CanceledActionException(((CanceledActionException)e.getCause()).getCanceledCause());
+                    }
                     Logger.exception(e);
+                }
+                catch (IllegalAccessException e1)
+                {
+                    Logger.exception(e1);
                 }
             }
         }
@@ -112,27 +132,40 @@ public class CardScriptExecutor
         if(!executed)throw new CardScriptErrorException();
     }
 
-    private void selectPlayer(String param)
+    private void selectPlayer(String param) throws CanceledActionException
     {
         String[] params = param.trim().split("->");
         if(players.containsKey(params[1].trim()))throw new CardScriptErrorException();
-        String[] expressions = getExpressions(params[0].trim());
-        Predicate<Player> predicate = player -> evaluateExpression(expressions, player);
-        NetworkMessageServer<?> response = contextPlayer.getResponseTo(Messages.SELECT_PLAYER);
+        LogicExpression expression = new LogicExpression(params[0].trim());
+        Predicate<Player> predicate = player -> expression.evaluate(players, blocks, player);
+
+        List<Player> allPlayers = contextPlayer.getGameController().getPlayers();
+        ArrayList<String> validUsername = allPlayers.stream().filter(predicate).map(Player::getUsername).collect(Collectors.toCollection(ArrayList::new));
+
+        if(validUsername.isEmpty())throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION);
+
+        String chosen = contextPlayer.getView().choose(new Bundle<>("Scegli un giocatore tra", validUsername));
+        Optional<Player> chosenPlayer = contextPlayer.getGameController().findPlayerByUsername(chosen);
+
+        /*NetworkMessageServer<?> response = contextPlayer.getResponseTo(Messages.SELECT_PLAYER);
         while(!predicate.test((Player)response.getParam()))
         {
             response = contextPlayer.getResponseTo(Messages.STATE_MESSAGE_CLIENT.setParam(Messages.INVALID_PLAYER));
         }
-        contextPlayer.sendMessageToClient(Messages.STATE_MESSAGE_CLIENT.setParam(Messages.OK));
-        players.put(params[1].trim(), (Player)response.getParam());
+        contextPlayer.sendMessageToClient(Messages.STATE_MESSAGE_CLIENT.setParam(Messages.OK));*/
+
+        if(!chosenPlayer.isPresent())throw new CardScriptErrorException("Invalid player <"+chosen+">");
+
+        players.put(params[1].trim(), chosenPlayer.get());
     }
 
+    /*
     private void selectBlock(String param)
     {
         String[] params = param.trim().split("->");
         if(blocks.containsKey(params[1].trim()))throw new CardScriptErrorException();
-        String[] expressions = getExpressions(params[0].trim());
-        Predicate<Block> predicate = block -> evaluateExpression(expressions, block);
+        LogicExpression expression = new LogicExpression(params[0].trim());
+        Predicate<Block> predicate = block -> expression.evaluate(players, blocks, block);
         NetworkMessageServer<?> response = contextPlayer.getResponseTo(Messages.SELECT_BLOCK);
         while(!predicate.test((Block)response.getParam()))
         {
@@ -140,77 +173,7 @@ public class CardScriptExecutor
         }
         contextPlayer.sendMessageToClient(Messages.STATE_MESSAGE_CLIENT.setParam(Messages.OK));
         blocks.put(params[1].trim(), (Block)response.getParam());
-    }
-
-    private String[] getExpressions(String str)
-    {
-        if(str == null || str.isEmpty() || !(str.startsWith("(") && str.endsWith(")")))throw new CardScriptErrorException();
-        return str.substring(1, str.length()-1).split(",");
-    }
-
-    private boolean evaluateExpression(String[] expressions, Object obj)
-    {
-        for(String expression : expressions)
-        {
-            boolean result = false;
-            String[] subExpressions = expression.split("or");
-            for(String subExpr : subExpressions)
-            {
-                if(evaluateExpression(subExpr.trim(), obj))result = true;
-            }
-            if(!result)return false;
-        }
-        return true;
-    }
-
-    private boolean evaluateExpression(String expression, Object obj)
-    {
-        Block block = null;
-        Player player = null;
-        boolean result;
-        boolean invert = false;
-        boolean isPlayer = false;
-        if(obj instanceof Block)block = (Block)obj;
-        else if(obj instanceof Player)
-        {
-            player = (Player)obj;
-            isPlayer = true;
-        }
-        else throw new CardScriptErrorException();
-
-        String[] split = expression.split(" ");
-        if(expression.startsWith("!"))
-        {
-            invert = true;
-            split[0] = split[0].substring(1);
-        }
-
-        switch (split[0])
-        {
-            case "visible":
-                result = isPlayer ? players.get(split[1]).getVisiblePlayers().contains(player) :
-                        players.get(split[1]).getVisibleBlocks().contains(block);
-                break;
-            case "equal":
-                result = isPlayer ? player.equals(players.get(split[1])) :
-                        block.equals(blocks.get(split[1]));
-                break;
-            case "maxd":
-                result = isAtDistance(obj, split[1], split[2], MAX_DISTANCE);
-                break;
-            case "mind":
-                result = isAtDistance(obj, split[1], split[2], MIN_DISTANCE);
-                break;
-            case "damaged":
-                result = contextPlayer.getDamagedPlayers().contains(player);
-                break;
-            default:
-                throw new CardScriptErrorException();
-        }
-        if(invert)return !result;
-        return result;
-
-    }
+    }*/
 
     private void hit(String param)
     {
@@ -233,6 +196,13 @@ public class CardScriptExecutor
     private void pay(String param)
     {
         //TODO
+    }
+
+    private boolean isDigit(String str)
+    {
+        if(str == null || str.isEmpty())return false;
+        for(char ch : str.toCharArray())if(!Character.isDigit(ch))return false;
+        return true;
     }
 
     private void mark(String param)
@@ -259,25 +229,6 @@ public class CardScriptExecutor
         updateContextBlock();
     }
 
-    private boolean isAtDistance(Object obj, String param2, String distance, int maxOrMin)
-    {
-        if(!isDigit(distance))throw new CardScriptErrorException();
-        int dist = Integer.parseInt(distance);
-        Block block1;
-        Block block2;
-
-        if(obj instanceof Block)block1 = (Block)obj;
-        else if(obj instanceof Player)block1 = ((Player)obj).getBlock();
-        else throw new CardScriptErrorException();
-
-        if(isPlayer(param2))block2 = players.get(param2).getBlock();
-        else if(isBlock(param2))block2 = blocks.get(param2);
-        else throw new CardScriptErrorException();
-
-       return maxOrMin == MAX_DISTANCE ? block1.getDistanceFrom(block2) <= dist : block1.getDistanceFrom(block2) >= dist;
-    }
-
-
     private void updateContextBlock()
     {
         contextBlock = contextPlayer.getBlock();
@@ -294,12 +245,7 @@ public class CardScriptExecutor
         return blocks.containsKey(str);
     }
 
-    private boolean isDigit(String str)
-    {
-        if(str == null || str.isEmpty())return false;
-        for(char ch : str.toCharArray())if(!Character.isDigit(ch))return false;
-        return true;
-    }
+
 
 
 

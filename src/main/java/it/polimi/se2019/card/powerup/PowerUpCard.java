@@ -6,9 +6,12 @@ import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.GameColor;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 public class PowerUpCard extends Card implements Grabbable, Serializable
 {
+	private static final HashMap<String, PowerUpCard> cards = new HashMap<>();
+
 	private transient String originalId;
 	private transient String script;
 	private GameColor color;
@@ -17,6 +20,16 @@ public class PowerUpCard extends Card implements Grabbable, Serializable
 	public PowerUpCard()
 	{
 		super();
+	}
+
+	public static void addCard(String id, PowerUpCard card)
+	{
+		cards.putIfAbsent(id, card);
+	}
+
+	public static PowerUpCard findById(String id)
+	{
+		return cards.get(id);
 	}
 
 	public void execute(Player player)

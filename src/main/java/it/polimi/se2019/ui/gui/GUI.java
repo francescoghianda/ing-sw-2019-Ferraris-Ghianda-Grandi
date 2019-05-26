@@ -2,17 +2,21 @@ package it.polimi.se2019.ui.gui;
 
 import it.polimi.se2019.card.Card;
 import it.polimi.se2019.controller.GameData;
+import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
+import it.polimi.se2019.player.Action;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.ui.gui.dialogs.CloseDialog;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
+import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.omg.CORBA.MARSHAL;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -134,9 +138,37 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     }
 
     @Override
+    public boolean notEnoughAmmo(boolean askToSellPowerUp)
+    {
+        MatchScene matchScene = MatchScene.getInstance();
+        SceneManager.runOnFxThread(()->
+        {
+
+            if(askToSellPowerUp)
+            {
+                matchScene.setOptions("Non hai abbastanza munizioni!\nVuoi vendere un potenziamento?", "Si", "No");
+            }
+            else
+            {
+                matchScene.setOptions("Non hai abbastanza munizioni!");
+            }
+        });
+
+        if(askToSellPowerUp)
+        {
+            String option = new ValueObserver<String>().getValue(matchScene.selectedOption);
+            return option.equals("Si");
+        }
+
+        return false;
+    }
+
+    @Override
     public String choose(Bundle<String, ArrayList<String>> options)
     {
-        return null;
+        MatchScene matchScene = MatchScene.getInstance();
+        SceneManager.runOnFxThread(() -> matchScene.setOptions(options.getFirst(), options.getSecond()));
+        return new ValueObserver<String>().getValue(matchScene.selectedOption);
     }
 
     @Override
@@ -144,10 +176,55 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     {
         SceneManager.runOnFxThread(() ->
         {
-            sceneManager.getMatchScene().addCard(option1);
-            sceneManager.getMatchScene().addCard(option2);
+            MatchScene.getInstance().addCard(option1);
+            MatchScene.getInstance().addCard(option2);
+            MatchScene.getInstance().setOptions("Seleziona il potenziamento che vuoi scartare");
         });
         return new ValueObserver<String>().getValue(sceneManager.getMatchScene().selectedPowerUpId);
+    }
+
+    @Override
+    public Action chooseActionFrom(Action[] possibleActions)
+    {
+        MatchScene matchScene = MatchScene.getInstance();
+        SceneManager.runOnFxThread(() ->
+        {
+            matchScene.setOptions("È il tuo turno");
+            matchScene.enableActions(possibleActions);
+        });
+        return new ValueObserver<Action>().getValue(matchScene.selectedAction);
+    }
+
+    @Override
+    public Coordinates chooseBlock(int maxDistance)
+    {
+        MatchScene matchScene = MatchScene.getInstance();
+        SceneManager.runOnFxThread(() -> matchScene.chooseBlock(maxDistance));
+        return new ValueObserver<Coordinates>().getValue(matchScene.selectedBlock);
+    }
+
+    @Override
+    public Card chooseWeaponFromPlayer()
+    {
+        MatchScene matchScene = MatchScene.getInstance();
+        SceneManager.runOnFxThread(matchScene::chooseWeaponFromPlayer);
+        return new ValueObserver<Card>().getValue(matchScene.selectedWeapon);
+    }
+
+    @Override
+    public Card chooseWeaponFromBlock()
+    {
+        MatchScene matchScene = MatchScene.getInstance();
+        SceneManager.runOnFxThread(matchScene::chooseWeaponFromBlock);
+        return new ValueObserver<Card>().getValue(matchScene.selectedWeapon);
+    }
+
+    @Override
+    public Card choosePowerUp()
+    {
+        MatchScene matchScene = MatchScene.getInstance();
+        SceneManager.runOnFxThread(matchScene::choosePowerUp);
+        return new ValueObserver<Card>().getValue(matchScene.selectedPowerUp);
     }
 
 

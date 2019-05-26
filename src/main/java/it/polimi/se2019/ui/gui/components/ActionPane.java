@@ -74,6 +74,44 @@ public class ActionPane extends TilePane implements Initializable
         reloadButton.setColor(color);
     }
 
+    public void disableAll()
+    {
+        moveButton.setDisable(true);
+        fireButton.setDisable(true);
+        grabButton.setDisable(true);
+        reloadButton.setDisable(true);
+    }
+
+    public void enable(int action)
+    {
+        setDisable(action, false);
+    }
+
+    public void disable(int action)
+    {
+        setDisable(action, true);
+    }
+
+    private void setDisable(int action, boolean disable)
+    {
+        if (action == MOVE_ACTION)
+        {
+            moveButton.setDisable(disable);
+        }
+        else if (action == GRAB_ACTION)
+        {
+            grabButton.setDisable(disable);
+        }
+        else if (action == FIRE_ACTION)
+        {
+            fireButton.setDisable(disable);
+        }
+        else if (action == RELOAD_ACTION)
+        {
+            reloadButton.setDisable(disable);
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
