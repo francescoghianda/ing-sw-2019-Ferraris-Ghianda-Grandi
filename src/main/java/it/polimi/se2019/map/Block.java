@@ -1,14 +1,10 @@
 package it.polimi.se2019.map;
 
-import it.polimi.se2019.card.Card;
-import it.polimi.se2019.card.Grabbable;
 import it.polimi.se2019.card.ammo.AmmoCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
-import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.utils.constants.Ansi;
-import javafx.geometry.Point2D;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -109,6 +105,19 @@ public class Block implements Serializable
 		return true;
 	}
 
+	public boolean isWeaponCardPresent()
+	{
+		return !weaponCards.isEmpty();
+	}
+
+	public void replaceWeaponCard(WeaponCard weaponCard1, WeaponCard weaponCard2)
+	{
+		if(!weaponCards.contains(weaponCard1))return;
+		int index = weaponCards.indexOf(weaponCard1);
+		weaponCards.remove(weaponCard1);
+		weaponCards.add(index, weaponCard2);
+	}
+
 	public void removeWeaponCard(WeaponCard weaponCard)
 	{
 		weaponCards.remove(weaponCard);
@@ -175,11 +184,15 @@ public class Block implements Serializable
 		doors[side] = block;
 	}
 
-	public int getDistanceFrom(Block block)
+	public int getManhattanDistanceFrom(Block block)
 	{
 		return Math.abs(getX() - block.getX())+ Math.abs(getY() - block.getY());
 	}
 
+	public int getDistanceFrom(Block block)
+	{
+		return paths.get(block).get(0).getLength();
+	}
 
 	public int getX()
 	{
@@ -201,15 +214,6 @@ public class Block implements Serializable
 		return this.ammoCard;
 	}
 
-	/*public Grabbable getCard(int index)
-	{
-		return cards[index];
-	}*/
-
-	/*public void setCard(Grabbable card, int index)
-	{
-		cards[index] = card;
-	}*/
 
 	public Block getBottomBlock()
 	{
@@ -293,7 +297,7 @@ public class Block implements Serializable
 	@Override
 	public String toString()
 	{
-		return ""+room.getColor().name().charAt(0);
+		return "("+x+", "+y+") - "+room.getColor().name().charAt(0);
 	}
 
 
@@ -433,10 +437,10 @@ public class Block implements Serializable
 
 	public BlockData getData()
 	{
-		HashMap<Bundle<Integer, Integer>, Integer> distances = new HashMap<>();
+		HashMap<Coordinates, Integer> distances = new HashMap<>();
 		ArrayList<PlayerData> playersData = new ArrayList<>();
 
-		paths.forEach((block, path) -> distances.put(new Bundle<>(block.x, block.y), path.get(0).getLength()));
+		paths.forEach((block, path) -> distances.put(new Coordinates(block.x, block.y), path.get(0).getLength()));
 		players.forEach(player -> playersData.add(player.getData()));
 
 		String ammoCardId = ammoCard == null ? null : ammoCard.getId();

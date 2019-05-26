@@ -42,10 +42,10 @@ public class PathFinder
 
         ArrayList<Path> paths = new ArrayList<>();
 
-        paths.addAll(findPaths(leftBlock, new Path()));
-        paths.addAll(findPaths(rightBlock, new Path()));
-        paths.addAll(findPaths(upperBlock, new Path()));
-        paths.addAll(findPaths(bottomBlock, new Path()));
+        if(startBlock.isConnected(leftBlock))paths.addAll(findPaths(leftBlock, new Path()));
+        if(startBlock.isConnected(rightBlock))paths.addAll(findPaths(rightBlock, new Path()));
+        if(startBlock.isConnected(upperBlock))paths.addAll(findPaths(upperBlock, new Path()));
+        if(startBlock.isConnected(bottomBlock))paths.addAll(findPaths(bottomBlock, new Path()));
 
         return paths;
     }
