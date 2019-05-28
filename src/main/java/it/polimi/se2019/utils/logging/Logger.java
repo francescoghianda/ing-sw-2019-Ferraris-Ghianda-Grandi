@@ -26,9 +26,8 @@ public class Logger
     {
         try
         {
-            AnsiConsole.systemInstall();
             sdf = new SimpleDateFormat("ddMMyy_HHmmss");
-            addOutput(new LoggerOutputStream(AnsiConsole.out, getDefaultFormatter(),true));
+            addOutput(new LoggerOutputStream(AnsiConsole.out(), getDefaultFormatter(),true));
             File logFile = new File(getLogFileName());
             boolean addFileOutput = true;
             if(!logFile.getParentFile().exists())addFileOutput = logFile.getParentFile().mkdirs();

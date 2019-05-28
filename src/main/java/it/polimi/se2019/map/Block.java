@@ -357,10 +357,10 @@ public class Block implements Serializable
 		return stringBuilder.toString();
 	}
 
-	private static final char ROOM_WALL_VERTICAL = '┃';
-	private static final char ROOM_WALL_HORIZONTAL = '━';
-	private static final char BLOCK_WALL_VERTICAL = '┆';
-	private static final char BLOCK_WALL_HORIZONTAL = '┄';
+	private static final char ROOM_WALL_VERTICAL = '║';
+	private static final char ROOM_WALL_HORIZONTAL = '═';
+	private static final char BLOCK_WALL_VERTICAL = '│';
+	private static final char BLOCK_WALL_HORIZONTAL = '─';
 
 	private void drawSide(char[][] canvas, int side, int x, int y)
 	{
@@ -374,10 +374,10 @@ public class Block implements Serializable
 			{
 				if(isDoor(sideBlock) && i >= 2 && i <= 7)
 				{
-					if(side == UPPER_SIDE && i == 2)canvas[y][x+i] = '┛';
-					else if(side == UPPER_SIDE && i == 7)canvas[y][x+i] = '┗';
-					else if(side == LOWER_SIDE && i == 2)canvas[y][x+i] = '┓';
-					else if(side == LOWER_SIDE && i == 7)canvas[y][x+i] = '┏';
+					if(side == UPPER_SIDE && i == 2)canvas[y][x+i] = '╝';
+					else if(side == UPPER_SIDE && i == 7)canvas[y][x+i] = '╚';
+					else if(side == LOWER_SIDE && i == 2)canvas[y][x+i] = '╗';
+					else if(side == LOWER_SIDE && i == 7)canvas[y][x+i] = '╔';
 					else canvas[y][x+i] = ' ';
 				}
 				else canvas[y][x+i] = ch;
@@ -392,10 +392,10 @@ public class Block implements Serializable
 			{
 				if(isDoor(sideBlock) && i >= 1 && i <= 4)
 				{
-					if(side == RIGHT_SIDE && i == 1)canvas[y+i][x] = '┗';
-					else if(side == RIGHT_SIDE && i == 4)canvas[y+i][x] = '┏';
-					else if(side == LEFT_SIDE && i == 1)canvas[y+i][x] = '┛';
-					else if(side == LEFT_SIDE && i == 4)canvas[y+i][x] = '┓';
+					if(side == RIGHT_SIDE && i == 1)canvas[y+i][x] = '╚';
+					else if(side == RIGHT_SIDE && i == 4)canvas[y+i][x] = '╔';
+					else if(side == LEFT_SIDE && i == 1)canvas[y+i][x] = '╝';
+					else if(side == LEFT_SIDE && i == 4)canvas[y+i][x] = '╗';
 					else canvas[y+i][x] = ' ';
 				}
 				else canvas[y+i][x] = ch;
@@ -411,28 +411,28 @@ public class Block implements Serializable
 		Block leftBlock = getLeftBlock();
 
 		//FIRST CORNER (UPPER-LEFT)
-		if(!isInSameRoom(upperBlock) && !isInSameRoom(leftBlock)) canvas[0][0] = '┏';
-		else if(!isInSameRoom(upperBlock) && isInSameRoom(leftBlock)) canvas[0][0] = '┯';
+		if(!isInSameRoom(upperBlock) && !isInSameRoom(leftBlock)) canvas[0][0] = '╔';
+		else if(!isInSameRoom(upperBlock) && isInSameRoom(leftBlock)) canvas[0][0] = '╤';
 		else if(isInSameRoom(upperBlock) && isInSameRoom(leftBlock) && isInSameRoom(upperBlock.getLeftBlock())) canvas[0][0] = '┼';
-		else if(isInSameRoom(upperBlock) && !isInSameRoom(leftBlock)) canvas[0][0] = '┠';
+		else if(isInSameRoom(upperBlock) && !isInSameRoom(leftBlock)) canvas[0][0] = '╟';
 
 		//SECOND CORNER (UPPER-RIGHT)
-		if(!isInSameRoom(upperBlock) && !isInSameRoom(rightBlock)) canvas[0][11] = '┓';
-		else if(!isInSameRoom(upperBlock) && isInSameRoom(rightBlock)) canvas[0][11] = '┯';
+		if(!isInSameRoom(upperBlock) && !isInSameRoom(rightBlock)) canvas[0][11] = '╗';
+		else if(!isInSameRoom(upperBlock) && isInSameRoom(rightBlock)) canvas[0][11] = '╤';
 		else if(isInSameRoom(upperBlock) && isInSameRoom(rightBlock) && isInSameRoom(upperBlock.getRightBlock())) canvas[0][11] = '┼';
-		else if(isInSameRoom(upperBlock) && !isInSameRoom(rightBlock)) canvas[0][11] = '┨';
+		else if(isInSameRoom(upperBlock) && !isInSameRoom(rightBlock)) canvas[0][11] = '╢';
 
 		//THIRD CORNER (BOTTOM-LEFT)
-		if(!isInSameRoom(bottomBlock) && !isInSameRoom(leftBlock)) canvas[7][0] = '┗';
-		else if(!isInSameRoom(bottomBlock) && isInSameRoom(leftBlock)) canvas[7][0] = '┷';
+		if(!isInSameRoom(bottomBlock) && !isInSameRoom(leftBlock)) canvas[7][0] = '╚';
+		else if(!isInSameRoom(bottomBlock) && isInSameRoom(leftBlock)) canvas[7][0] = '╧';
 		else if(isInSameRoom(bottomBlock) && isInSameRoom(leftBlock) && isInSameRoom(bottomBlock.getLeftBlock())) canvas[7][0] = '┼';
-		else if(isInSameRoom(bottomBlock) && !isInSameRoom(leftBlock)) canvas[7][0] = '┠';
+		else if(isInSameRoom(bottomBlock) && !isInSameRoom(leftBlock)) canvas[7][0] = '╟';
 
 		//FOURTH CORNER (BOTTOM-RIGHT)
-		if(!isInSameRoom(bottomBlock) && !isInSameRoom(rightBlock)) canvas[7][11] = '┛';
-		else if(!isInSameRoom(bottomBlock) && isInSameRoom(rightBlock)) canvas[7][11] = '┷';
+		if(!isInSameRoom(bottomBlock) && !isInSameRoom(rightBlock)) canvas[7][11] = '╝';
+		else if(!isInSameRoom(bottomBlock) && isInSameRoom(rightBlock)) canvas[7][11] = '╧';
 		else if(isInSameRoom(bottomBlock) && isInSameRoom(rightBlock) && isInSameRoom(bottomBlock.getRightBlock())) canvas[7][11] = '┼';
-		else if(isInSameRoom(bottomBlock) && !isInSameRoom(rightBlock)) canvas[7][11] = '┨';
+		else if(isInSameRoom(bottomBlock) && !isInSameRoom(rightBlock)) canvas[7][11] = '╢';
 	}
 
 	public BlockData getData()

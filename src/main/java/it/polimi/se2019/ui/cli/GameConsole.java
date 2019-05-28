@@ -9,12 +9,13 @@ import java.util.Scanner;
 
 class GameConsole
 {
-    static final PrintStream out = AnsiConsole.out;
+    static final PrintStream out = AnsiConsole.out();
     static final Scanner in = new Scanner(System.in);
+
+    private GameConsole(){}
 
     static void startConsole()
     {
-        AnsiConsole.systemInstall();
         Logger.getInstance().disableConsole();
         clear();
     }
@@ -22,6 +23,7 @@ class GameConsole
     static void clear()
     {
         out.println(Ansi.CLEAR_SCREEN);
+        out.flush();
     }
 
     static String nextLine(String question)
