@@ -10,11 +10,10 @@ public class RoundManager
     private int index;
     private int roundNumber;
 
-    public RoundManager(List<Player> players, Player firstPlayer)
+    public RoundManager(List<Player> players)
     {
         this.players = players;
         roundNumber = 1;
-        index = players.indexOf(firstPlayer);
     }
 
     public Player next()
@@ -34,6 +33,7 @@ public class RoundManager
         }
         Player currentPlayer = players.get(index);
         index++;
+
         return currentPlayer;
     }
 

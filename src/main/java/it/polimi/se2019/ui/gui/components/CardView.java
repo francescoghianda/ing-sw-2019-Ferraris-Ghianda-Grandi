@@ -92,6 +92,8 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
         scaleTransition = new ScaleTransition();
         fadeTransition = new FadeTransition();
 
+        if(transition == FADE_TRANSITION)setOpacity(0.7);
+
         setMinHeight(0);
         setMinWidth(0);
 
@@ -163,13 +165,13 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
         if(event.getEventType().equals(MouseEvent.MOUSE_ENTERED))
         {
             fadeTransition.setFromValue(getOpacity());
-            fadeTransition.setToValue(0.7);
+            fadeTransition.setToValue(1);
             fadeTransition.playFromStart();
         }
         else if(event.getEventType().equals(MouseEvent.MOUSE_EXITED))
         {
             fadeTransition.setFromValue(getOpacity());
-            fadeTransition.setToValue(1);
+            fadeTransition.setToValue(0.7);
             fadeTransition.playFromStart();
         }
     }

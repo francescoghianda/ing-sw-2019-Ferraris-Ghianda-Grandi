@@ -43,7 +43,7 @@ public class GameController implements TimerListener
 
     private RoundManager roundManager;
 
-    private int playersForStart = 2;
+    private int playersForStart = 1;
 
     public GameController()
     {
@@ -222,12 +222,15 @@ public class GameController implements TimerListener
 
     private void selectStartingPlayer()
     {
-        Player firstPlayer = players.get(random.nextInt(players.size()));
+        Collections.shuffle(players);
+
+        Player firstPlayer = players.get(0);
+
         firstPlayer.setAsStartingPlayer(true);
         firstPlayer.getView().youAreFirstPlayer();
         String username = firstPlayer.getClientConnection().getUsername();
         notifyOtherClients(firstPlayer, view -> view.firstPlayerIs(username));
-        roundManager = new RoundManager(players, firstPlayer);
+        roundManager = new RoundManager(players);
     }
 
     public GameMode getGameMode()
