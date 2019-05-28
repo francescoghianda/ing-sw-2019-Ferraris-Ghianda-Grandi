@@ -79,6 +79,6 @@ public class LoginScene extends Scene implements EventHandler<MouseEvent>
             invalidUsername();
             return;
         }
-        this.username.setValue(usernameTextFiled.getText());
+        username.setValue(usernameTextFiled.getText());
     }
 }

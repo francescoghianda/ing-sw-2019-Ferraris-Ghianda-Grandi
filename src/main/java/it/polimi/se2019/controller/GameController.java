@@ -43,7 +43,7 @@ public class GameController implements TimerListener
 
     private RoundManager roundManager;
 
-    private int playersForStart = 1;
+    private int playersForStart = 2;
 
     public GameController()
     {
@@ -54,6 +54,9 @@ public class GameController implements TimerListener
         remainingSkulls = 8;
         deaths = 0;
         map = Map.createMap();
+
+        System.out.println(map.drawMap());
+
         random = new Random();
         players = new ArrayList<>();
         createDecks();
