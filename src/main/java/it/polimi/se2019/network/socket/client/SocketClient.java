@@ -2,10 +2,7 @@ package it.polimi.se2019.network.socket.client;
 
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.network.NetworkClient;
-import it.polimi.se2019.network.message.AsyncMessage;
-import it.polimi.se2019.network.message.Message;
-import it.polimi.se2019.network.message.Request;
-import it.polimi.se2019.network.message.Response;
+import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
 
@@ -67,15 +64,24 @@ public class SocketClient implements Runnable, NetworkClient
                 //incomeMessage.setClient(this).execute();
                 if(incomeMessage.getType() == Message.Type.REQUEST)
                 {
-                    try
+                    if(incomeMessage instanceof CancellableActionRequest)
                     {
-                        Serializable obj = ((Request)incomeMessage).apply(getUI());
+                        try
+                        {
+                            Serializable obj = ((CancellableActionRequest)incomeMessage).apply(getUI());
+                            sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), obj, Response.Status.OK));
+                        }
+                        catch (CanceledActionException e)
+                        {
+                            sendMessageToServer(new Response("ACTION_CANCELED", null, Response.Status.ACTION_CANCELED));
+                        }
+                    }
+                    else
+                    {
+                        Serializable obj = ((ActionRequest)incomeMessage).apply(getUI());
                         sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), obj, Response.Status.OK));
                     }
-                    catch (CanceledActionException e)
-                    {
-                        sendMessageToServer(new Response("ACTION_CANCELED", null, Response.Status.ACTION_CANCELED));
-                    }
+
                 }
                 else if(incomeMessage.getType() == Message.Type.ASYNC_MESSAGE)
                 {
@@ -154,22 +160,6 @@ public class SocketClient implements Runnable, NetworkClient
     public UI getUI()
     {
         return ui;
-    }
-
-
-    public Response getResponseTo(Request messageServer)
-    {
-        try
-        {
-            sendMessageToServer(messageServer);
-            return (Response) ois.readObject();
-        }
-        catch (IOException | ClassNotFoundException e)
-        {
-            Logger.exception(e);
-        }
-
-        return null;
     }
 
 }

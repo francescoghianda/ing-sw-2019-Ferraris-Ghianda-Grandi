@@ -7,15 +7,15 @@ import java.io.Serializable;
 
 public class AsyncMessage extends Message implements Serializable
 {
-    private SerializableConsumer consumer;
+    private ActionConsumer consumer;
 
-    public AsyncMessage(String message, SerializableConsumer consumer)
+    public AsyncMessage(String message, ActionConsumer consumer)
     {
         super(message, Type.ASYNC_MESSAGE);
         this.consumer = consumer;
     }
 
-    public AsyncMessage(String message, Serializable content, SerializableConsumer consumer)
+    public AsyncMessage(String message, Serializable content, ActionConsumer consumer)
     {
         super(message, content, Type.ASYNC_MESSAGE);
         this.consumer = consumer;

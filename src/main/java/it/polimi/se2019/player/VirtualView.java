@@ -1,12 +1,13 @@
 package it.polimi.se2019.player;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.message.AsyncMessage;
 import it.polimi.se2019.network.message.Bundle;
-import it.polimi.se2019.network.message.Request;
+import it.polimi.se2019.network.message.RequestFactory;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
 
@@ -36,7 +37,7 @@ public class VirtualView implements UI
     @Override
     public String getUsername()
     {
-        return (String) client.getResponseTo(new Request("get_username", UI::getUsername)).getContent();
+        return (String) client.getResponseTo(RequestFactory.newActionRequest("get_username", UI::getUsername)).getContent();
     }
 
     @Override
@@ -98,7 +99,7 @@ public class VirtualView implements UI
     {
         if(askToSellPowerUp)
         {
-            return (Boolean) client.getResponseTo(new Request("not_enough_ammo", ui -> ui.notEnoughAmmo(true))).getContent();
+            return (Boolean) client.getResponseTo(RequestFactory.newActionRequest("not_enough_ammo", ui -> ui.notEnoughAmmo(true))).getContent();
         }
 
         client.sendMessageToClient(new AsyncMessage("not_enough_ammo", ui -> ui.notEnoughAmmo(false)));
@@ -106,45 +107,45 @@ public class VirtualView implements UI
     }
 
     @Override
-    public String choose(Bundle<String, ArrayList<String>> options)
+    public String choose(Bundle<String, ArrayList<String>> options) throws CanceledActionException
     {
-        return (String) client.getResponseTo(new Request("choose", ui -> ui.choose(options))).getContent();
+        return (String) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose", ui -> ui.choose(options))).getContent();
     }
 
     @Override
     public String chooseSpawnPoint(Card option1, Card option2)
     {
-        return (String) client.getResponseTo(new Request("choose_spawn_point", ui -> ui.chooseSpawnPoint(option1, option2))).getContent();
+        return (String) client.getResponseTo(RequestFactory.newActionRequest("choose_spawn_point", ui -> ui.chooseSpawnPoint(option1, option2))).getContent();
     }
 
     @Override
     public Action chooseActionFrom(Action[] possibleActions)
     {
-        return (Action) client.getResponseTo(new Request("choose_action", ui -> ui.chooseActionFrom(possibleActions))).getContent();
+        return (Action) client.getResponseTo(RequestFactory.newActionRequest("choose_action", ui -> ui.chooseActionFrom(possibleActions))).getContent();
     }
 
     @Override
-    public Coordinates chooseBlock(int maxDistance)
+    public Coordinates chooseBlock(int maxDistance) throws CanceledActionException
     {
-        return (Coordinates) client.getResponseTo(new Request("choose_block", ui -> ui.chooseBlock(maxDistance))).getContent();
+        return (Coordinates) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_block", ui -> ui.chooseBlock(maxDistance))).getContent();
     }
 
     @Override
-    public Card chooseWeaponFromPlayer()
+    public Card chooseWeaponFromPlayer() throws CanceledActionException
     {
-        return (Card) client.getResponseTo(new Request("choose_weapon_from_player", UI::chooseWeaponFromPlayer)).getContent();
+        return (Card) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_weapon_from_player", UI::chooseWeaponFromPlayer)).getContent();
     }
 
     @Override
-    public Card chooseWeaponFromBlock()
+    public Card chooseWeaponFromBlock() throws CanceledActionException
     {
-        return (Card) client.getResponseTo(new Request("choose_weapon_from_block", UI::chooseWeaponFromBlock)).getContent();
+        return (Card) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_weapon_from_block", UI::chooseWeaponFromBlock)).getContent();
     }
 
     @Override
-    public Card choosePowerUp()
+    public Card choosePowerUp() throws CanceledActionException
     {
-        return (Card) client.getResponseTo(new Request("choose_power_up", UI::choosePowerUp)).getContent();
+        return (Card) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_power_up", UI::choosePowerUp)).getContent();
     }
 
     @Override

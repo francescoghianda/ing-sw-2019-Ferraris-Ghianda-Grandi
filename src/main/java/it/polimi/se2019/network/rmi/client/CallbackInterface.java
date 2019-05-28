@@ -1,9 +1,7 @@
 package it.polimi.se2019.network.rmi.client;
 
-import it.polimi.se2019.network.message.AsyncMessage;
-import it.polimi.se2019.network.message.Message;
-import it.polimi.se2019.network.message.Request;
-import it.polimi.se2019.network.message.Response;
+import it.polimi.se2019.controller.CanceledActionException;
+import it.polimi.se2019.network.message.*;
 
 import java.io.Serializable;
 import java.rmi.Remote;
@@ -25,5 +23,7 @@ public interface CallbackInterface extends Serializable, Remote
      * @return The response message
      * @throws RemoteException
      */
-    Response sendRequest(Request request) throws RemoteException;
+    Response sendRequest(CancellableActionRequest request) throws RemoteException, CanceledActionException;
+
+    Response sendRequest(ActionRequest request) throws RemoteException;
 }

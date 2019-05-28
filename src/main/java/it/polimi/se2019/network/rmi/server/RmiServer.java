@@ -6,7 +6,7 @@ import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
 import it.polimi.se2019.network.message.AsyncMessage;
-import it.polimi.se2019.network.message.Request;
+import it.polimi.se2019.network.message.RequestFactory;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
@@ -87,21 +87,25 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
     private void login(CallbackInterface clientStub)
     {
         ClientConnection client = clients.get(clientStub);
-        String username = (String) client.getResponseTo(new Request("username", UI::getUsername)).getContent();
+
+        String username = (String) client.getResponseTo(RequestFactory.newActionRequest("username", UI::getUsername)).getContent();
 
         while(ClientsManager.getInstance().getConnectedClientsUsername().contains(username))
         {
-            username = (String) client.getResponseTo(new Request("invalid_username", UI::getUsername)).getContent();
+            username = (String) client.getResponseTo(RequestFactory.newActionRequest("invalid_username", UI::getUsername)).getContent();
         }
 
         client.sendMessageToClient(new AsyncMessage("logged", UI::logged));
         client.setUsername(username);
-        client.setLogged(true);
+        boolean reconnected = false;
         if(ClientsManager.getInstance().getDisconnectedClientsUsername().contains(username))
         {
             client.getServer().clientReconnected(client);
+            reconnected = true;
+            gameController.playerReconnected(client.getPlayer());
             Logger.warning("Client "+username+" has reconnected!");
         }
+        client.setLogged(true, reconnected);
     }
 
     @Override
@@ -115,7 +119,7 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
     public void onClientDisconnection(ClientConnection disconnectedClient)
     {
         Logger.warning("Client "+disconnectedClient.getUsername()+" has disconnected!");
-        disconnectedClient.setLogged(false);
+        disconnectedClient.setLogged(false, false);
 
         clients.remove(((RmiClientConnection)disconnectedClient).getCallback());
         clientsManager.unregisterClient(disconnectedClient);

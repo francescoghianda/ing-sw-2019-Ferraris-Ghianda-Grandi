@@ -11,6 +11,7 @@ import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.map.Map;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
+import it.polimi.se2019.network.message.ConnectionErrorException;
 import it.polimi.se2019.player.*;
 import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.constants.GameMode;
@@ -74,6 +75,12 @@ public class GameController implements TimerListener
         }
     }
 
+    public void playerReconnected(Player player)
+    {
+        player.getView().gameStarted();
+        player.getView().update(getData(player));
+    }
+
     public List<Player> getPlayers()
     {
         return this.players;
@@ -92,34 +99,44 @@ public class GameController implements TimerListener
     {
         Player currentPlayer = roundManager.next();
         
-        if(roundManager.isFirstRound())firstRound(currentPlayer);
+        if(roundManager.isFirstRound()) firstRound(currentPlayer);
 
         Action[] possibleActions;
 
-        while ((possibleActions = ActionsGroup.getPossibleActions(currentPlayer)).length > 0)
+        try
         {
-            Action chosen = currentPlayer.getView().chooseActionFrom(possibleActions);
-
-            if(chosen == Action.END_ROUND)break;
-
-            try
+            while ((possibleActions = ActionsGroup.getPossibleActions(currentPlayer)).length > 0)
             {
-                executeAction(chosen, currentPlayer);
-            }
-            catch (CanceledActionException e)
-            {
-                Logger.warning("Player "+currentPlayer.getUsername()+" has canceled action. "+e.getCanceledCause());
-                continue;
-            }
+                Action chosen = currentPlayer.getView().chooseActionFrom(possibleActions);
 
-            sendBroadcastUpdate();
+                if(chosen == Action.END_ROUND)break;
+
+                try
+                {
+                    executeAction(chosen, currentPlayer);
+                }
+                catch (CanceledActionException e)
+                {
+                    Logger.warning("Player "+currentPlayer.getUsername()+" has canceled action. "+e.getCanceledCause());
+                    continue;
+                }
+
+                sendBroadcastUpdate();
+            }
         }
+        catch (ConnectionErrorException e)
+        {
+            Logger.error("Connection error during "+currentPlayer.getUsername()+"'s round!");
+            currentPlayer.getClientConnection().stop();
+        }
+        finally
+        {
+            currentPlayer.resetExecutedAction();
 
-        currentPlayer.resetExecutedAction();
-
-        refillMap();
-        sendBroadcastUpdate();
-        nextRound();
+            refillMap();
+            sendBroadcastUpdate();
+            nextRound();
+        }
     }
 
     private void executeAction(Action action, Player player) throws CanceledActionException
@@ -137,7 +154,7 @@ public class GameController implements TimerListener
         }
     }
 
-    private Block selectBlock(Player player)
+    private Block selectBlock(Player player) throws CanceledActionException
     {
         int maxMoves = ActionsGroup.getMaxMoves(player);
         Coordinates coords = player.getView().chooseBlock(maxMoves);
@@ -242,22 +259,22 @@ public class GameController implements TimerListener
         return player;
     }
 
-    public void sendUpdate(Player player)
+    private void sendUpdate(Player player)
     {
         player.getView().update(getData(player));
     }
 
-    public GameData getData(Player player)
+    private GameData getData(Player player)
     {
         return new GameData(map.getData(), player.getData(), remainingSkulls, deaths);
     }
 
-    public void sendBroadcastUpdate()
+    private void sendBroadcastUpdate()
     {
         players.forEach(this::sendUpdate);
     }
 
-    public void notifyOtherClients(Player player, Consumer<VirtualView> consumer)
+    private void notifyOtherClients(Player player, Consumer<VirtualView> consumer)
     {
         players.forEach(client ->
         {
@@ -265,12 +282,12 @@ public class GameController implements TimerListener
         });
     }
 
-    public void sendBroadCastMessage(Consumer<VirtualView> consumer)
+    private void sendBroadCastMessage(Consumer<VirtualView> consumer)
     {
         players.forEach(player -> consumer.accept(player.getView()));
     }
 
-    public void movePlayer(Player player, Block block)
+    private void movePlayer(Player player, Block block)
     {
         //TODO movimento tra i blocchi (path)
         int distance = block.getDistanceFrom(player.getBlock());
@@ -284,19 +301,19 @@ public class GameController implements TimerListener
 
     }
 
-    public WeaponCard selectWeaponFromPlayer(Player player)
+    private WeaponCard selectWeaponFromPlayer(Player player) throws CanceledActionException
     {
         Card chosen = player.getView().chooseWeaponFromPlayer();
         return WeaponCard.findCardById(chosen.getId());
     }
 
-    public WeaponCard selectWeaponFromBlock(Player player)
+    private WeaponCard selectWeaponFromBlock(Player player) throws CanceledActionException
     {
         Card chosen = player.getView().chooseWeaponFromBlock();
         return WeaponCard.findCardById(chosen.getId());
     }
 
-    public void notEnoughAmmo(Player player)
+    private void notEnoughAmmo(Player player) throws CanceledActionException
     {
         if(player.powerUpsSize() > 0)
         {
@@ -326,7 +343,7 @@ public class GameController implements TimerListener
         }
     }
 
-    public void grab(Player player)
+    private void grab(Player player) throws CanceledActionException
     {
         Block playerBlock = player.getBlock();
         if(playerBlock.isSpawnPoint() && playerBlock.isWeaponCardPresent())
@@ -338,10 +355,18 @@ public class GameController implements TimerListener
                 player.getGameBoard().pay(weaponCard.getBuyCost());
                 if(player.weaponsSize() >= 3)
                 {
-                    WeaponCard substituteWeapon = selectWeaponFromPlayer(player);
-                    player.removeWeapon(substituteWeapon);
-                    player.addWeaponCard(weaponCard);
-                    playerBlock.replaceWeaponCard(weaponCard, substituteWeapon);
+                    try
+                    {
+                        WeaponCard substituteWeapon = selectWeaponFromPlayer(player);
+                        player.removeWeapon(substituteWeapon);
+                        player.addWeaponCard(weaponCard);
+                        playerBlock.replaceWeaponCard(weaponCard, substituteWeapon);
+                    }
+                    catch (CanceledActionException e)
+                    {
+                        player.getGameBoard().reverseLastPay();
+                        throw new CanceledActionException(e.getCanceledCause());
+                    }
                 }
                 else
                 {
@@ -354,6 +379,7 @@ public class GameController implements TimerListener
             {
                 notEnoughAmmo(player);
             }
+
         }
         else if(playerBlock.getAmmoCard() != null)
         {

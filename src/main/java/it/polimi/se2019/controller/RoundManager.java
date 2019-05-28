@@ -19,6 +19,14 @@ public class RoundManager
 
     public Player next()
     {
+        Player nextPlayer = getNextPlayer();
+        System.out.println(getRoundNumber());
+        while (!nextPlayer.getClientConnection().isConnected())nextPlayer = getNextPlayer();
+        return nextPlayer;
+    }
+
+    private Player getNextPlayer()
+    {
         if(index >= players.size())
         {
             index = 0;

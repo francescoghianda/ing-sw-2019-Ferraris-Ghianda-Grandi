@@ -28,9 +28,9 @@ public class Player implements Serializable
 
 	private transient ArrayList<Player> damagedPlayers;
 
-	private final transient ClientConnection clientConnection;
+	private transient ClientConnection clientConnection;
 
-	private final transient VirtualView view;
+	private transient VirtualView view;
 
 	/**
 	 * creates and initializes the features of the player
@@ -50,6 +50,12 @@ public class Player implements Serializable
 		this.clientConnection = clientConnection;
 		this.gameController = gameController;
 		this.view = new VirtualView(clientConnection);
+	}
+
+	public void setClientConnection(ClientConnection clientConnection)
+	{
+		this.clientConnection = clientConnection;
+		view = new VirtualView(clientConnection);
 	}
 
 	public VirtualView getView()

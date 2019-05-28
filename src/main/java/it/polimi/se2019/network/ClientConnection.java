@@ -1,10 +1,8 @@
 package it.polimi.se2019.network;
 
+import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameController;
-import it.polimi.se2019.network.message.AsyncMessage;
-import it.polimi.se2019.network.message.Message;
-import it.polimi.se2019.network.message.Request;
-import it.polimi.se2019.network.message.Response;
+import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.player.Player;
 
 public interface ClientConnection
@@ -27,7 +25,9 @@ public interface ClientConnection
      * @param request The message to send
      * @return The response message
      */
-    Response getResponseTo(Request request);
+    Response getResponseTo(CancellableActionRequest request) throws CanceledActionException;
+
+    Response getResponseTo(ActionRequest request);
 
     /**
      * Close the connection with the client
@@ -36,8 +36,10 @@ public interface ClientConnection
     NetworkServer getServer();
     void setUsername(String username);
     String getUsername();
-    void setLogged(boolean logged);
+    void setLogged(boolean logged, boolean reconnected);
     boolean isLogged();
+    boolean isConnected();
+    void setConnected(boolean connected);
     Player getPlayer();
     void setPlayer(Player player);
     GameController getGameController();

@@ -1,5 +1,6 @@
 package it.polimi.se2019.network.socket.server;
 
+import it.polimi.se2019.card.cardscript.LogicExpression;
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
@@ -84,9 +85,9 @@ public class SocketServer implements NetworkServer, Runnable, OnClientDisconnect
     {
         this.running = true;
 
-        try
+        while(running)
         {
-            while(running)
+            try
             {
                 Logger.info("Waiting for clients...");
                 SocketClientConnection client = new SocketClientConnection(serverSocket.accept(), this, gameController);
@@ -94,11 +95,14 @@ public class SocketServer implements NetworkServer, Runnable, OnClientDisconnect
                 clientsManager.registerClient(client.setOnClientDisconnectionListener(this));
                 client.start();
             }
+            catch (IOException e)
+            {
+                Logger.exception(e);
+                Logger.info("Failed to register new client!");
+            }
+
         }
-        catch (IOException e)
-        {
-            Logger.exception(e);
-        }
+
     }
 
 

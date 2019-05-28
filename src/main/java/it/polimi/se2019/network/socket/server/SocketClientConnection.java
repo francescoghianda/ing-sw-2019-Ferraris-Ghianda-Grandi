@@ -1,5 +1,7 @@
 package it.polimi.se2019.network.socket.server;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
@@ -33,23 +35,28 @@ public class SocketClientConnection implements Runnable, ClientConnection
     private volatile boolean getResponse;
     private volatile Response response;
 
-    SocketClientConnection(Socket client, SocketServer server, GameController controller)
+    private Thread requestThread;
+
+    SocketClientConnection(Socket client, SocketServer server, GameController controller) throws IOException
     {
         this.controller = controller;
         this.clientsManager = ClientsManager.getInstance();
 
+        this.client = client;
+        this.server = server;
+        this.connected = true;
+
         try
         {
-            this.client = client;
-            this.server = server;
-            this.connected = true;
             this.ois = new ObjectInputStream(client.getInputStream());
             this.oos = new ObjectOutputStream(client.getOutputStream());
         }
         catch (IOException e)
         {
-            Logger.exception(e);
+            client.close();
+            throw new IOException(e.getCause());
         }
+
     }
 
     void start()
@@ -70,8 +77,8 @@ public class SocketClientConnection implements Runnable, ClientConnection
             running = false;
             connected = false;
             client.close();
-            ois.close();
-            oos.close();
+            if(ois != null)ois.close();
+            if(oos != null)oos.close();
             ///TODO informare gli altri client della disconnessione
         }
         catch (IOException e)
@@ -86,18 +93,13 @@ public class SocketClientConnection implements Runnable, ClientConnection
         {
             try
             {
+                Response message = (Response) ois.readObject();
 
-                Message message = (Message) ois.readObject();
-
-                if(message.getType() == Message.Type.ASYNC_MESSAGE)
-                {
-
-                }
-                else if(message.getType() == Message.Type.RESPONSE && getResponse)
+                if(getResponse)
                 {
                     synchronized (this)
                     {
-                        response = (Response) message;
+                        response = message;
                         getResponse = false;
                         this.notifyAll();
                     }
@@ -107,7 +109,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
             catch (ClassNotFoundException | NullPointerException | IOException e)
             {
                 lostConnection();
-                //Logger.exception(e);
+                if(requestThread != null)requestThread.interrupt();
             }
         }
     }
@@ -115,21 +117,24 @@ public class SocketClientConnection implements Runnable, ClientConnection
 
     private void login()
     {
-        String username = (String) getResponseTo(new Request("username", UI::getUsername)).getContent();
+        String username = (String) getResponseTo(RequestFactory.newActionRequest("username", UI::getUsername)).getContent();
 
         while(ClientsManager.getInstance().getConnectedClientsUsername().contains(username))
         {
-            username = (String) getResponseTo(new Request("invalid_username", UI::getUsername)).getContent();
+            username = (String) getResponseTo(RequestFactory.newActionRequest("invalid_username", UI::getUsername)).getContent();
         }
 
         sendMessageToClient(new AsyncMessage("logged", UI::logged));
         setUsername(username);
-        setLogged(true);
+        boolean reconnected = false;
         if(ClientsManager.getInstance().getDisconnectedClientsUsername().contains(username))
         {
             getServer().clientReconnected(this);
+            reconnected = true;
+            controller.playerReconnected(getPlayer());
             Logger.warning("Client "+username+" has reconnected!");
         }
+        setLogged(true, reconnected);
     }
 
     public void sendMessageToClient(AsyncMessage message)
@@ -159,12 +164,14 @@ public class SocketClientConnection implements Runnable, ClientConnection
         {
             lostConnection();
             Logger.exception(e);
+            throw new ConnectionErrorException();
         }
     }
 
     @Override
-    public synchronized Response getResponseTo(Request request)
+    public synchronized Response getResponseTo(CancellableActionRequest request) throws CanceledActionException
     {
+        if(!connected)throw new CanceledActionException(CanceledActionException.Cause.ERROR);
         try
         {
             getResponse = true;
@@ -173,17 +180,40 @@ public class SocketClientConnection implements Runnable, ClientConnection
             {
                 this.wait();
             }
+            if(response.getStatus() == Response.Status.ACTION_CANCELED)throw new CanceledActionException(CanceledActionException.Cause.CANCELED_BY_USER);
             return response;
-            //return (NetworkMessageServer) ois.readObject();
         }
         catch (InterruptedException e)
         {
-            //Logger.exception(e);
             lostConnection();
-            Thread.currentThread().interrupt();
+            connected = false;
+            userThread.interrupt();
+            throw new ConnectionErrorException();
         }
+    }
 
-        return null;
+    @Override
+    public synchronized Response getResponseTo(ActionRequest request)
+    {
+        if(!connected)return null;
+        try
+        {
+            requestThread = Thread.currentThread();
+            getResponse = true;
+            sendMessageToClient(request);
+            while (getResponse)
+            {
+                this.wait();
+            }
+            return response;
+        }
+        catch (InterruptedException e)
+        {
+            lostConnection();
+            connected = false;
+            userThread.interrupt();
+            throw new ConnectionErrorException();
+        }
     }
 
     private void lostConnection()
@@ -206,11 +236,10 @@ public class SocketClientConnection implements Runnable, ClientConnection
     }
 
     @Override
-    public void setLogged(boolean logged)
+    public void setLogged(boolean logged, boolean reconnected)
     {
-        //TODO spostare la creazione del giocatore in un metodo apposito (anche su rmi)
         this.logged = logged;
-        this.player = controller.createPlayer(this);
+        if(!reconnected && logged)this.player = controller.createPlayer(this);
     }
 
     @Override
@@ -231,9 +260,16 @@ public class SocketClientConnection implements Runnable, ClientConnection
         return controller;
     }
 
-    boolean isConnected()
+    @Override
+    public boolean isConnected()
     {
         return this.connected;
+    }
+
+    @Override
+    public void setConnected(boolean connected)
+    {
+        this.connected = connected;
     }
 
     @Override

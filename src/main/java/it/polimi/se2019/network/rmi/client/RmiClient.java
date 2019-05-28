@@ -2,9 +2,7 @@ package it.polimi.se2019.network.rmi.client;
 
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.network.NetworkClient;
-import it.polimi.se2019.network.message.AsyncMessage;
-import it.polimi.se2019.network.message.Request;
-import it.polimi.se2019.network.message.Response;
+import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.network.rmi.server.RmiServer;
 import it.polimi.se2019.network.rmi.server.ServerInterface;
 import it.polimi.se2019.ui.UI;
@@ -59,7 +57,7 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     }
 
     @Override
-    public synchronized Response sendRequest(Request request) throws RemoteException
+    public synchronized Response sendRequest(CancellableActionRequest request) throws RemoteException, CanceledActionException
     {
         try
         {
@@ -70,6 +68,12 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
         {
             return new Response("Response to "+request.getMessage(), null, Response.Status.ACTION_CANCELED).setSender(stub);
         }
+    }
+
+    public synchronized Response sendRequest(ActionRequest request)
+    {
+        Serializable obj = request.apply(getUI());
+        return new Response("Response to "+request.getMessage(), obj, Response.Status.OK).setSender(stub);
     }
 
     public ServerInterface getServer()

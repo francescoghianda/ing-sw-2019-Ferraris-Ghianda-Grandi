@@ -4,7 +4,7 @@ import it.polimi.se2019.ui.UI;
 
 import java.io.Serializable;
 
-public interface SerializableConsumer extends Serializable
+public interface ActionConsumer extends Serializable
 {
     void accept(UI ui);
 }

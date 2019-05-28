@@ -1,14 +1,12 @@
 package it.polimi.se2019.network.rmi.server;
 
+import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
-import it.polimi.se2019.network.message.AsyncMessage;
-import it.polimi.se2019.network.message.Message;
-import it.polimi.se2019.network.message.Request;
-import it.polimi.se2019.network.message.Response;
+import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
 import it.polimi.se2019.player.Player;
 
@@ -31,6 +29,8 @@ public class RmiClientConnection implements ClientConnection
 
     private ClientsManager clientsManager;
 
+    private boolean connected;
+
     /**
      * Create a new connection with the client
      * @param callback The callback of the client
@@ -42,6 +42,7 @@ public class RmiClientConnection implements ClientConnection
         this.gameController = gameController;
         this.callback = callback;
         this.server = server;
+        this.connected = true;
         this.clientsManager = ClientsManager.getInstance();
     }
 
@@ -65,9 +66,20 @@ public class RmiClientConnection implements ClientConnection
         });
     }
 
+    public void setConnected(boolean connected)
+    {
+        this.connected = connected;
+    }
+
+    public boolean isConnected()
+    {
+        return connected;
+    }
+
     @Override
     public synchronized void sendMessageToClient(AsyncMessage message)
     {
+        if(!connected)return;
         try
         {
             callback.sendAsyncMessage(message);
@@ -79,8 +91,27 @@ public class RmiClientConnection implements ClientConnection
     }
 
     @Override
-    public Response getResponseTo(Request request)
+    public Response getResponseTo(CancellableActionRequest request) throws CanceledActionException
     {
+        if(!connected)throw new CanceledActionException(CanceledActionException.Cause.ERROR);
+        try
+        {
+            Response response = callback.sendRequest(request);
+            if(response.getStatus() == Response.Status.ACTION_CANCELED)throw new CanceledActionException(CanceledActionException.Cause.CANCELED_BY_USER);
+            return response;
+        }
+        catch (RemoteException e)
+        {
+            clientDisconnectionListener.onClientDisconnection(this);
+            connected = false;
+            throw new ConnectionErrorException();
+        }
+    }
+
+    @Override
+    public Response getResponseTo(ActionRequest request)
+    {
+        if(!connected)return null;
         try
         {
             return callback.sendRequest(request);
@@ -88,7 +119,8 @@ public class RmiClientConnection implements ClientConnection
         catch (RemoteException e)
         {
             clientDisconnectionListener.onClientDisconnection(this);
-            return null;
+            connected = false;
+            throw  new ConnectionErrorException();
         }
     }
 
@@ -111,11 +143,10 @@ public class RmiClientConnection implements ClientConnection
     }
 
     @Override
-    public void setLogged(boolean logged)
+    public void setLogged(boolean logged, boolean reconnected)
     {
-        //TODO vedi socket
         this.logged = logged;
-        this.player = gameController.createPlayer(this);
+        if(!reconnected && logged)this.player = gameController.createPlayer(this);
     }
 
     @Override

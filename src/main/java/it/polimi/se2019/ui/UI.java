@@ -1,6 +1,7 @@
 package it.polimi.se2019.ui;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
@@ -29,11 +30,11 @@ public interface UI extends GameEventHandler
     void connectionRefused();
 
     boolean notEnoughAmmo(boolean askToSellPowerUp);
-    String choose(Bundle<String, ArrayList<String>> options);
+    String choose(Bundle<String, ArrayList<String>> options) throws CanceledActionException;
     String chooseSpawnPoint(Card option1, Card option2);
     Action chooseActionFrom(Action[] possibleActions);
-    Coordinates chooseBlock(int maxDistance);
-    Card chooseWeaponFromPlayer();
-    Card chooseWeaponFromBlock();
-    Card choosePowerUp();
+    Coordinates chooseBlock(int maxDistance) throws CanceledActionException;
+    Card chooseWeaponFromPlayer() throws CanceledActionException;
+    Card chooseWeaponFromBlock() throws CanceledActionException;
+    Card choosePowerUp() throws CanceledActionException;
 }

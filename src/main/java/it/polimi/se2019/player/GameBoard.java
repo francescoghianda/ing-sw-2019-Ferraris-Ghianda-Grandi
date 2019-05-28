@@ -22,6 +22,8 @@ public class GameBoard implements Serializable
     private int skulls;
     private int aviableActions;
 
+    private Cost lastPay;
+
     /**
      * gameboard
      */
@@ -144,9 +146,18 @@ public class GameBoard implements Serializable
     public void pay(Cost cost) throws NotEnoughAmmoException
     {
         if(!canPay(cost))throw new NotEnoughAmmoException();
+        this.lastPay = cost;
         redAmmo -= cost.getRedAmmo();
         blueAmmo -= cost.getBlueAmmo();
         yellowAmmo -= cost.getYellowAmmo();
+    }
+
+    public void reverseLastPay()
+    {
+        if(lastPay == null)return;
+        addRedAmmo(lastPay.getRedAmmo());
+        addBlueAmmo(lastPay.getBlueAmmo());
+        addYellowAmmo(lastPay.getYellowAmmo());
     }
 
     public GameBoardData getData()

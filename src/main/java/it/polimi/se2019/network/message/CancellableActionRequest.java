@@ -5,13 +5,13 @@ import it.polimi.se2019.ui.UI;
 
 import java.io.Serializable;
 
-public class Request extends Message
+public class CancellableActionRequest extends Message
 {
-    private final SerializableFunction function;
+    private final CancellableActionFunction function;
 
-    public Request(String message, SerializableFunction function)
+    CancellableActionRequest(String message, CancellableActionFunction function)
     {
-        super(message, Type.REQUEST);
+        super(message, Message.Type.REQUEST);
         this.function = function;
     }
 

@@ -29,6 +29,7 @@ public class ClientsManager
         {
             disconnectedClients.remove(disconnected);
             client.setPlayer(disconnected.getPlayer());
+            client.getPlayer().setClientConnection(client);
         }
         if(!connectedClients.contains(client))connectedClients.add(client);
     }
