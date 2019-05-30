@@ -6,6 +6,8 @@ import it.polimi.se2019.map.BlockData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.player.Action;
 import it.polimi.se2019.ui.gui.components.*;
+import it.polimi.se2019.ui.gui.value.CancelableValue;
+import it.polimi.se2019.ui.gui.value.Value;
 import it.polimi.se2019.utils.logging.Logger;
 
 import javafx.fxml.FXML;
@@ -59,12 +61,12 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     private boolean choosePowerUp;
     private int maxDistance;
     private boolean firstUpdate;
-    final ObservableValue<String> selectedPowerUpId;
-    final ObservableValue<Action> selectedAction;
-    final ObservableValue<Coordinates> selectedBlock;
-    final ObservableValue<String> selectedOption;
-    final ObservableValue<Card> selectedWeapon;
-    final ObservableValue<Card> selectedPowerUp;
+    final Value<String> selectedSpawnPoint;
+    final Value<Action> selectedAction;
+    final CancelableValue<Coordinates> selectedBlock;
+    final Value<String> selectedOption;
+    final CancelableValue<Card> selectedWeapon;
+    final CancelableValue<Card> selectedPowerUp;
 
     private MatchScene()
     {
@@ -82,12 +84,12 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
             Logger.exception(e);
         }
 
-        selectedPowerUpId = new ObservableValue<>();
-        selectedAction = new ObservableValue<>();
-        selectedBlock = new ObservableValue<>();
-        selectedOption = new ObservableValue<>();
-        selectedWeapon = new ObservableValue<>();
-        selectedPowerUp = new ObservableValue<>();
+        selectedSpawnPoint = new Value<>();
+        selectedAction = new Value<>();
+        selectedBlock = new CancelableValue<>();
+        selectedOption = new Value<>();
+        selectedWeapon = new CancelableValue<>();
+        selectedPowerUp = new CancelableValue<>();
 
         firstUpdate = true;
     }
@@ -171,6 +173,7 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
             else if(action == Action.GRAB)actionPane.enable(ActionPane.GRAB_ACTION);
             else if(action == Action.RELOAD)actionPane.enable(ActionPane.RELOAD_ACTION);
         }
+        actionPane.enable(ActionPane.END_ROUND);
     }
 
     @Override
@@ -182,25 +185,25 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
             {
                 chooseWeaponFromPlayer = false;
                 choosePane.clear();
-                selectedWeapon.setValue(cardView.getCard());
+                selectedWeapon.set(cardView.getCard());
             }
             else if(chooseWeaponFromBlock)
             {
                 chooseWeaponFromBlock = false;
                 choosePane.clear();
-                selectedWeapon.setValue(cardView.getCard());
+                selectedWeapon.set(cardView.getCard());
             }
         }
         else if(cardView.getCardType() == CardView.POWER_UP_CARD)
         {
-            selectedPowerUpId.setValue(cardView.getCardId());
-            selectedAction.setValue(Action.USE_POWER_UP);
+            selectedSpawnPoint.set(cardView.getCardId());
+            selectedAction.set(Action.USE_POWER_UP);
 
             if(choosePowerUp)
             {
                 choosePowerUp = false;
                 choosePane.clear();
-                selectedPowerUp.setValue(cardView.getCard());
+                selectedPowerUp.set(cardView.getCard());
             }
         }
     }
@@ -243,23 +246,24 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         {
             chooseBlock = false;
             choosePane.clear();
-            selectedBlock.setValue(new Coordinates(clicked.getX(), clicked.getY()));
+            selectedBlock.set(new Coordinates(clicked.getX(), clicked.getY()));
         }
     }
 
     @Override
     public void onActionClick(int action)
     {
-        if(action == ActionPane.MOVE_ACTION)selectedAction.setValue(Action.MOVE);
-        else if(action == ActionPane.FIRE_ACTION)selectedAction.setValue(Action.FIRE);
-        else if(action == ActionPane.RELOAD_ACTION)selectedAction.setValue(Action.RELOAD);
-        else if(action == ActionPane.GRAB_ACTION)selectedAction.setValue(Action.GRAB);
+        if(action == ActionPane.MOVE_ACTION)selectedAction.set(Action.MOVE);
+        else if(action == ActionPane.FIRE_ACTION)selectedAction.set(Action.FIRE);
+        else if(action == ActionPane.RELOAD_ACTION)selectedAction.set(Action.RELOAD);
+        else if(action == ActionPane.GRAB_ACTION)selectedAction.set(Action.GRAB);
+        else if(action == ActionPane.END_ROUND)selectedAction.set(Action.END_ROUND);
     }
 
     @Override
     public void onOptionChosen(String chosenOption)
     {
-        selectedOption.setValue(chosenOption);
+        selectedOption.set(chosenOption);
         choosePane.clear();
     }
 }

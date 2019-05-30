@@ -1,14 +1,13 @@
 package it.polimi.se2019.card.powerup;
 
 import it.polimi.se2019.card.Card;
-import it.polimi.se2019.card.Grabbable;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.GameColor;
 
 import java.io.Serializable;
 import java.util.HashMap;
 
-public class PowerUpCard extends Card implements Grabbable, Serializable
+public class PowerUpCard extends Card implements Serializable
 {
 	private static final HashMap<String, PowerUpCard> cards = new HashMap<>();
 
@@ -64,11 +63,6 @@ public class PowerUpCard extends Card implements Grabbable, Serializable
 		this.use = use;
 	}
 
-	@Override
-	public void grab(Player player)
-	{
-
-	}
 
 	@Override
 	public String toString()

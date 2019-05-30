@@ -21,7 +21,6 @@ public class Block implements Serializable
 
 	private Block[] doors;
 	private final Room room;
-	//private Grabbable[] cards;
 
 	private AmmoCard ammoCard;
 	private ArrayList<WeaponCard> weaponCards;
@@ -39,7 +38,6 @@ public class Block implements Serializable
 
 	public Block(boolean spawnPoint, int x, int y, Room room)
 	{
-		//cards = new Grabbable[3];
 		doors = new Block[4];
 		paths = new HashMap<>();
 		this.weaponCards = new ArrayList<>();
@@ -338,8 +336,8 @@ public class Block implements Serializable
 			{
 				if(drawBackground)
 				{
-					if(canvas[i][j] != ' ' && canvas[i][j] != '┆' && canvas[i][j] != '┄' && canvas[i][j] != '┼')stringBuilder.append(Ansi.convertColor(getRoom().getColor()));
-					else if(canvas[i][j] == '┆' || canvas[i][j] == '┄' || canvas[i][j] == '┼')stringBuilder.append(Ansi.combineColor(Ansi.convertColorBackground(getRoom().getColor()), Ansi.BLACK));
+					if(canvas[i][j] != ' ' && canvas[i][j] != '│' && canvas[i][j] != '─' && canvas[i][j] != '┼')stringBuilder.append(Ansi.convertColor(getRoom().getColor()));
+					else if(canvas[i][j] == '│' || canvas[i][j] == '─' || canvas[i][j] == '┼')stringBuilder.append(Ansi.combineColor(Ansi.convertColorBackground(getRoom().getColor()), Ansi.BLACK));
 					else stringBuilder.append(Ansi.convertColorBackground(getRoom().getColor()));
 				}
 				else

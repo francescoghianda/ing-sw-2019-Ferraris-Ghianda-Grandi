@@ -1,5 +1,6 @@
 package it.polimi.se2019.ui.gui;
 
+import it.polimi.se2019.ui.gui.value.Value;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,7 +14,7 @@ public class LoginScene extends Scene implements EventHandler<MouseEvent>
 {
     public static final String INPUT_USERNAME = "username";
 
-    public static final ObservableValue<String> username = new ObservableValue<>();
+    public static final Value<String> username = new Value<>();
 
     private Label messageLabel;
     private Label usernameLabel;
@@ -79,6 +80,6 @@ public class LoginScene extends Scene implements EventHandler<MouseEvent>
             invalidUsername();
             return;
         }
-        username.setValue(usernameTextFiled.getText());
+        username.set(usernameTextFiled.getText());
     }
 }

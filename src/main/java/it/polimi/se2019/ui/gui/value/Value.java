@@ -1,32 +1,35 @@
-package it.polimi.se2019.ui.gui;
+package it.polimi.se2019.ui.gui.value;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ObservableValue<T>
+public final class Value<T> extends ObservableValue<T>
 {
     private T value;
 
     private List<ValueObserver<T>> valueObservers;
 
-    public ObservableValue()
+    public Value()
     {
         valueObservers = new ArrayList<>();
     }
 
-    public void addObserver(ValueObserver<T> valueObserver)
+    @Override
+    void addObserver(ValueObserver<T> valueObserver)
     {
         valueObservers.add(valueObserver);
     }
 
-    public void setValue(T value)
+    @Override
+    public void set(T value)
     {
         this.value = value;
         valueObservers.forEach(ValueObserver::notifyObserver);
         valueObservers.clear();
     }
 
-    public T getValue()
+    @Override
+    public T get()
     {
         return value;
     }

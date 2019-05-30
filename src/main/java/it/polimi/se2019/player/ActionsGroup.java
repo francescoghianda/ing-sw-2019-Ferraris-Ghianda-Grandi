@@ -39,6 +39,11 @@ public class ActionsGroup
 	 */
 	private ActionsGroup(GameMode gameMode, int damageToActivate, Action... actions)
 	{
+		for(Action action : actions)
+		{
+			if(!action.isExecutable())throw new NotExecutableActionException();
+		}
+
 		this.actions = new ArrayList<>();
 		this.actions.addAll(Arrays.asList(actions));
 

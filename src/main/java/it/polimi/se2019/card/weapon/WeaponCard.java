@@ -2,7 +2,6 @@ package it.polimi.se2019.card.weapon;
 
 import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.cardscript.CardScriptExecutor;
-import it.polimi.se2019.card.Grabbable;
 import it.polimi.se2019.card.cost.Cost;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.player.Player;
@@ -12,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WeaponCard extends Card implements Grabbable, Serializable
+public class WeaponCard extends Card implements Serializable
 {
 	private static final HashMap<String, WeaponCard> cards = new HashMap<>();
 
@@ -93,12 +92,6 @@ public class WeaponCard extends Card implements Grabbable, Serializable
 	public void setLoad(boolean isLoad)
 	{
 		this.isLoad = isLoad;
-	}
-
-	@Override
-	public void grab(Player player)
-	{
-
 	}
 
 	public List<OptionalEffect> getEnabledOptionalEffects()

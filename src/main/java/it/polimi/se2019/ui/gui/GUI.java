@@ -1,6 +1,7 @@
 package it.polimi.se2019.ui.gui;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
@@ -8,15 +9,14 @@ import it.polimi.se2019.player.Action;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.ui.gui.dialogs.CloseDialog;
+import it.polimi.se2019.ui.gui.value.ValueObserver;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import org.omg.CORBA.MARSHAL;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -156,7 +156,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
 
         if(askToSellPowerUp)
         {
-            String option = new ValueObserver<String>().getValue(matchScene.selectedOption);
+            String option = new ValueObserver<String>().get(matchScene.selectedOption);
             return option.equals("Si");
         }
 
@@ -168,7 +168,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     {
         MatchScene matchScene = MatchScene.getInstance();
         SceneManager.runOnFxThread(() -> matchScene.setOptions(options.getFirst(), options.getSecond()));
-        return new ValueObserver<String>().getValue(matchScene.selectedOption);
+        return new ValueObserver<String>().get(matchScene.selectedOption);
     }
 
     @Override
@@ -180,7 +180,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
             MatchScene.getInstance().addCard(option2);
             MatchScene.getInstance().setOptions("Seleziona il potenziamento che vuoi scartare");
         });
-        return new ValueObserver<String>().getValue(sceneManager.getMatchScene().selectedPowerUpId);
+        return new ValueObserver<String>().get(sceneManager.getMatchScene().selectedSpawnPoint);
     }
 
     @Override
@@ -192,39 +192,39 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
             matchScene.setOptions("È il tuo turno");
             matchScene.enableActions(possibleActions);
         });
-        return new ValueObserver<Action>().getValue(matchScene.selectedAction);
+        return new ValueObserver<Action>().get(matchScene.selectedAction);
     }
 
     @Override
-    public Coordinates chooseBlock(int maxDistance)
+    public Coordinates chooseBlock(int maxDistance) throws CanceledActionException
     {
         MatchScene matchScene = MatchScene.getInstance();
         SceneManager.runOnFxThread(() -> matchScene.chooseBlock(maxDistance));
-        return new ValueObserver<Coordinates>().getValue(matchScene.selectedBlock);
+        return new ValueObserver<Coordinates>().get(matchScene.selectedBlock);
     }
 
     @Override
-    public Card chooseWeaponFromPlayer()
+    public Card chooseWeaponFromPlayer() throws CanceledActionException
     {
         MatchScene matchScene = MatchScene.getInstance();
         SceneManager.runOnFxThread(matchScene::chooseWeaponFromPlayer);
-        return new ValueObserver<Card>().getValue(matchScene.selectedWeapon);
+        return new ValueObserver<Card>().get(matchScene.selectedWeapon);
     }
 
     @Override
-    public Card chooseWeaponFromBlock()
+    public Card chooseWeaponFromBlock() throws CanceledActionException
     {
         MatchScene matchScene = MatchScene.getInstance();
         SceneManager.runOnFxThread(matchScene::chooseWeaponFromBlock);
-        return new ValueObserver<Card>().getValue(matchScene.selectedWeapon);
+        return new ValueObserver<Card>().get(matchScene.selectedWeapon);
     }
 
     @Override
-    public Card choosePowerUp()
+    public Card choosePowerUp() throws CanceledActionException
     {
         MatchScene matchScene = MatchScene.getInstance();
         SceneManager.runOnFxThread(matchScene::choosePowerUp);
-        return new ValueObserver<Card>().getValue(matchScene.selectedPowerUp);
+        return new ValueObserver<Card>().get(matchScene.selectedPowerUp);
     }
 
 

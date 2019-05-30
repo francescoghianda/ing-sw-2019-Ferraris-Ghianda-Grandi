@@ -43,7 +43,7 @@ public class GameController implements TimerListener
 
     private RoundManager roundManager;
 
-    private int playersForStart = 2;
+    private int playersForStart = 1;
 
     public GameController()
     {

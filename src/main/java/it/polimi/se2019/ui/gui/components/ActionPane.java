@@ -8,21 +8,20 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.TilePane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class ActionPane extends TilePane implements Initializable
+public class ActionPane extends Pane implements Initializable
 {
     public static final int MOVE_ACTION = 0;
     public static final int FIRE_ACTION = 1;
     public static final int GRAB_ACTION = 2;
     public static final int RELOAD_ACTION = 3;
+    public static final int END_ROUND = 4;
 
     @FXML
     private ColoredButton moveButton;
@@ -35,6 +34,15 @@ public class ActionPane extends TilePane implements Initializable
 
     @FXML
     private ColoredButton reloadButton;
+
+    @FXML
+    private ColoredButton endRoundButton;
+
+    @FXML
+    private TilePane tilePane;
+
+    @FXML
+    private VBox vbox;
 
     private OnActionClickListener clickListener;
 
@@ -72,6 +80,7 @@ public class ActionPane extends TilePane implements Initializable
         fireButton.setColor(color);
         grabButton.setColor(color);
         reloadButton.setColor(color);
+        endRoundButton.setColor(color);
     }
 
     public void disableAll()
@@ -80,6 +89,7 @@ public class ActionPane extends TilePane implements Initializable
         fireButton.setDisable(true);
         grabButton.setDisable(true);
         reloadButton.setDisable(true);
+        endRoundButton.setDisable(true);
     }
 
     public void enable(int action)
@@ -110,12 +120,18 @@ public class ActionPane extends TilePane implements Initializable
         {
             reloadButton.setDisable(disable);
         }
+        else if (action == END_ROUND)
+        {
+            endRoundButton.setDisable(disable);
+        }
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
         setPrefHeight(GUI.getScreenHeight()/5);
+
+        vbox.setPrefHeight(getPrefHeight());
 
         ImageView moveImageView = new ImageView(new Image(getClass().getResourceAsStream("/img/action_button/move.png")));
         moveImageView.setPreserveRatio(true);
@@ -137,6 +153,19 @@ public class ActionPane extends TilePane implements Initializable
         fireButton.setGraphic(fireImageView);
         grabButton.setGraphic(grabImageView);
         reloadButton.setGraphic(reloadImageView);
+
+        moveButton.heightProperty().addListener((observable, oldValue, newValue) ->
+        {
+            endRoundButton.setMaxHeight(newValue.intValue());
+            endRoundButton.setMinHeight(newValue.intValue());
+        });
+
+        moveButton.widthProperty().addListener((observable, oldValue, newValue) ->
+        {
+            endRoundButton.setMaxWidth(newValue.intValue()*2 + vbox.getSpacing());
+            endRoundButton.setMinWidth(newValue.intValue()*2 + vbox.getSpacing());
+        });
+
     }
 
     @FXML
@@ -146,6 +175,7 @@ public class ActionPane extends TilePane implements Initializable
         if(event.getSource().equals(moveButton))action = MOVE_ACTION;
         else if(event.getSource().equals(fireButton))action = FIRE_ACTION;
         else if(event.getSource().equals(grabButton))action = GRAB_ACTION;
+        else if(event.getSource().equals(endRoundButton))action = END_ROUND;
         if(clickListener != null)clickListener.onActionClick(action);
     }
 

@@ -61,7 +61,7 @@ public class SocketClient implements Runnable, NetworkClient
             while(running)
             {
                 Message incomeMessage = (Message) ois.readObject();
-                //incomeMessage.setClient(this).execute();
+
                 if(incomeMessage.getType() == Message.Type.REQUEST)
                 {
                     if(incomeMessage instanceof CancellableActionRequest)

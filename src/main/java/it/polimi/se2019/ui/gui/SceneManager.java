@@ -2,6 +2,7 @@ package it.polimi.se2019.ui.gui;
 
 import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.ui.UI;
+import it.polimi.se2019.ui.gui.value.ValueObserver;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -116,7 +117,7 @@ public class SceneManager
         if(getScene().equals(loginScene)) runOnFxThread(loginScene::invalidUsername);
         else setScene(loginScene.reset());
 
-        return new ValueObserver<String>().getValue(LoginScene.username);
+        return new ValueObserver<String>().get(LoginScene.username);
     }
 
     public static void runOnFxThread(Runnable runnable)
