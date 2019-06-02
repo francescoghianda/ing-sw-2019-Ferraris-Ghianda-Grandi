@@ -2,6 +2,7 @@ package it.polimi.se2019.map;
 
 import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.logging.Logger;
+import it.polimi.se2019.utils.map.MapDrawer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,21 +12,16 @@ import java.util.Scanner;
 
 public class Map implements Serializable
 {
-	private final char[][] cliMap;
-	final int mapWidth = 48;
-	final int mapHeight = 24;
-
 	private ArrayList<Room> rooms;
 	private transient Scanner scanner;
-
 	private transient Block[][] mapMatrix;
-
 	private int mapNumber;
+	private MapDrawer drawer;
 
 	private Map()
 	{
-		cliMap = new char[mapHeight][mapWidth];
 		this.rooms = new ArrayList<>();
+		drawer = new MapDrawer(15, 11);
 	}
 
 	public List<Room> getRooms()
@@ -35,7 +31,12 @@ public class Map implements Serializable
 
 	public static Map createMap()
 	{
-		return new Map().initMap();
+		return new Map().initMap(1 + new Random().nextInt(4));
+	}
+
+	public static Map createMap(int mapNumber)
+	{
+		return new Map().initMap(mapNumber);
 	}
 
 
@@ -43,14 +44,9 @@ public class Map implements Serializable
 	 * initializes the rooms with a random selection
 	 * @return return the rooms generated
 	 */
-	private Map initMap()
+	private Map initMap(int mapNumber)
 	{
-		mapNumber = 1 + new Random().nextInt(4);
-
-		//
-		mapNumber = 3;
-		//
-
+		this.mapNumber = mapNumber;
 		Logger.debug("Map "+mapNumber+" selected");
 		scanner = new Scanner(getClass().getResourceAsStream("/maps"));
 		String line;
@@ -216,37 +212,6 @@ public class Map implements Serializable
 		return stringBuilder.toString();
 	}
 
-	private static final String EMPTY_BLOCK = "            \n            \n            \n            \n            \n            \n            \n            \n";
-
-	public String drawMap()
-	{
-		StringBuilder stringBuilder = new StringBuilder();
-		getMapMatrix();
-		String[][] blockString = new String[3][4];
-
-		for(int i = 0; i < mapMatrix.length; i++)
-			for(int j = 0; j < mapMatrix[i].length; j++)
-			{
-				if(mapMatrix[i][j] != null)blockString[i][j] = mapMatrix[i][j].drawBlock();
-				else blockString[i][j] = EMPTY_BLOCK;
-			}
-
-
-		for(int x = 0; x < 3; x++)
-		{
-			for(int i = 0; i < 8; i++)
-			{
-				for(int j = 0; j < 4 ; j++)
-				{
-					String line = blockString[x][j].split("\n")[i];
-					stringBuilder.append(line);
-				}
-				stringBuilder.append("\n");
-			}
-		}
-
-		return stringBuilder.toString();
-	}
 
 	public MapData getData()
 	{
@@ -261,7 +226,7 @@ public class Map implements Serializable
 			}
 		}
 
-		return new MapData(mapNumber, blocksData);
+		return new MapData(mapNumber, blocksData, drawer.drawMap(this));
 	}
 
 }

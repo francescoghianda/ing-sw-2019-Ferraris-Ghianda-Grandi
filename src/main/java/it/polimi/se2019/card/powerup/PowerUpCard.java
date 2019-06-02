@@ -1,6 +1,7 @@
 package it.polimi.se2019.card.powerup;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.GameColor;
 
 import java.io.Serializable;

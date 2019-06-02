@@ -1,9 +1,14 @@
 package it.polimi.se2019.ui.cli;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.powerup.PowerUpCard;
+import it.polimi.se2019.controller.CanceledActionException;
+import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.Coordinates;
+import it.polimi.se2019.map.Map;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
+import it.polimi.se2019.player.Player;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.ui.UI;
@@ -114,11 +119,17 @@ public class CLI implements UI
     }
 
     @Override
-    public String choose(Bundle<String, ArrayList<String>> bundle)
+    public String chooseOrCancel(Bundle<String, ArrayList<String>> bundle)
     {
         Options<Void> options = new Options<>(bundle.getFirst(), true);
         bundle.getSecond().forEach(option -> options.addOption(option, option.substring(0, 1)));
         return options.show().getOption();
+    }
+
+    @Override
+    public String choose(Bundle<String, ArrayList<String>> options)
+    {
+        return null;
     }
 
     @Override
@@ -138,6 +149,11 @@ public class CLI implements UI
     @Override
     public Coordinates chooseBlock(int maxDistance)
     {
+        return null;
+    }
+
+    @Override
+    public Coordinates chooseBlockFrom(ArrayList<Coordinates> coordinates) throws CanceledActionException {
         return null;
     }
 

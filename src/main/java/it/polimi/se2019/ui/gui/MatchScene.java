@@ -1,6 +1,7 @@
 package it.polimi.se2019.ui.gui;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.BlockData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.player.Action;

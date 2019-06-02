@@ -12,8 +12,6 @@ import javafx.scene.layout.*;
 
 public class LoginScene extends Scene implements EventHandler<MouseEvent>
 {
-    public static final String INPUT_USERNAME = "username";
-
     public static final Value<String> username = new Value<>();
 
     private Label messageLabel;

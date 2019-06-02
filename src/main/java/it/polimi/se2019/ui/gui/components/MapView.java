@@ -1,9 +1,11 @@
 package it.polimi.se2019.ui.gui.components;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.BlockData;
 import it.polimi.se2019.map.MapData;
 import it.polimi.se2019.ui.gui.GUI;
+import it.polimi.se2019.ui.gui.MatchScene;
 import it.polimi.se2019.utils.logging.Logger;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -54,6 +56,8 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
     private boolean initialized;
 
     private Image skullImage;
+    private Image powerUpDeckImage;
+    private Image weaponDeckImage;
 
     private ArrayList<MapBlock> mapBlocks;
 
@@ -77,6 +81,8 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         scale = 1.0;
         ammoCardImages = new HashMap<>();
         skullImage = new Image(getClass().getResourceAsStream("/img/skull.png"));
+        powerUpDeckImage = new Image(getClass().getResourceAsStream("/img/powerups/AD_powerups_IT_02.png"));
+        weaponDeckImage = new Image(getClass().getResourceAsStream("/img/weapons/AD_weapons_IT_02.png"));
         afterScale = new ArrayList<>();
         loadAmmoCardImages();
         loadFxml();
@@ -135,6 +141,38 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         updateAmmoImages();
         doAfterScaleComputed(this::updateWeapons);
         updatePlayers();
+        paintDecks();
+    }
+
+    private void paintDecks()
+    {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        double pwuX = 1086*scale + getLeftImageWidth();
+        double pwuY = 115*scale;
+        double pwuWidth = 177*scale;
+        double pwuHeight = 256*scale;
+
+        double wpX = 1020*scale + getLeftImageWidth();
+        double wpY = 523*scale;
+        double wpWidth = 242*scale;
+        double wpHeight = 402*scale;
+
+        GameData gameData = MatchScene.getInstance().getGameData();
+
+        paintDeck(gc, powerUpDeckImage, pwuX, pwuY, pwuWidth, pwuHeight, gameData.getPowerUpDeckSize());
+        paintDeck(gc, weaponDeckImage, wpX, wpY, wpWidth, wpHeight, gameData.getWeaponDeckSize());
+    }
+
+    private void paintDeck(GraphicsContext gc, Image image, double x, double y, double width, double height, int size)
+    {
+        gc.clearRect(x-2, y-100*scale, width+2, height+100*scale);
+        gc.setFill(Color.BLACK);
+        for(int i = 0; i < size; i++)
+        {
+            gc.drawImage(image, x, y-2*i, width, height);
+            gc.strokeRoundRect(x, y-2*i, width, height, 10, 10);
+        }
     }
 
     private void updateWeapons()

@@ -2,6 +2,7 @@ package it.polimi.se2019.map;
 
 import it.polimi.se2019.card.ammo.AmmoCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
+import it.polimi.se2019.player.Player;
 import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.utils.constants.Ansi;
 
@@ -64,6 +65,11 @@ public class Block implements Serializable
 		return paths.isEmpty() ? null : paths.get(new Random().nextInt(paths.size()));
 	}
 
+	public boolean containsPlayer()
+	{
+		return !players.isEmpty();
+	}
+
 	public void addPlayer(Player player)
 	{
 		this.players.add(player);
@@ -92,6 +98,11 @@ public class Block implements Serializable
 	public boolean isAllWeaponsPresent()
 	{
 		return weaponCards.size() == 3;
+	}
+
+	public Coordinates getCoordinates()
+	{
+		return new Coordinates(x, y);
 	}
 
 	public boolean addWeaponCard(WeaponCard weaponCard)
@@ -310,127 +321,6 @@ public class Block implements Serializable
 		return false;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
-	String drawBlock()
-	{
-		StringBuilder stringBuilder = new StringBuilder();
-		char[][] canvas = new char[8][12];
-
-		for(int i = 0; i < canvas.length; i++)
-			for(int j = 0; j < canvas[i].length; j++)canvas[i][j] = ' ';
-
-		drawSide(canvas, UPPER_SIDE, 1, 0);
-		drawSide(canvas, LOWER_SIDE, 1, 7);
-		drawSide(canvas, RIGHT_SIDE, 11, 1);
-		drawSide(canvas, LEFT_SIDE, 0, 1);
-
-		drawCorners(canvas);
-
-		for(int i = 0; i < canvas.length; i++)
-		{
-			for(int j = 0; j < canvas[i].length; j++)
-			{
-				if(drawBackground)
-				{
-					if(canvas[i][j] != ' ' && canvas[i][j] != '│' && canvas[i][j] != '─' && canvas[i][j] != '┼')stringBuilder.append(Ansi.convertColor(getRoom().getColor()));
-					else if(canvas[i][j] == '│' || canvas[i][j] == '─' || canvas[i][j] == '┼')stringBuilder.append(Ansi.combineColor(Ansi.convertColorBackground(getRoom().getColor()), Ansi.BLACK));
-					else stringBuilder.append(Ansi.convertColorBackground(getRoom().getColor()));
-				}
-				else
-				{
-					if(canvas[i][j] != ' ')stringBuilder.append(Ansi.convertColor(getRoom().getColor()));
-				}
-
-				stringBuilder.append(canvas[i][j]);
-				stringBuilder.append(Ansi.RESET);
-			}
-			stringBuilder.append('\n');
-		}
-
-
-		return stringBuilder.toString();
-	}
-
-	private static final char ROOM_WALL_VERTICAL = '║';
-	private static final char ROOM_WALL_HORIZONTAL = '═';
-	private static final char BLOCK_WALL_VERTICAL = '│';
-	private static final char BLOCK_WALL_HORIZONTAL = '─';
-
-	private void drawSide(char[][] canvas, int side, int x, int y)
-	{
-		Block sideBlock = getSideBlock(side);
-		if(side == UPPER_SIDE || side == LOWER_SIDE)
-		{
-			char ch;
-			if(this.isInSameRoom(sideBlock))ch = BLOCK_WALL_HORIZONTAL;
-			else ch = ROOM_WALL_HORIZONTAL;
-			for(int i = 0; i < 10; i++)
-			{
-				if(isDoor(sideBlock) && i >= 2 && i <= 7)
-				{
-					if(side == UPPER_SIDE && i == 2)canvas[y][x+i] = '╝';
-					else if(side == UPPER_SIDE && i == 7)canvas[y][x+i] = '╚';
-					else if(side == LOWER_SIDE && i == 2)canvas[y][x+i] = '╗';
-					else if(side == LOWER_SIDE && i == 7)canvas[y][x+i] = '╔';
-					else canvas[y][x+i] = ' ';
-				}
-				else canvas[y][x+i] = ch;
-			}
-		}
-		else
-		{
-			char ch;
-			if(this.isInSameRoom(sideBlock))ch = BLOCK_WALL_VERTICAL;
-			else ch = ROOM_WALL_VERTICAL;
-			for(int i = 0; i < 6; i++)
-			{
-				if(isDoor(sideBlock) && i >= 1 && i <= 4)
-				{
-					if(side == RIGHT_SIDE && i == 1)canvas[y+i][x] = '╚';
-					else if(side == RIGHT_SIDE && i == 4)canvas[y+i][x] = '╔';
-					else if(side == LEFT_SIDE && i == 1)canvas[y+i][x] = '╝';
-					else if(side == LEFT_SIDE && i == 4)canvas[y+i][x] = '╗';
-					else canvas[y+i][x] = ' ';
-				}
-				else canvas[y+i][x] = ch;
-			}
-		}
-	}
-
-	private void drawCorners(char[][] canvas)
-	{
-		Block upperBlock = getUpperBlock();
-		Block bottomBlock = getBottomBlock();
-		Block rightBlock = getRightBlock();
-		Block leftBlock = getLeftBlock();
-
-		//FIRST CORNER (UPPER-LEFT)
-		if(!isInSameRoom(upperBlock) && !isInSameRoom(leftBlock)) canvas[0][0] = '╔';
-		else if(!isInSameRoom(upperBlock) && isInSameRoom(leftBlock)) canvas[0][0] = '╤';
-		else if(isInSameRoom(upperBlock) && isInSameRoom(leftBlock) && isInSameRoom(upperBlock.getLeftBlock())) canvas[0][0] = '┼';
-		else if(isInSameRoom(upperBlock) && !isInSameRoom(leftBlock)) canvas[0][0] = '╟';
-
-		//SECOND CORNER (UPPER-RIGHT)
-		if(!isInSameRoom(upperBlock) && !isInSameRoom(rightBlock)) canvas[0][11] = '╗';
-		else if(!isInSameRoom(upperBlock) && isInSameRoom(rightBlock)) canvas[0][11] = '╤';
-		else if(isInSameRoom(upperBlock) && isInSameRoom(rightBlock) && isInSameRoom(upperBlock.getRightBlock())) canvas[0][11] = '┼';
-		else if(isInSameRoom(upperBlock) && !isInSameRoom(rightBlock)) canvas[0][11] = '╢';
-
-		//THIRD CORNER (BOTTOM-LEFT)
-		if(!isInSameRoom(bottomBlock) && !isInSameRoom(leftBlock)) canvas[7][0] = '╚';
-		else if(!isInSameRoom(bottomBlock) && isInSameRoom(leftBlock)) canvas[7][0] = '╧';
-		else if(isInSameRoom(bottomBlock) && isInSameRoom(leftBlock) && isInSameRoom(bottomBlock.getLeftBlock())) canvas[7][0] = '┼';
-		else if(isInSameRoom(bottomBlock) && !isInSameRoom(leftBlock)) canvas[7][0] = '╟';
-
-		//FOURTH CORNER (BOTTOM-RIGHT)
-		if(!isInSameRoom(bottomBlock) && !isInSameRoom(rightBlock)) canvas[7][11] = '╝';
-		else if(!isInSameRoom(bottomBlock) && isInSameRoom(rightBlock)) canvas[7][11] = '╧';
-		else if(isInSameRoom(bottomBlock) && isInSameRoom(rightBlock) && isInSameRoom(bottomBlock.getRightBlock())) canvas[7][11] = '┼';
-		else if(isInSameRoom(bottomBlock) && !isInSameRoom(rightBlock)) canvas[7][11] = '╢';
-	}
 
 	public BlockData getData()
 	{

@@ -3,6 +3,7 @@ package it.polimi.se2019.network;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.message.*;
+import it.polimi.se2019.player.Player;
 
 public interface ClientConnection
 {

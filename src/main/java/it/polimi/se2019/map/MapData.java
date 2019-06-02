@@ -10,11 +10,18 @@ public class MapData implements Serializable
 {
     private final int mapNumber;
     private final BlockData[][] blocks;
+    private final String cliMap;
 
-    public MapData(int mapNumber, BlockData[][] blocks)
+    public MapData(int mapNumber, BlockData[][] blocks, String cliMap)
     {
         this.mapNumber = mapNumber;
         this.blocks = blocks;
+        this.cliMap = cliMap;
+    }
+
+    public String getCliMap()
+    {
+        return this.cliMap;
     }
 
     public int getMapNumber()

@@ -6,6 +6,7 @@ import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
 import it.polimi.se2019.network.message.*;
+import it.polimi.se2019.player.Player;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
 

@@ -9,6 +9,6 @@ public class LogicExpressionTest
     @Test
     public void test()
     {
-        LogicExpression expression = new LogicExpression("(!visible p1 & !(visible p2 | equal p3)) | visible p4");
+        LogicExpression expression = new LogicExpression("(visible context_player)");
     }
 }

@@ -2,6 +2,7 @@ package it.polimi.se2019.ui.gui;
 
 import it.polimi.se2019.card.Card;
 import it.polimi.se2019.controller.CanceledActionException;
+import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
@@ -108,6 +109,8 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     @Override
     public void gameStarted()
     {
+        System.out.println("GAME STARTED");
+
         sceneManager.setScene(SceneManager.MATCH_SCENE);
         SceneManager.runOnFxThread(window::centerOnScreen);
     }
@@ -163,11 +166,17 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     }
 
     @Override
-    public String choose(Bundle<String, ArrayList<String>> options)
+    public String chooseOrCancel(Bundle<String, ArrayList<String>> options)
     {
         MatchScene matchScene = MatchScene.getInstance();
         SceneManager.runOnFxThread(() -> matchScene.setOptions(options.getFirst(), options.getSecond()));
         return new ValueObserver<String>().get(matchScene.selectedOption);
+    }
+
+    @Override
+    public String choose(Bundle<String, ArrayList<String>> options)
+    {
+        return null;
     }
 
     @Override
@@ -200,6 +209,12 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
         MatchScene matchScene = MatchScene.getInstance();
         SceneManager.runOnFxThread(() -> matchScene.chooseBlock(maxDistance));
         return new ValueObserver<Coordinates>().get(matchScene.selectedBlock);
+    }
+
+    public Coordinates chooseBlockFrom(ArrayList<Coordinates> coordinates)throws CanceledActionException
+    {
+        //TODO
+        return null;
     }
 
     @Override

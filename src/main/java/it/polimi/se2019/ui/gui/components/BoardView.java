@@ -110,11 +110,11 @@ public class BoardView extends StackPane implements Initializable
         double space1 = 27*scale;
         double space2 = 33*scale;
 
-        //
+        /*/
         damages.put(GameColor.GREEN, 3);
         damages.put(GameColor.WHITE, 4);
         damages.put(GameColor.PURPLE, 4);
-        //
+        /*/
 
         Set<GameColor> keys = damages.keySet();
 
@@ -146,11 +146,11 @@ public class BoardView extends StackPane implements Initializable
         double yi = 0;
         double space = 8*scale;
 
-        //
+        /*/
         markers.put(GameColor.BLUE, 2);
         markers.put(GameColor.YELLOW, 3);
         markers.put(GameColor.PURPLE, 2);
-        //
+        /*/
 
         Set<GameColor> keys = markers.keySet();
 
@@ -251,13 +251,6 @@ public class BoardView extends StackPane implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        /*this.background = backgrounds.get(color);
-
-        backgroundImage.setImage(background);
-
-        backgroundImage.setPreserveRatio(true);
-        backgroundImage.setFitHeight(GUI.getScreenHeight()/5);
-        setPrefHeight(GUI.getScreenHeight()/5);
-        setPrefWidth(backgroundImage.getBoundsInParent().getWidth());*/
+        setColor(GameColor.WHITE);
     }
 }

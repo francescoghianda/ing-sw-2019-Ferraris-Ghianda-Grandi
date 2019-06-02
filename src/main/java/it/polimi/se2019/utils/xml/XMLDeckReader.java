@@ -5,6 +5,7 @@ import it.polimi.se2019.card.ammo.AmmoCard;
 import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.cost.Cost;
 import it.polimi.se2019.card.powerup.PowerUpCard;
+import it.polimi.se2019.card.weapon.OptionalEffect;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.logging.Logger;
@@ -101,6 +102,15 @@ public class XMLDeckReader
         for(int i = 0; i < cards.getLength(); i++) weaponCards.add(parseWeaponCard((Element) cards.item(i)));
 
         weaponCards.forEach(card -> WeaponCard.addCard(card.getId(), card));
+
+        //TEST
+
+        String script = "select_player(visible context_player)->player1\n"+
+                        "hit player1 3\n"+
+                        "mark player1 1";
+        weaponCards.forEach(card -> card.setBasicModeScript(script));
+
+        //
 
         return weaponCards;
     }

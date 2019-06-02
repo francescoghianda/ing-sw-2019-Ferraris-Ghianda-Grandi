@@ -1,6 +1,7 @@
 package it.polimi.se2019.map;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Path
 {
@@ -12,7 +13,7 @@ public class Path
         blocks = new ArrayList<>();
     }
 
-    public void addBlock(Block block)
+    void addBlock(Block block)
     {
         blocks.add(block);
     }
@@ -20,6 +21,11 @@ public class Path
     public int getLength()
     {
        return blocks.size();
+    }
+
+    public List<Block> getBlocks()
+    {
+        return new ArrayList<>(blocks);
     }
 
     public  boolean contains(Block block)
