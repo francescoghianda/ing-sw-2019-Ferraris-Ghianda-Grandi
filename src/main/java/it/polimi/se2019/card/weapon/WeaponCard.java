@@ -4,6 +4,7 @@ import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.cardscript.CardScriptExecutor;
 import it.polimi.se2019.card.cost.Cost;
 import it.polimi.se2019.controller.CanceledActionException;
+import it.polimi.se2019.player.Player;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -62,30 +63,41 @@ public class WeaponCard extends Card implements Serializable
 	public void reload()
 	{
 		this.isLoad = true;
+		optionalEffects.values().forEach(OptionalEffect::resetEnable);
 	}
 
-	public void fire(Player player)throws WeaponNotLoadException, CanceledActionException
+	public void reset()
 	{
-		if(!isLoad)throw new WeaponNotLoadException(this);
+		scriptExecutor.reset();
+	}
+
+	public void fire(Player player)throws CanceledActionException
+	{
+		if(!isLoad)throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION, "WEAPON NOT LOAD");
 		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))createScriptExecutor(player);
 		scriptExecutor.setScript(fireMode.equals(Mode.BASIC) ? basicModeScript : alternateModeScript);
 		scriptExecutor.execute();
 	}
 
-	public boolean useOptionalEffect(Player player, OptionalEffect effect)throws WeaponNotLoadException, CanceledActionException
+	public boolean useOptionalEffect(Player player, OptionalEffect effect)throws CanceledActionException
 	{
-		if(!isLoad)throw new WeaponNotLoadException(this);
-		if(!effect.isEnabled())return false;
+		if(!isLoad)throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION);
+		if(!effect.isEnabled())throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION);
 		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))createScriptExecutor(player);
 		scriptExecutor.setScript(effect.getScript());
 		scriptExecutor.execute();
 		return true;
 	}
 
+	public void setFireMode(Mode fireMode)
+	{
+		if(fireMode == Mode.ALTERNATE_FIRE && !hasAlternateFireMode)return;
+		this.fireMode = fireMode;
+	}
+
 	private void createScriptExecutor(Player player)
 	{
-		scriptExecutor = new CardScriptExecutor(player);
-		scriptExecutor.setWeapon(this);
+		scriptExecutor = CardScriptExecutor.getWeaponScriptExecutor(player, this);
 	}
 
 	public void setLoad(boolean isLoad)
@@ -118,6 +130,16 @@ public class WeaponCard extends Card implements Serializable
 		buyCost = new Cost(redCost, blueCost, yellowCost);
 	}
 
+	public boolean hasOptionalEffect()
+	{
+		return hasOptionalEffect;
+	}
+
+	public boolean hasAlternateFireMode()
+	{
+		return hasAlternateFireMode;
+	}
+
 	public void setBuyCost(Cost buyCost)
 	{
 		this.buyCost = buyCost;
@@ -143,11 +165,6 @@ public class WeaponCard extends Card implements Serializable
 		this.alternateModeCost = alternateModeCost;
 	}
 
-	void setHasAlternateFireMode(boolean hasAlternateFireMode)
-	{
-		this.hasAlternateFireMode = hasAlternateFireMode;
-	}
-
 	public void setBasicModeScript(String basicModeScript)
 	{
 		this.basicModeScript = basicModeScript;
@@ -156,6 +173,7 @@ public class WeaponCard extends Card implements Serializable
 	public void setAlternateModeScript(String alternateModeScript)
 	{
 		this.alternateModeScript = alternateModeScript;
+		hasAlternateFireMode = true;
 	}
 
 	public void addOptionalEffect(OptionalEffect effect, String name)
@@ -164,7 +182,7 @@ public class WeaponCard extends Card implements Serializable
 		hasOptionalEffect = true;
 	}
 
-	OptionalEffect getOptionaEffect(String name)
+	public OptionalEffect getOptionalEffect(String name)
 	{
 		return optionalEffects.get(name);
 	}

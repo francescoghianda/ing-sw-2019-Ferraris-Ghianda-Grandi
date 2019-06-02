@@ -1,9 +1,13 @@
 package it.polimi.se2019.card.cardscript;
 
+import it.polimi.se2019.card.powerup.PowerUpCard;
+import it.polimi.se2019.card.weapon.OptionalEffect;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.map.Block;
+import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
+import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.lang.reflect.InvocationTargetException;
@@ -28,24 +32,29 @@ public class CardScriptExecutor
     private HashMap<String, Block> blocks;
 
     private WeaponCard weapon;
+    private PowerUpCard powerUp;
 
-    public CardScriptExecutor(Player contextPlayer)
+    private boolean firstPlayerOfScript;
+
+    private CardScriptExecutor(Player contextPlayer)
     {
         this.players = new HashMap<>();
         this.blocks = new HashMap<>();
         this.commands = new HashMap<>();
         this.contextPlayer = contextPlayer;
         this.players.put("context_player", contextPlayer);
+        firstPlayerOfScript = true;
         updateContextBlock();
 
         try
         {
-            commands.put("select_block", getClass().getMethod("selectBlock", String.class));
-            commands.put("select_player", getClass().getMethod("selectPlayer", String.class));
-            commands.put("hit", getClass().getMethod("hit", String.class));
-            commands.put("mark", getClass().getMethod("mark", String.class));
-            commands.put("move", getClass().getMethod("move", String.class));
-            commands.put("pay", getClass().getMethod("pay", String.class));
+            commands.put("select_block", getClass().getDeclaredMethod("selectBlock", String.class));
+            commands.put("select_player", getClass().getDeclaredMethod("selectPlayer", String.class));
+            commands.put("hit", getClass().getDeclaredMethod("hit", String.class));
+            commands.put("mark", getClass().getDeclaredMethod("mark", String.class));
+            commands.put("move", getClass().getDeclaredMethod("move", String.class));
+            commands.put("enable", getClass().getDeclaredMethod("enable", String.class));
+            commands.put("pay", getClass().getDeclaredMethod("pay", String.class));
         }
         catch (NoSuchMethodException e)
         {
@@ -53,9 +62,26 @@ public class CardScriptExecutor
         }
     }
 
-    public void setWeapon(WeaponCard weapon)
+    private CardScriptExecutor(Player contextPlayer, WeaponCard weaponCard)
     {
-        this.weapon = weapon;
+        this(contextPlayer);
+        this.weapon = weaponCard;
+    }
+
+    private CardScriptExecutor(Player contextPlayer, PowerUpCard powerUpCard)
+    {
+        this(contextPlayer);
+        this.powerUp = powerUpCard;
+    }
+
+    public static CardScriptExecutor getWeaponScriptExecutor(Player contextPlayer, WeaponCard weaponCard)
+    {
+        return new CardScriptExecutor(contextPlayer, weaponCard);
+    }
+
+    public static CardScriptExecutor getPowerUpScriptExecutor(Player contextPlayer, PowerUpCard powerUpCard)
+    {
+        return new CardScriptExecutor(contextPlayer, powerUpCard);
     }
 
     public Player getContextPlayer()
@@ -76,6 +102,7 @@ public class CardScriptExecutor
     public CardScriptExecutor setScript(String script)
     {
         currScript = script.split("\\r?\\n");
+        firstPlayerOfScript = true;
         return this;
     }
 
@@ -123,7 +150,7 @@ public class CardScriptExecutor
             commandBuilder.append(chars[i]);
             if(commands.containsKey(commandBuilder.toString()))
             {
-                commands.get(commandBuilder.toString()).invoke(this, line.substring(i).trim());
+                commands.get(commandBuilder.toString()).invoke(this, line.substring(i+1).trim());
                 executed = true;
                 break;
             }
@@ -131,48 +158,60 @@ public class CardScriptExecutor
         if(!executed)throw new CardScriptErrorException();
     }
 
+    private void enable(String param)
+    {
+        if(weapon != null)
+        {
+            OptionalEffect effect = weapon.getOptionalEffect(param);
+            if(effect != null)effect.setEnabled(true);
+        }
+    }
+
     private void selectPlayer(String param) throws CanceledActionException
     {
         String[] params = param.trim().split("->");
-        if(players.containsKey(params[1].trim()))throw new CardScriptErrorException();
+        if(players.containsKey(params[1].trim()))throw new CardScriptErrorException(params[1]+" already exist!");
         LogicExpression expression = new LogicExpression(params[0].trim());
         Predicate<Player> predicate = player -> expression.evaluate(players, blocks, player);
 
         List<Player> allPlayers = contextPlayer.getGameController().getPlayers();
+        allPlayers.remove(contextPlayer);
         ArrayList<String> validUsername = allPlayers.stream().filter(predicate).map(Player::getUsername).collect(Collectors.toCollection(ArrayList::new));
 
-        if(validUsername.isEmpty())throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION);
-
-        String chosen = contextPlayer.getView().choose(new Bundle<>("Scegli un giocatore tra", validUsername));
-        Optional<Player> chosenPlayer = contextPlayer.getGameController().findPlayerByUsername(chosen);
-
-        /*NetworkMessageServer<?> response = contextPlayer.getResponseTo(Messages.SELECT_PLAYER);
-        while(!predicate.test((Player)response.getParam()))
+        if(validUsername.isEmpty())
         {
-            response = contextPlayer.getResponseTo(Messages.STATE_MESSAGE_CLIENT.setParam(Messages.INVALID_PLAYER));
+            if(firstPlayerOfScript)throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION, "NOT VALID PLAYER");
+            else return;
         }
-        contextPlayer.sendMessageToClient(Messages.STATE_MESSAGE_CLIENT.setParam(Messages.OK));*/
+
+        String chosen = contextPlayer.getView().chooseOrCancel(new Bundle<>("Scegli un giocatore tra", validUsername));
+        Optional<Player> chosenPlayer = contextPlayer.getGameController().findPlayerByUsername(chosen);
 
         if(!chosenPlayer.isPresent())throw new CardScriptErrorException("Invalid player <"+chosen+">");
 
         players.put(params[1].trim(), chosenPlayer.get());
+        firstPlayerOfScript = false;
     }
 
-    /*
-    private void selectBlock(String param)
+    private void selectBlock(String param) throws CanceledActionException
     {
         String[] params = param.trim().split("->");
-        if(blocks.containsKey(params[1].trim()))throw new CardScriptErrorException();
+        if(blocks.containsKey(params[1].trim()))throw new CardScriptErrorException(params[1]+" already exist!");
         LogicExpression expression = new LogicExpression(params[0].trim());
         Predicate<Block> predicate = block -> expression.evaluate(players, blocks, block);
-        NetworkMessageServer<?> response = contextPlayer.getResponseTo(Messages.SELECT_BLOCK);
-        while(!predicate.test((Block)response.getParam()))
-        {
-            response = contextPlayer.getResponseTo(Messages.STATE_MESSAGE_CLIENT.setParam(Messages.INVALID_BLOCK));
-        }
-        contextPlayer.sendMessageToClient(Messages.STATE_MESSAGE_CLIENT.setParam(Messages.OK));
-        blocks.put(params[1].trim(), (Block)response.getParam());
-    }*/
+
+        List<Block> allBlocks = contextBlock.getRoom().getMap().getAllBlocks();
+        ArrayList<Coordinates> validBlocks = allBlocks.stream().filter(predicate).map(Block::getCoordinates).collect(Collectors.toCollection(ArrayList::new));
+
+        if(validBlocks.isEmpty()) throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION, "NOT VALID BLOCK");
+
+        Coordinates chosen = contextPlayer.getView().chooseBlockFrom(validBlocks);
+        Block chosenBlock = contextBlock.getRoom().getMap().getBlock(chosen.getX(), chosen.getY());
+
+        if(chosenBlock == null)throw new CardScriptErrorException("Invalid block <"+chosen+">");
+
+        blocks.put(params[1].trim(), chosenBlock);
+    }
 
     private void hit(String param)
     {
