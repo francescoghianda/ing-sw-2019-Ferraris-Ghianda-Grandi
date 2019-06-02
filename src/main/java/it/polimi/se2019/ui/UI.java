@@ -2,7 +2,6 @@ package it.polimi.se2019.ui;
 
 import it.polimi.se2019.card.Card;
 import it.polimi.se2019.controller.CanceledActionException;
-import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;

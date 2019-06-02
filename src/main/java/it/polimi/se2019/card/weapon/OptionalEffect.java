@@ -5,6 +5,9 @@ import it.polimi.se2019.card.cost.Cost;
 public class OptionalEffect
 {
     private final String name;
+
+    private boolean firstAssign;
+    private boolean enableReset;
     private boolean enabled;
 
     private Cost cost;
@@ -14,6 +17,7 @@ public class OptionalEffect
     public OptionalEffect(String name)
     {
         this.name = name;
+        firstAssign = true;
     }
 
     public void setScript(String script)
@@ -23,7 +27,17 @@ public class OptionalEffect
 
     public void setEnabled(boolean enabled)
     {
+        if(firstAssign)
+        {
+            enableReset = enabled;
+            firstAssign = false;
+        }
         this.enabled = enabled;
+    }
+
+    public void resetEnable()
+    {
+        this.enabled = enableReset;
     }
 
     public void setCost(int redCost, int blueCost, int yellowCost)

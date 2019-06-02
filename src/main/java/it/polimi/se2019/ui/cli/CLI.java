@@ -1,13 +1,9 @@
 package it.polimi.se2019.ui.cli;
 
 import it.polimi.se2019.card.Card;
-import it.polimi.se2019.card.powerup.PowerUpCard;
-import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.Coordinates;
-import it.polimi.se2019.map.Map;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
-import it.polimi.se2019.player.Player;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.ui.UI;

@@ -8,7 +8,6 @@ import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
 import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
-import it.polimi.se2019.player.Player;
 
 import java.rmi.RemoteException;
 

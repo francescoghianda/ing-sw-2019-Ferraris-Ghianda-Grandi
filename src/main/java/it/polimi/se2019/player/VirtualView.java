@@ -2,7 +2,6 @@ package it.polimi.se2019.player;
 
 import it.polimi.se2019.card.Card;
 import it.polimi.se2019.controller.CanceledActionException;
-import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.message.AsyncMessage;
@@ -12,6 +11,7 @@ import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class VirtualView implements UI
 {
@@ -107,9 +107,24 @@ public class VirtualView implements UI
     }
 
     @Override
-    public String choose(Bundle<String, ArrayList<String>> options) throws CanceledActionException
+    public String chooseOrCancel(Bundle<String, ArrayList<String>> options) throws CanceledActionException
     {
-        return (String) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose", ui -> ui.choose(options))).getContent();
+        return (String) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_or_cancel", ui -> ui.chooseOrCancel(options))).getContent();
+    }
+
+    public String chooseOrCancel(String question, String... options) throws CanceledActionException
+    {
+        return chooseOrCancel(new Bundle<>(question, new ArrayList<>(Arrays.asList(options))));
+    }
+
+    public String choose(Bundle<String, ArrayList<String>> options)
+    {
+        return (String) client.getResponseTo(RequestFactory.newActionRequest("choose", ui -> ui.choose(options))).getContent();
+    }
+
+    public String choose(String question, String... options)
+    {
+        return choose(new Bundle<>(question, new ArrayList<>(Arrays.asList(options))));
     }
 
     @Override
@@ -128,6 +143,12 @@ public class VirtualView implements UI
     public Coordinates chooseBlock(int maxDistance) throws CanceledActionException
     {
         return (Coordinates) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_block", ui -> ui.chooseBlock(maxDistance))).getContent();
+    }
+
+    @Override
+    public Coordinates chooseBlockFrom(ArrayList<Coordinates> coordinates) throws CanceledActionException
+    {
+        return (Coordinates) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_block_from", ui -> ui.chooseBlockFrom(coordinates))).getContent();
     }
 
     @Override

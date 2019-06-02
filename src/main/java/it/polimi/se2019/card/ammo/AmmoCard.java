@@ -3,8 +3,6 @@ package it.polimi.se2019.card.ammo;
 import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.deck.Deck;
 import it.polimi.se2019.card.powerup.PowerUpCard;
-import it.polimi.se2019.controller.GameController;
-import it.polimi.se2019.player.Player;
 
 import java.io.Serializable;
 

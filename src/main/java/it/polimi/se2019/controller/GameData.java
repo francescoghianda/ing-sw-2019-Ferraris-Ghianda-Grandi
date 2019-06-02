@@ -12,12 +12,17 @@ public class GameData implements Serializable
     private final int remainingSkulls;
     private final int deaths;
 
-    public GameData(MapData map, PlayerData player, int remainingSkulls, int deaths)
+    private final int powerUpDeckSize;
+    private final int weaponDeckSize;
+
+    public GameData(MapData map, PlayerData player, int remainingSkulls, int deaths, int powerUpDeckSize, int weaponDeckSize)
     {
         this.map = map;
         this.player = player;
         this.remainingSkulls = remainingSkulls;
         this.deaths = deaths;
+        this.powerUpDeckSize = powerUpDeckSize;
+        this.weaponDeckSize = weaponDeckSize;
     }
 
     public MapData getMap()
@@ -38,5 +43,15 @@ public class GameData implements Serializable
     public int getDeaths()
     {
         return this.deaths;
+    }
+
+    public int getPowerUpDeckSize()
+    {
+        return powerUpDeckSize;
+    }
+
+    public int getWeaponDeckSize()
+    {
+        return weaponDeckSize;
     }
 }

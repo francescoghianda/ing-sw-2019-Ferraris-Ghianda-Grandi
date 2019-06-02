@@ -2,7 +2,6 @@ package it.polimi.se2019.map;
 
 import it.polimi.se2019.card.ammo.AmmoCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
-import it.polimi.se2019.player.Player;
 import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.utils.constants.Ansi;
 

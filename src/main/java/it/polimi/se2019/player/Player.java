@@ -25,12 +25,11 @@ public class Player implements Serializable
 	private GameBoard gameBoard;
 	private transient ArrayList<Action> executedAction;
 	private transient GameController gameController;
-
 	private transient ArrayList<Player> damagedPlayers;
-
 	private transient ClientConnection clientConnection;
-
 	private transient VirtualView view;
+
+	private boolean firstRoundPlayed;
 
 	/**
 	 * creates and initializes the features of the player
@@ -46,10 +45,21 @@ public class Player implements Serializable
 		executedAction = new ArrayList<>();
 		damagedPlayers = new ArrayList<>();
 		gameBoard = new GameBoard();
+		firstRoundPlayed = false;
 		this.color = color;
 		this.clientConnection = clientConnection;
 		this.gameController = gameController;
 		this.view = new VirtualView(clientConnection);
+	}
+
+	public boolean isFirstRoundPlayed()
+	{
+		return firstRoundPlayed;
+	}
+
+	public void setFirstRoundPlayed(boolean firstRoundPlayed)
+	{
+		this.firstRoundPlayed = firstRoundPlayed;
 	}
 
 	public void setClientConnection(ClientConnection clientConnection)

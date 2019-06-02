@@ -7,7 +7,8 @@ import java.util.List;
 public class RoundManager
 {
     private List<Player> players;
-    private int index;
+    private int playerIndex;
+    private int roundIndex;
     private int roundNumber;
 
     public RoundManager(List<Player> players)
@@ -21,19 +22,21 @@ public class RoundManager
         Player nextPlayer = getNextPlayer();
         System.out.println(getRoundNumber());
         while (!nextPlayer.getClientConnection().isConnected())nextPlayer = getNextPlayer();
+        roundIndex++;
         return nextPlayer;
     }
 
     private Player getNextPlayer()
     {
-        if(index >= players.size())
+        if(playerIndex >= players.size())
         {
-            index = 0;
-            roundNumber++;
+            playerIndex = 0;
+            if(roundIndex >= players.size())roundNumber++;
+            roundIndex = 0;
         }
-        Player currentPlayer = players.get(index);
-        index++;
 
+        Player currentPlayer = players.get(playerIndex);
+        playerIndex++;
         return currentPlayer;
     }
 

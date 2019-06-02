@@ -4,7 +4,6 @@ import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.map.Block;
 import it.polimi.se2019.network.message.Bundle;
-import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.lang.reflect.InvocationTargetException;
