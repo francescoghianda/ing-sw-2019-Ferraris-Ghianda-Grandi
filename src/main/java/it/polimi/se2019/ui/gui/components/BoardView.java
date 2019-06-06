@@ -3,8 +3,10 @@ package it.polimi.se2019.ui.gui.components;
 import it.polimi.se2019.player.GameBoardData;
 import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.gui.GUI;
+import it.polimi.se2019.ui.gui.MatchScene;
 import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.gui.BloodDropImageFactory;
+import javafx.application.Platform;
 import javafx.beans.NamedArg;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -136,6 +138,7 @@ public class BoardView extends StackPane implements Initializable
                 totSpace += space;
             }
         }
+
     }
 
     private void paintMarkers(GraphicsContext gc)

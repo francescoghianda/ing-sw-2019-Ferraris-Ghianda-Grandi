@@ -12,6 +12,7 @@ import it.polimi.se2019.ui.gui.dialogs.CloseDialog;
 import it.polimi.se2019.ui.gui.value.ValueObserver;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Screen;
@@ -63,7 +64,8 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     @Override
     public void update(GameData data)
     {
-        SceneManager.runOnFxThread(() -> sceneManager.getMatchScene().update(data));
+        System.out.println("UPDATE");
+        sceneManager.getMatchScene().update(data);
     }
 
     @Override
@@ -74,8 +76,9 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     }
 
     @Override
-    public String getUsername()
+    public String login()
     {
+        sceneManager.setScene(SceneManager.LOGIN_SCENE);
         return sceneManager.getUsername();
     }
 
@@ -109,8 +112,6 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     @Override
     public void gameStarted()
     {
-        System.out.println("GAME STARTED");
-
         sceneManager.setScene(SceneManager.MATCH_SCENE);
         SceneManager.runOnFxThread(window::centerOnScreen);
     }

@@ -10,6 +10,10 @@ import it.polimi.se2019.ui.gui.value.CancelableValue;
 import it.polimi.se2019.ui.gui.value.Value;
 import it.polimi.se2019.utils.logging.Logger;
 
+import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ObjectPropertyBase;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -54,7 +58,9 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     private Label cardDescriptionLabel;
 
 
-    private GameData gameData;
+    private final ObjectPropertyBase<GameData> gameDataProperty;
+
+    //private GameData gameData;
     private boolean chooseBlock;
     private boolean chooseWeaponFromPlayer;
     private boolean chooseWeaponFromBlock;
@@ -74,6 +80,8 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MatchScene.fxml"));
         fxmlLoader.setController(this);
         fxmlLoader.setRoot(this);
+
+        gameDataProperty = new SimpleObjectProperty<>();
 
         try
         {
@@ -105,26 +113,35 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         return cardDescriptionLabel;
     }
 
-    public GameData getGameData()
+    public ObjectProperty<GameData> getGameDataProperty()
     {
-        return gameData;
+        return gameDataProperty;
     }
 
     public void update(GameData data)
     {
-        this.gameData = data;
-        if(firstUpdate)
+        Platform.runLater(() -> gameDataProperty.set(data));
+
+        /*if(firstUpdate)
         {
-            actionPane.setColor(data.getPlayer().getColor());
-            board.setColor(data.getPlayer().getColor());
-            choosePane.setColor(data.getPlayer().getColor());
+            Platform.runLater(() ->
+            {
+                actionPane.setColor(data.getPlayer().getColor());
+                board.setColor(data.getPlayer().getColor());
+                choosePane.setColor(data.getPlayer().getColor());
+            });
             firstUpdate = false;
         }
+
         mapView.update(data.getMap());
         mapView.setRemainingSkulls(data.getRemainingSkulls(), data.getDeaths());
-        weaponsCardPane.updateCards(data.getPlayer().getWeapons(), this);
-        powerUpsCardPane.updateCards(data.getPlayer().getPowerUps(), this);
         board.update(data.getPlayer());
+
+        Platform.runLater(() ->
+        {
+            weaponsCardPane.updateCards(data.getPlayer().getWeapons(), this);
+            powerUpsCardPane.updateCards(data.getPlayer().getPowerUps(), this);
+        });*/
     }
 
     public void addCard(Card card)
@@ -146,6 +163,27 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         cardDescriptionLabel.setFont(new Font(15));
         cardDescriptionLabel.setStyle("-fx-text-fill: white");
         cardDescriptionLabel.setPadding(new Insets(0, 0, 0, 20));
+
+        gameDataProperty.addListener((observable, oldData, gameData) ->
+        {
+            System.out.println("AAAA");
+
+
+            if(firstUpdate)
+            {
+                firstUpdate = false;
+
+                choosePane.setColor(gameData.getPlayer().getColor());
+                actionPane.setColor(gameData.getPlayer().getColor());
+                board.setColor(gameData.getPlayer().getColor());
+            }
+
+            board.update(gameData.getPlayer());
+            mapView.update(gameData.getMap());
+            mapView.setRemainingSkulls(gameData.getRemainingSkulls(), gameData.getDeaths());
+            weaponsCardPane.updateCards(gameData.getPlayer().getWeapons(), this);
+            powerUpsCardPane.updateCards(gameData.getPlayer().getPowerUps(), this);
+        });
 
     }
 
@@ -236,11 +274,12 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     @Override
     public void onBlockClick(int blockX, int blockY)
     {
-        BlockData clicked = gameData.getMap().getBlock(blockX, blockY);
-        int playerX = gameData.getPlayer().getX();
-        int playerY = gameData.getPlayer().getY();
-        BlockData playerBlock = gameData.getMap().getBlock(playerX, playerY);
-        int distance = gameData.getMap().getDistance(playerBlock, clicked);
+        BlockData clicked = gameDataProperty.getValue().getMap().getBlock(blockX, blockY);
+        int playerX = gameDataProperty.getValue().getPlayer().getX();
+        int playerY = gameDataProperty.getValue().getPlayer().getY();
+        BlockData playerBlock = gameDataProperty.getValue().getMap().getBlock(playerX, playerY);
+        if(playerBlock == null)return;
+        int distance = gameDataProperty.getValue().getMap().getDistance(playerBlock, clicked);
 
         if(chooseBlock && distance <= maxDistance)
         {

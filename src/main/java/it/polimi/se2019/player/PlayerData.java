@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 public class PlayerData implements Serializable
 {
+    private final String username;
     private final GameColor color;
     private final ArrayList<Card> weapons;
     private final ArrayList<Card> powerUps;
@@ -17,14 +18,20 @@ public class PlayerData implements Serializable
     private final int x;
     private final int y;
     
-    public PlayerData(GameColor color, ArrayList<Card> weapons, ArrayList<Card> powerUps, GameBoardData gameBoard, int x, int y)
+    public PlayerData(String username, GameColor color, ArrayList<Card> weapons, ArrayList<Card> powerUps, GameBoardData gameBoard, int x, int y)
     {
+        this.username = username;
         this.color = color;
         this.weapons = weapons;
         this.powerUps = powerUps;
         this.gameBoard = gameBoard;
         this.x = x;
         this.y = y;
+    }
+
+    public String getUsername()
+    {
+        return username;
     }
 
     public GameColor getColor()

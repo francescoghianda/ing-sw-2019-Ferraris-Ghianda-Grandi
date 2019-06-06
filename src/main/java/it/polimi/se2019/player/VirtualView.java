@@ -5,11 +5,13 @@ import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.ClientConnection;
+import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.message.AsyncMessage;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.network.message.RequestFactory;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
+import it.polimi.se2019.utils.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,9 +38,32 @@ public class VirtualView implements UI
     }
 
     @Override
-    public String getUsername()
+    public String login()
     {
-        return (String) client.getResponseTo(RequestFactory.newActionRequest("get_username", UI::getUsername)).getContent();
+        String username = (String) client.getResponseTo(RequestFactory.newActionRequest("username", UI::login)).getContent();
+
+        while(ClientsManager.getInstance().getConnectedClientsUsername().contains(username))
+        {
+            username = (String) client.getResponseTo(RequestFactory.newActionRequest("invalid_username", UI::login)).getContent();
+        }
+
+        client.getUser().setUsername(username);
+        boolean reconnected = false;
+        if(ClientsManager.getInstance().getDisconnectedClientsUsername().contains(username))
+        {
+            ClientsManager.getInstance().registerClient(client);
+            reconnected = true;
+            client.getGameController().playerReconnected(client);
+            Logger.warning("Client "+username+" has reconnected!");
+        }
+        else
+        {
+            logged();
+            ClientsManager.getInstance().registerClient(client);
+        }
+        client.setLogged(true, reconnected);
+
+        return username;
     }
 
     @Override

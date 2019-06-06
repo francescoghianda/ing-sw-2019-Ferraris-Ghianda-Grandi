@@ -5,9 +5,9 @@ import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
+import it.polimi.se2019.network.User;
 import it.polimi.se2019.network.message.*;
-import it.polimi.se2019.player.Player;
-import it.polimi.se2019.ui.UI;
+import it.polimi.se2019.player.VirtualView;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.*;
@@ -24,8 +24,6 @@ public class SocketClientConnection implements Runnable, ClientConnection
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
     private final GameController controller;
-    private Player player;
-    private String nickname;
 
     private ClientsManager clientsManager;
 
@@ -36,6 +34,9 @@ public class SocketClientConnection implements Runnable, ClientConnection
 
     private Thread requestThread;
 
+    private final User user;
+    private final VirtualView view;
+
     SocketClientConnection(Socket client, SocketServer server, GameController controller) throws IOException
     {
         this.controller = controller;
@@ -44,6 +45,9 @@ public class SocketClientConnection implements Runnable, ClientConnection
         this.client = client;
         this.server = server;
         this.connected = true;
+
+        this.user = new User();
+        this.view = new VirtualView(this);
 
         try
         {
@@ -65,7 +69,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
             this.userThread = new Thread(this);
             this.running = true;
             this.userThread.start();
-            login();
+            view.login();
         }
     }
 
@@ -113,29 +117,6 @@ public class SocketClientConnection implements Runnable, ClientConnection
         }
     }
 
-
-    private void login()
-    {
-        String username = (String) getResponseTo(RequestFactory.newActionRequest("username", UI::getUsername)).getContent();
-
-        while(ClientsManager.getInstance().getConnectedClientsUsername().contains(username))
-        {
-            username = (String) getResponseTo(RequestFactory.newActionRequest("invalid_username", UI::getUsername)).getContent();
-        }
-
-        sendMessageToClient(new AsyncMessage("logged", UI::logged));
-        setUsername(username);
-        boolean reconnected = false;
-        if(ClientsManager.getInstance().getDisconnectedClientsUsername().contains(username))
-        {
-            getServer().clientReconnected(this);
-            reconnected = true;
-            controller.playerReconnected(getPlayer());
-            Logger.warning("Client "+username+" has reconnected!");
-        }
-        setLogged(true, reconnected);
-    }
-
     public void sendMessageToClient(AsyncMessage message)
     {
         sendMessageToClient((Message) message);
@@ -155,8 +136,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
         if(!connected)return;
         try
         {
-            oos.reset();
-            oos.writeObject(message);
+            oos.writeUnshared(message);
             oos.flush();
         }
         catch (IOException e)
@@ -165,6 +145,18 @@ public class SocketClientConnection implements Runnable, ClientConnection
             Logger.exception(e);
             throw new ConnectionErrorException();
         }
+    }
+
+    @Override
+    public User getUser()
+    {
+        return this.user;
+    }
+
+    @Override
+    public VirtualView getVirtualView()
+    {
+        return this.view;
     }
 
     @Override
@@ -218,27 +210,16 @@ public class SocketClientConnection implements Runnable, ClientConnection
     private void lostConnection()
     {
         stop();
-        Logger.warning("Client "+nickname+" has disconnected!");
-        clientDisconnectionListener.onClientDisconnection(this);
-    }
-
-    @Override
-    public void setUsername(String nickname)
-    {
-        this.nickname = nickname;
-    }
-
-    @Override
-    public String getUsername()
-    {
-        return this.nickname;
+        Logger.warning("Client "+user.getUsername()+" has disconnected!");
+        ClientsManager.getInstance().unregisterClient(this);
+        //clientDisconnectionListener.onClientDisconnection(this);
     }
 
     @Override
     public void setLogged(boolean logged, boolean reconnected)
     {
         this.logged = logged;
-        if(!reconnected && logged)this.player = controller.createPlayer(this);
+        if(!reconnected && logged)user.setPlayer(controller.createPlayer(this));
     }
 
     @Override
@@ -247,11 +228,6 @@ public class SocketClientConnection implements Runnable, ClientConnection
         return this.logged;
     }
 
-    @Override
-    public Player getPlayer()
-    {
-        return player;
-    }
 
     @Override
     public GameController getGameController()
@@ -275,12 +251,6 @@ public class SocketClientConnection implements Runnable, ClientConnection
     public SocketServer getServer()
     {
         return server;
-    }
-
-    @Override
-    public void setPlayer(Player player)
-    {
-        this.player = player;
     }
 
     public GameController getGameCotroller()

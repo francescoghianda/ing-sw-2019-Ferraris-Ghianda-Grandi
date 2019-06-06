@@ -2,13 +2,10 @@ package it.polimi.se2019.network.rmi.server;
 
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameController;
-import it.polimi.se2019.network.ClientConnection;
-import it.polimi.se2019.network.ClientsManager;
-import it.polimi.se2019.network.NetworkServer;
-import it.polimi.se2019.network.OnClientDisconnectionListener;
+import it.polimi.se2019.network.*;
 import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
-import it.polimi.se2019.player.Player;
+import it.polimi.se2019.player.VirtualView;
 
 import java.rmi.RemoteException;
 
@@ -20,14 +17,15 @@ public class RmiClientConnection implements ClientConnection
     private final CallbackInterface callback;
     private final RmiServer server;
 
-    private String username;
     private boolean logged;
-    private Player player;
     private GameController gameController;
 
     private OnClientDisconnectionListener clientDisconnectionListener;
 
     private ClientsManager clientsManager;
+
+    private final User user;
+    private final VirtualView view;
 
     private boolean connected;
 
@@ -43,15 +41,17 @@ public class RmiClientConnection implements ClientConnection
         this.callback = callback;
         this.server = server;
         this.connected = true;
+        this.user = new User();
+        this.view = new VirtualView(this);
         this.clientsManager = ClientsManager.getInstance();
     }
 
-    public CallbackInterface getCallback()
+    CallbackInterface getCallback()
     {
         return this.callback;
     }
 
-    public RmiClientConnection setOnClientDisconnectionListener(OnClientDisconnectionListener listener)
+    RmiClientConnection setOnClientDisconnectionListener(OnClientDisconnectionListener listener)
     {
         this.clientDisconnectionListener = listener;
         return this;
@@ -131,34 +131,27 @@ public class RmiClientConnection implements ClientConnection
     }
 
     @Override
-    public void setUsername(String username)
+    public User getUser()
     {
-        this.username = username;
+        return user;
     }
 
-    @Override
-    public String getUsername()
+    public VirtualView getVirtualView()
     {
-        return this.username;
+        return view;
     }
 
     @Override
     public void setLogged(boolean logged, boolean reconnected)
     {
         this.logged = logged;
-        if(!reconnected && logged)this.player = gameController.createPlayer(this);
+        if(!reconnected && logged)user.setPlayer(gameController.createPlayer(this));
     }
 
     @Override
     public boolean isLogged()
     {
         return logged;
-    }
-
-    @Override
-    public Player getPlayer()
-    {
-        return player;
     }
 
     @Override
@@ -173,9 +166,4 @@ public class RmiClientConnection implements ClientConnection
         return server;
     }
 
-    @Override
-    public void setPlayer(Player player)
-    {
-        this.player = player;
-    }
 }

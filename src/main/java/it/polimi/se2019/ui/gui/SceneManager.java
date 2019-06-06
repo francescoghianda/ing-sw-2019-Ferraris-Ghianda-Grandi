@@ -122,7 +122,10 @@ public class SceneManager
 
     public static void runOnFxThread(Runnable runnable)
     {
-        if(!Platform.isFxApplicationThread())Platform.runLater(runnable);
+        if(!Platform.isFxApplicationThread())
+        {
+            Platform.runLater(runnable);
+        }
         else runnable.run();
     }
 

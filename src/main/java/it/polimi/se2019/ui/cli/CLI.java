@@ -51,7 +51,7 @@ public class CLI implements UI
     }
 
     @Override
-    public String getUsername()
+    public String login()
     {
         return new FormattedInput(CliString.GET_USERNAME, FormattedInput.USERNAME_REGEX).show();
     }

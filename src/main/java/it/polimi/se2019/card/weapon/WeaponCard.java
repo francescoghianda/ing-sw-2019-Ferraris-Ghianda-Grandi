@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WeaponCard extends Card implements Serializable
+public class WeaponCard extends Card
 {
 	private static final HashMap<String, WeaponCard> cards = new HashMap<>();
 

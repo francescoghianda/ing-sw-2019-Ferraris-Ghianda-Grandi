@@ -5,6 +5,7 @@ import it.polimi.se2019.network.NetworkClient;
 import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
+import javafx.concurrent.Task;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -64,28 +65,58 @@ public class SocketClient implements Runnable, NetworkClient
 
                 if(incomeMessage.getType() == Message.Type.REQUEST)
                 {
-                    if(incomeMessage instanceof CancellableActionRequest)
+
+                    Task<Void> messageTask = new Task<Void>()
                     {
-                        try
+                        @Override
+                        protected Void call()
                         {
-                            Serializable obj = ((CancellableActionRequest)incomeMessage).apply(getUI());
-                            sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), obj, Response.Status.OK));
+                            if(incomeMessage instanceof CancellableActionRequest)
+                            {
+                                try
+                                {
+                                    Serializable obj = ((CancellableActionRequest)incomeMessage).apply(getUI());
+                                    sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), obj, Response.Status.OK));
+                                }
+                                catch (CanceledActionException e)
+                                {
+                                    sendMessageToServer(new Response("ACTION_CANCELED", null, Response.Status.ACTION_CANCELED));
+                                }
+                            }
+                            else
+                            {
+                                Serializable obj = ((ActionRequest)incomeMessage).apply(getUI());
+                                sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), obj, Response.Status.OK));
+                            }
+
+                            return null;
                         }
-                        catch (CanceledActionException e)
-                        {
-                            sendMessageToServer(new Response("ACTION_CANCELED", null, Response.Status.ACTION_CANCELED));
-                        }
-                    }
-                    else
-                    {
-                        Serializable obj = ((ActionRequest)incomeMessage).apply(getUI());
-                        sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), obj, Response.Status.OK));
-                    }
+                    };
+
+                    Thread messageThread = new Thread(messageTask);
+                    messageThread.setDaemon(true);
+                    messageThread.setName("Request ("+incomeMessage.getMessage()+") thread");
+                    messageThread.start();
 
                 }
                 else if(incomeMessage.getType() == Message.Type.ASYNC_MESSAGE)
                 {
-                    ((AsyncMessage)incomeMessage).accept(getUI());
+                    Task<Void> messageTask = new Task<Void>()
+                    {
+                        @Override
+                        protected Void call()
+                        {
+                            ((AsyncMessage)incomeMessage).accept(getUI());
+                            return null;
+                        }
+                    };
+                    messageTask.exceptionProperty().addListener((observable, oldValue, newValue) ->
+                    {
+                        newValue.printStackTrace();
+                    });
+                    Thread messageThread = new Thread(messageTask);
+                    messageThread.setName("AsyncMessage ("+incomeMessage.getMessage()+") thread");
+                    messageThread.start();
                 }
             }
 
@@ -140,7 +171,7 @@ public class SocketClient implements Runnable, NetworkClient
     @Override
     public String getUsername()
     {
-        return ui.getUsername();
+        return ui.login();
     }
 
     @Override
@@ -153,7 +184,6 @@ public class SocketClient implements Runnable, NetworkClient
     public void setLogged(boolean logged)
     {
         this.logged = logged;
-        if(logged)ui.logged();
     }
 
     @Override

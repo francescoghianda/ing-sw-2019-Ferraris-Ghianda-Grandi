@@ -5,10 +5,7 @@ import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
-import it.polimi.se2019.network.message.AsyncMessage;
-import it.polimi.se2019.network.message.RequestFactory;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
-import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.net.InetAddress;
@@ -17,12 +14,10 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
 
 public class RmiServer extends UnicastRemoteObject implements NetworkServer, ServerInterface, OnClientDisconnectionListener
 {
     public static final String SERVER_NAME = "Server";
-    private transient HashMap<CallbackInterface, ClientConnection> clients;
     private transient GameController gameController;
     private transient boolean running;
     private transient ClientsManager clientsManager;
@@ -36,7 +31,6 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
     public  RmiServer(GameController controller) throws RemoteException
     {
         super();
-        clients = new HashMap<>();
         this.gameController = controller;
         clientsManager = ClientsManager.getInstance();
     }
@@ -78,50 +72,16 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
     {
         Logger.info("Client connected!");
         ClientConnection clientConnection = new RmiClientConnection(clientStub, this, gameController).setOnClientDisconnectionListener(this);
-        clients.put(clientStub, clientConnection);
-        clientsManager.registerClient(clientConnection);
         new ConnectionController(clientConnection).setOnClientDisconnectionListener(this).start();
-        login(clientStub);
-    }
-
-    private void login(CallbackInterface clientStub)
-    {
-        ClientConnection client = clients.get(clientStub);
-
-        String username = (String) client.getResponseTo(RequestFactory.newActionRequest("username", UI::getUsername)).getContent();
-
-        while(ClientsManager.getInstance().getConnectedClientsUsername().contains(username))
-        {
-            username = (String) client.getResponseTo(RequestFactory.newActionRequest("invalid_username", UI::getUsername)).getContent();
-        }
-
-        client.sendMessageToClient(new AsyncMessage("logged", UI::logged));
-        client.setUsername(username);
-        boolean reconnected = false;
-        if(ClientsManager.getInstance().getDisconnectedClientsUsername().contains(username))
-        {
-            client.getServer().clientReconnected(client);
-            reconnected = true;
-            gameController.playerReconnected(client.getPlayer());
-            Logger.warning("Client "+username+" has reconnected!");
-        }
-        client.setLogged(true, reconnected);
-    }
-
-    @Override
-    public void clientReconnected(ClientConnection clientConnection)
-    {
-        clients.put(((RmiClientConnection)clientConnection).getCallback(), clientConnection);
-        clientsManager.registerClient(clientConnection);
+        clientConnection.getVirtualView().login();
     }
 
     @Override
     public void onClientDisconnection(ClientConnection disconnectedClient)
     {
-        Logger.warning("Client "+disconnectedClient.getUsername()+" has disconnected!");
+        Logger.warning("Client "+disconnectedClient.getUser().getUsername()+" has disconnected!");
         disconnectedClient.setLogged(false, false);
 
-        clients.remove(((RmiClientConnection)disconnectedClient).getCallback());
         clientsManager.unregisterClient(disconnectedClient);
     }
 }

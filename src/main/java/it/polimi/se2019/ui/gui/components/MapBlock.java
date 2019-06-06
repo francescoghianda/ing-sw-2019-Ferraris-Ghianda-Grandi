@@ -202,7 +202,7 @@ public class MapBlock extends Rectangle2D implements CardView.OnCardViewClickLis
     {
         MatchScene matchScene = MatchScene.getInstance();
 
-        if(matchScene.getGameData().getPlayer().getCoordinates().equals(new Coordinates(mapX, mapY)))
+        if(matchScene.getGameDataProperty().getValue().getPlayer().getCoordinates().equals(new Coordinates(mapX, mapY)))
         {
             matchScene.onCardClick(cardView);
         }

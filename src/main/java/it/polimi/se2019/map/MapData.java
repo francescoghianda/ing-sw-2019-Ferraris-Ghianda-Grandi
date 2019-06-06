@@ -1,7 +1,5 @@
 package it.polimi.se2019.map;
 
-import it.polimi.se2019.network.message.Bundle;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +47,7 @@ public class MapData implements Serializable
 
     public BlockData getBlock(int x, int y)
     {
+        if(x < 0 || y < 0)return null;
         return blocks[y][x];
     }
 

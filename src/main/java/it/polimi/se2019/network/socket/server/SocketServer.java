@@ -1,6 +1,5 @@
 package it.polimi.se2019.network.socket.server;
 
-import it.polimi.se2019.card.cardscript.LogicExpression;
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
@@ -72,12 +71,6 @@ public class SocketServer implements NetworkServer, Runnable, OnClientDisconnect
         {
             Logger.exception(e);
         }
-    }
-
-    @Override
-    public void clientReconnected(ClientConnection clientConnection)
-    {
-        clientsManager.registerClient(clientConnection);
     }
 
     @Override

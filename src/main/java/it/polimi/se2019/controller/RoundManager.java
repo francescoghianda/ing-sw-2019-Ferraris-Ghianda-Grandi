@@ -21,7 +21,7 @@ public class RoundManager
     {
         Player nextPlayer = getNextPlayer();
         System.out.println(getRoundNumber());
-        while (!nextPlayer.getClientConnection().isConnected())nextPlayer = getNextPlayer();
+        while (!nextPlayer.getClientConnection().isConnected() || !nextPlayer.getClientConnection().isLogged())nextPlayer = getNextPlayer();
         roundIndex++;
         return nextPlayer;
     }

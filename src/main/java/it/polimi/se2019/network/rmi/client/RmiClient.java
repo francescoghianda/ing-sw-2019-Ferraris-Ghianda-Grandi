@@ -25,8 +25,6 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     private transient volatile boolean getIncomeMessage;
     private transient volatile boolean incomeMessageReceived;
     private transient volatile boolean waitResponse;
-    //private transient volatile NetworkMessageClient<?> message;
-    //private transient volatile NetworkMessageServer<?> responseMessage;
 
     private boolean logged;
 
@@ -47,7 +45,9 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     @Override
     public synchronized void sendAsyncMessage(AsyncMessage message) throws RemoteException
     {
-        message.accept(getUI());
+        Thread messageThread = new Thread(() -> message.accept(getUI()));
+        messageThread.setName("AsyncMessage ("+message.getMessage()+") thread");
+        messageThread.start();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     @Override
     public String getUsername()
     {
-        return ui.getUsername();
+        return ui.login();
     }
 
     @Override

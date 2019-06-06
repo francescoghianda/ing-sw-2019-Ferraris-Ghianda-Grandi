@@ -2,13 +2,14 @@ package it.polimi.se2019.network;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClientsManager
 {
     private static ClientsManager instance;
 
     private ArrayList<ClientConnection> connectedClients;
-    private ArrayList<ClientConnection> disconnectedClients;
+    private ArrayList<User> disconnectedClients;
 
     private ClientsManager()
     {
@@ -24,12 +25,12 @@ public class ClientsManager
 
     public void registerClient(ClientConnection client)
     {
-        ClientConnection disconnected;
-        if((disconnected = findDisconnectedClient(client)) != null)
+        User disconnected;
+        if((disconnected = findDisconnectedClient(client.getUser().getUsername())) != null)
         {
             disconnectedClients.remove(disconnected);
-            client.setPlayer(disconnected.getPlayer());
-            client.getPlayer().setClientConnection(client);
+            client.getUser().setPlayer(disconnected.getPlayer());
+            client.getUser().getPlayer().setClientConnection(client);
         }
         if(!connectedClients.contains(client))connectedClients.add(client);
     }
@@ -39,7 +40,7 @@ public class ClientsManager
         if(connectedClients.contains(client))
         {
             connectedClients.remove(client);
-            disconnectedClients.add(client);
+            disconnectedClients.add(client.getUser());
         }
     }
 
@@ -50,7 +51,7 @@ public class ClientsManager
 
     public List<String> getConnectedClientsUsername()
     {
-        return getAllUsernameFrom(connectedClients);
+        return getAllUsernameFrom(connectedClients.stream().map(ClientConnection::getUser).collect(Collectors.toList()));
     }
 
     public List<String> getDisconnectedClientsUsername()
@@ -63,18 +64,16 @@ public class ClientsManager
         connectedClients.forEach(ClientConnection::stop);
     }
 
-    private List<String> getAllUsernameFrom(List<ClientConnection> clients)
+    private List<String> getAllUsernameFrom(List<User> users)
     {
-        List<String> clientsUsername = new ArrayList<>();
-        clients.forEach(clientConnection -> clientsUsername.add(clientConnection.getUsername()));
-        return clientsUsername;
+        return users.stream().map(User::getUsername).collect(Collectors.toList());
     }
 
-    private ClientConnection findDisconnectedClient(ClientConnection client)
+    private User findDisconnectedClient(String username)
     {
-        for(ClientConnection clientConnection : disconnectedClients)
+        for(User user : disconnectedClients)
         {
-            if(clientConnection.getUsername().equals(client.getUsername()))return clientConnection;
+            if(user.getUsername().equals(username))return user;
         }
         return null;
     }

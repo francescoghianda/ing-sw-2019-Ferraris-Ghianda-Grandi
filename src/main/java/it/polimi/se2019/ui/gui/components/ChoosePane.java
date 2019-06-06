@@ -1,6 +1,9 @@
 package it.polimi.se2019.ui.gui.components;
 
+import it.polimi.se2019.map.BlockData;
+import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.gui.GUI;
+import it.polimi.se2019.ui.gui.MatchScene;
 import it.polimi.se2019.utils.constants.GameColor;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
@@ -17,7 +20,9 @@ import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class ChoosePane extends AnchorPane implements Initializable
 {
@@ -65,6 +70,17 @@ public class ChoosePane extends AnchorPane implements Initializable
     public void setText(String text)
     {
         label.setText(text);
+
+        List<PlayerData> players = MatchScene.getInstance().getGameDataProperty().get().getPlayers();
+
+        for(PlayerData player : players)
+        {
+            if(player.getUsername().equals(text))
+            {
+                setColor(player.getColor());
+                break;
+            }
+        }
     }
 
     public void addOption(String option)

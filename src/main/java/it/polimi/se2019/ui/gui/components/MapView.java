@@ -7,6 +7,7 @@ import it.polimi.se2019.map.MapData;
 import it.polimi.se2019.ui.gui.GUI;
 import it.polimi.se2019.ui.gui.MatchScene;
 import it.polimi.se2019.utils.logging.Logger;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,6 +26,8 @@ import javafx.scene.transform.Rotate;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 public class MapView extends StackPane implements Initializable, EventHandler<MouseEvent>
 {
@@ -138,10 +141,10 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
             doAfterScaleComputed(this::initMapBlocks);
         }
         this.map = map;
-        updateAmmoImages();
+        doAfterScaleComputed(this::updateAmmoImages);
         doAfterScaleComputed(this::updateWeapons);
-        updatePlayers();
-        paintDecks();
+        doAfterScaleComputed(this::updatePlayers);
+        doAfterScaleComputed(this::paintDecks);
     }
 
     private void paintDecks()
@@ -158,7 +161,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         double wpWidth = 242*scale;
         double wpHeight = 402*scale;
 
-        GameData gameData = MatchScene.getInstance().getGameData();
+        GameData gameData = MatchScene.getInstance().getGameDataProperty().getValue();
 
         paintDeck(gc, powerUpDeckImage, pwuX, pwuY, pwuWidth, pwuHeight, gameData.getPowerUpDeckSize());
         paintDeck(gc, weaponDeckImage, wpX, wpY, wpWidth, wpHeight, gameData.getWeaponDeckSize());
@@ -178,6 +181,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
     private void updateWeapons()
     {
         pane.getChildren().clear();
+
         map.getBlocksAsList().forEach(block ->
         {
             if(block.isSpawnPoint())
@@ -312,7 +316,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
     }
 
 
-    void paintSkulls(int skulls, int deaths)
+    private void paintSkulls(int skulls, int deaths)
     {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -395,7 +399,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
 
     public void setRemainingSkulls(int remainingSkulls, int deaths)
     {
-        paintSkulls(remainingSkulls, deaths);
+        doAfterScaleComputed(() -> Platform.runLater(() -> paintSkulls(remainingSkulls, deaths)));
     }
 
     @Override

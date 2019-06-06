@@ -27,7 +27,6 @@ public class Player implements Serializable
 	private transient GameController gameController;
 	private transient ArrayList<Player> damagedPlayers;
 	private transient ClientConnection clientConnection;
-	private transient VirtualView view;
 
 	private boolean firstRoundPlayed;
 
@@ -49,7 +48,6 @@ public class Player implements Serializable
 		this.color = color;
 		this.clientConnection = clientConnection;
 		this.gameController = gameController;
-		this.view = new VirtualView(clientConnection);
 	}
 
 	public boolean isFirstRoundPlayed()
@@ -65,12 +63,11 @@ public class Player implements Serializable
 	public void setClientConnection(ClientConnection clientConnection)
 	{
 		this.clientConnection = clientConnection;
-		view = new VirtualView(clientConnection);
 	}
 
 	public VirtualView getView()
 	{
-		return this.view;
+		return clientConnection.getVirtualView();
 	}
 
 	public void reset()
@@ -81,7 +78,7 @@ public class Player implements Serializable
 
 	public String getUsername()
 	{
-		return clientConnection.getUsername();
+		return clientConnection.getUser().getUsername();
 	}
 
 	public GameController getGameController()
@@ -226,7 +223,7 @@ public class Player implements Serializable
 		ArrayList<Card> weaponsCards = new ArrayList<>(weapons);
 		int x = block == null ? -1 : block.getX();
 		int y = block == null ? -1 : block.getY();
-		return new PlayerData(color, weaponsCards, powerUpsCards, gameBoard.getData(), x, y);
+		return new PlayerData(clientConnection.getUser().getUsername(), color, weaponsCards, powerUpsCards, gameBoard.getData(), x, y);
 	}
 
 }

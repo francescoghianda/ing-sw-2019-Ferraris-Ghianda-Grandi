@@ -3,6 +3,8 @@ package it.polimi.se2019.ui.gui.components;
 import it.polimi.se2019.card.Card;
 import it.polimi.se2019.ui.gui.GUI;
 
+import it.polimi.se2019.ui.gui.MatchScene;
+import javafx.application.Platform;
 import javafx.beans.NamedArg;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -21,6 +23,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 public class CardPane extends StackPane implements Initializable
 {

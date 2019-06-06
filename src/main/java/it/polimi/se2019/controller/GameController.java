@@ -15,7 +15,9 @@ import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.network.message.ConnectionErrorException;
+import it.polimi.se2019.network.message.RequestFactory;
 import it.polimi.se2019.player.*;
+import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.constants.GameMode;
 import it.polimi.se2019.utils.logging.Logger;
@@ -49,6 +51,8 @@ public class GameController implements TimerListener
 
     private int playersForStart = 1;
 
+    private boolean gameStarted;
+
     public GameController()
     {
         this.clientsManager = ClientsManager.getInstance();
@@ -80,10 +84,19 @@ public class GameController implements TimerListener
         }
     }
 
-    public void playerReconnected(Player player)
+    public void playerReconnected(ClientConnection client)
     {
-        player.getView().update(getData(player));
-        player.getView().gameStarted();
+        sendUpdate(client.getUser().getPlayer());
+        client.getVirtualView().gameStarted();
+
+        try
+        {
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public List<Player> getPlayers()
@@ -159,6 +172,9 @@ public class GameController implements TimerListener
             case FIRE:
                 fire(player);
                 break;
+            case USE_POWER_UP:
+                
+                break;
 
         }
     }
@@ -231,14 +247,23 @@ public class GameController implements TimerListener
         PowerUpCard option2 = powerUpCardDeck.getFirstCard();
         String chosenId = player.getView().chooseSpawnPoint(option1, option2);
 
-        PowerUpCard chosen = option1.getId().equals(chosenId) ? option1 : option2;
+        try
+        {
+            PowerUpCard chosen = option1.getId().equals(chosenId) ? option1 : option2;
+            Block spawnPoint = map.findRoomByColor(chosen.getColor()).getSpawnPoint();
+            powerUpCardDeck.addCard(chosen);
+            player.addPowerUpCard(chosen.equals(option1) ? option2 : option1);
+            player.setBlock(spawnPoint);
+            player.setFirstRoundPlayed(true);
+            sendBroadcastUpdate();
+        }
+        catch (ConnectionErrorException e)
+        {
+            powerUpCardDeck.addCard(option1);
+            powerUpCardDeck.addCard(option2);
+            throw e;
+        }
 
-        Block spawnPoint = map.findRoomByColor(chosen.getColor()).getSpawnPoint();
-        powerUpCardDeck.addCard(chosen);
-        player.addPowerUpCard(chosen.equals(option1) ? option2 : option1);
-        player.setBlock(spawnPoint);
-        player.setFirstRoundPlayed(true);
-        sendBroadcastUpdate();
     }
 
     public void startGame()
@@ -280,7 +305,7 @@ public class GameController implements TimerListener
     private void startTimer()
     {
         Timer.destroyTimer("startCountdown");
-        timer = Timer.createTimer("startCountdown", 10);
+        timer = Timer.createTimer("startCountdown", 1);
         timer.addTimerListener(this);
         timer.start();
     }
@@ -293,7 +318,7 @@ public class GameController implements TimerListener
 
         firstPlayer.setAsStartingPlayer(true);
         firstPlayer.getView().youAreFirstPlayer();
-        String username = firstPlayer.getClientConnection().getUsername();
+        String username = firstPlayer.getClientConnection().getUser().getUsername();
         notifyOtherClients(firstPlayer, view -> view.firstPlayerIs(username));
         roundManager = new RoundManager(players);
     }

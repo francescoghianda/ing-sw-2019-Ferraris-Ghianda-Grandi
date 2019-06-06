@@ -4,10 +4,10 @@ import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.player.Player;
+import it.polimi.se2019.player.VirtualView;
 
 public interface ClientConnection
 {
-
     /**
      *  Send a message to all the clients connected, except this
      * @param message The message to send
@@ -33,14 +33,12 @@ public interface ClientConnection
      * Close the connection with the client
      */
     void stop();
-    NetworkServer getServer();
-    void setUsername(String username);
-    String getUsername();
     void setLogged(boolean logged, boolean reconnected);
+    void setConnected(boolean connected);
     boolean isLogged();
     boolean isConnected();
-    void setConnected(boolean connected);
-    Player getPlayer();
-    void setPlayer(Player player);
+    NetworkServer getServer();
+    User getUser();
+    VirtualView getVirtualView();
     GameController getGameController();
 }

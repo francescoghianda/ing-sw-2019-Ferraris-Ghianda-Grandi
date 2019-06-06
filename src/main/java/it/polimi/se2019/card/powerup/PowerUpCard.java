@@ -1,13 +1,14 @@
 package it.polimi.se2019.card.powerup;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.cardscript.CardScriptExecutor;
+import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.GameColor;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
-public class PowerUpCard extends Card implements Serializable
+public class PowerUpCard extends Card
 {
 	private static final HashMap<String, PowerUpCard> cards = new HashMap<>();
 
@@ -15,6 +16,7 @@ public class PowerUpCard extends Card implements Serializable
 	private transient String script;
 	private GameColor color;
 	private Use use;
+	private transient CardScriptExecutor scriptExecutor;
 
 	public PowerUpCard()
 	{
@@ -31,9 +33,16 @@ public class PowerUpCard extends Card implements Serializable
 		return cards.get(id);
 	}
 
-	public void execute(Player player)
+	public void apply(Player player) throws CanceledActionException
 	{
+		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))createScriptExecutor(player);
+		scriptExecutor.setScript(script);
+		scriptExecutor.execute();
+	}
 
+	private void createScriptExecutor(Player player)
+	{
+		scriptExecutor = CardScriptExecutor.getPowerUpScriptExecutor(player, this);
 	}
 
 	@Override

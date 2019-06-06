@@ -18,7 +18,7 @@ public interface UI extends GameEventHandler
     void update(GameData data);
     void startUI();
 
-    String getUsername();
+    String login();
     String selectPlayer();
     String selectBlock();
     void logged();
