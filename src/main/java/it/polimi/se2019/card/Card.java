@@ -8,11 +8,14 @@ public abstract class Card implements Serializable
 	private String description;
 	private String id;
 
+	private boolean enabled;
+
 	protected Card()
 	{
 		name = "";
 		description = "";
 		id = "";
+		enabled = true;
 	}
 
 	public void setId(String id)
@@ -43,6 +46,16 @@ public abstract class Card implements Serializable
 	public final String getId()
 	{
 		return id;
+	}
+
+	public final void setEnabled(boolean enabled)
+	{
+		this.enabled = enabled;
+	}
+
+	public final boolean isEnabled()
+	{
+		return enabled;
 	}
 
 	public final String getIdIgnoreClone()

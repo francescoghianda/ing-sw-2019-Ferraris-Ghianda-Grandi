@@ -6,7 +6,6 @@ import it.polimi.se2019.card.cost.Cost;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.player.Player;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +28,7 @@ public class WeaponCard extends Card
 
 	private transient HashMap<String, OptionalEffect> optionalEffects;
 
-	private boolean isLoad;
+	private boolean load;
 
 	private transient CardScriptExecutor scriptExecutor;
 
@@ -57,12 +56,12 @@ public class WeaponCard extends Card
 
 	public boolean isLoad()
 	{
-		return this.isLoad;
+		return this.load;
 	}
 
 	public void reload()
 	{
-		this.isLoad = true;
+		setLoad(true);
 		optionalEffects.values().forEach(OptionalEffect::resetEnable);
 	}
 
@@ -73,7 +72,7 @@ public class WeaponCard extends Card
 
 	public void fire(Player player)throws CanceledActionException
 	{
-		if(!isLoad)throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION, "WEAPON NOT LOAD");
+		if(!load)throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION, "WEAPON NOT LOAD");
 		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))createScriptExecutor(player);
 		scriptExecutor.setScript(fireMode.equals(Mode.BASIC) ? basicModeScript : alternateModeScript);
 		scriptExecutor.execute();
@@ -81,7 +80,7 @@ public class WeaponCard extends Card
 
 	public boolean useOptionalEffect(Player player, OptionalEffect effect)throws CanceledActionException
 	{
-		if(!isLoad)throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION);
+		if(!load)throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION);
 		if(!effect.isEnabled())throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION);
 		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))createScriptExecutor(player);
 		scriptExecutor.setScript(effect.getScript());
@@ -100,9 +99,10 @@ public class WeaponCard extends Card
 		scriptExecutor = CardScriptExecutor.getWeaponScriptExecutor(player, this);
 	}
 
-	public void setLoad(boolean isLoad)
+	public void setLoad(boolean load)
 	{
-		this.isLoad = isLoad;
+		this.load = load;
+		setEnabled(load);
 	}
 
 	public List<OptionalEffect> getEnabledOptionalEffects()

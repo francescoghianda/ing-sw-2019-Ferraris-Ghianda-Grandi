@@ -100,7 +100,8 @@ public class CardPane extends StackPane implements Initializable
         if(cardNumber > 3)throw new CardPaneOutOfBoundsException();
 
         CardView cardView = new CardView(card, CardView.SCALE_TRANSITION);
-        cardView.setMaxWidth(getMaxWidth()/4.5);
+        if(type.equals("weapon"))cardView.setMaxWidth(getMaxWidth()/4.5);
+        else cardView.setMaxWidth(getMaxWidth()/4.7);
 
         cardView.setOnCardViewClickListener(listener);
 
@@ -116,7 +117,17 @@ public class CardPane extends StackPane implements Initializable
         cards.forEach(card ->
         {
             if(!isCardPresent(card))addCard(card, listener);
+            else getCardView(card).setEnabled(card.isEnabled());
         });
+    }
+
+    private CardView getCardView(Card card)
+    {
+        if(isCardInSlot(card, cardSlot1))return (CardView) cardSlot1.getChildren().get(0);
+        if(isCardInSlot(card, cardSlot2))return (CardView) cardSlot2.getChildren().get(0);
+        if(isCardInSlot(card, cardSlot3))return (CardView) cardSlot3.getChildren().get(0);
+
+        return null;
     }
 
     private void removeIfNotInList(VBox cardSlot, List<Card> cards)
@@ -159,9 +170,20 @@ public class CardPane extends StackPane implements Initializable
         emptySlot2.setFitWidth(maxWidth);
         emptySlot3.setFitWidth(maxWidth);
 
-        cardSlot1.setPadding(new Insets(maxWidth/16, 0, 0, 0));
-        cardSlot2.setPadding(new Insets(maxWidth/16, 0, 0, 0));
-        cardSlot3.setPadding(new Insets(maxWidth/16, 0, 0, 0));
+        Insets insets;
+
+        if(type.equals("weapon"))
+        {
+            insets = new Insets(maxWidth/16, 0, 0, 0);
+        }
+        else
+        {
+            insets = new Insets(maxWidth/15, maxWidth/17, 0, 0);
+        }
+
+        cardSlot1.setPadding(insets);
+        cardSlot2.setPadding(insets);
+        cardSlot3.setPadding(insets);
     }
 
 

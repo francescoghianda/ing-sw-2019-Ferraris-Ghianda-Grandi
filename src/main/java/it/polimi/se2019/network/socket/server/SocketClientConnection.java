@@ -80,8 +80,6 @@ public class SocketClientConnection implements Runnable, ClientConnection
             running = false;
             connected = false;
             client.close();
-            if(ois != null)ois.close();
-            if(oos != null)oos.close();
             ///TODO informare gli altri client della disconnessione
         }
         catch (IOException e)
@@ -111,8 +109,11 @@ public class SocketClientConnection implements Runnable, ClientConnection
             }
             catch (ClassNotFoundException | NullPointerException | IOException e)
             {
-                lostConnection();
+                Thread.currentThread().interrupt();
+                running = false;
+                connected = false;
                 if(requestThread != null)requestThread.interrupt();
+                else lostConnection();
             }
         }
     }
@@ -142,6 +143,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
         catch (IOException e)
         {
             lostConnection();
+            //userThread.interrupt();
             Logger.exception(e);
             throw new ConnectionErrorException();
         }
@@ -165,20 +167,21 @@ public class SocketClientConnection implements Runnable, ClientConnection
         if(!connected)throw new CanceledActionException(CanceledActionException.Cause.ERROR);
         try
         {
+            requestThread = Thread.currentThread();
             getResponse = true;
             sendMessageToClient(request);
             while (getResponse)
             {
                 this.wait();
             }
+            requestThread = null;
             if(response.getStatus() == Response.Status.ACTION_CANCELED)throw new CanceledActionException(CanceledActionException.Cause.CANCELED_BY_USER);
             return response;
         }
         catch (InterruptedException e)
         {
+            requestThread = null;
             lostConnection();
-            connected = false;
-            userThread.interrupt();
             throw new ConnectionErrorException();
         }
     }
@@ -196,13 +199,13 @@ public class SocketClientConnection implements Runnable, ClientConnection
             {
                 this.wait();
             }
+            requestThread = null;
             return response;
         }
         catch (InterruptedException e)
         {
+            requestThread = null;
             lostConnection();
-            connected = false;
-            userThread.interrupt();
             throw new ConnectionErrorException();
         }
     }
@@ -210,9 +213,9 @@ public class SocketClientConnection implements Runnable, ClientConnection
     private void lostConnection()
     {
         stop();
+        connected = false;
         Logger.warning("Client "+user.getUsername()+" has disconnected!");
         ClientsManager.getInstance().unregisterClient(this);
-        //clientDisconnectionListener.onClientDisconnection(this);
     }
 
     @Override

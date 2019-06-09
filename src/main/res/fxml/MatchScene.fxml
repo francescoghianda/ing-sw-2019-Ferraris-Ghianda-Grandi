@@ -28,8 +28,8 @@
         <children>
             <CardPane fx:id="weaponsCardPane" title="Le tue armi" type="weapon" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
             <CardPane fx:id="powerUpsCardPane" title="I tuoi potenziamenti" type="poweup" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-            <AnchorPane fx:id="descriptionPane" GridPane.rowIndex="2" GridPane.columnIndex="0">
-                <Label fx:id="cardDescriptionLabel" alignment="TOP_LEFT" wrapText="true" maxHeight="Infinity" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" />
+            <AnchorPane GridPane.rowIndex="2" GridPane.columnIndex="0">
+                <PlayersInfoTable fx:id="playersInfoTable" maxHeight="Infinity" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" />
             </AnchorPane>
         </children>
 

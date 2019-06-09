@@ -1,6 +1,7 @@
 package it.polimi.se2019.ui.gui.components;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.ui.gui.GUI;
 import it.polimi.se2019.ui.gui.MatchScene;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -9,11 +10,17 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -39,7 +46,11 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
     private Image image;
     private OnCardViewClickListener clickListener;
 
+    private final Tooltip tooltip;
+
     private final int transition;
+
+    private boolean enabled;
 
     public CardView(Card card, int transition)
     {
@@ -53,6 +64,7 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
         String cardId = card.getIdIgnoreClone().substring(3);
 
         this.transition = transition;
+        this.enabled = card.isEnabled();
 
         switch (idTypePart)
         {
@@ -67,6 +79,33 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
             default:
                 throw new InvalidCardIdException(card.getId());
         }
+
+        //Tooltip
+        BorderPane tooltipPane = new BorderPane();
+        ImageView tooltipCardImageView = new ImageView(image);
+        tooltipCardImageView.setPreserveRatio(true);
+        tooltipCardImageView.setFitHeight(GUI.getScreenHeight()*0.2);
+        tooltipPane.setLeft(tooltipCardImageView);
+
+        BorderPane rightPane = new BorderPane();
+
+        Label titleLabel = new Label(card.getName());
+        titleLabel.setTextAlignment(TextAlignment.CENTER);
+        titleLabel.setFont(new Font(GUI.getScreenHeight()*0.02));
+        BorderPane.setAlignment(titleLabel, Pos.CENTER);
+
+        Label descriptionLabel = new Label(card.getDescription());
+        descriptionLabel.setFont(new Font(GUI.getScreenHeight()*0.01));
+        descriptionLabel.setPadding(new Insets(5, 5, 0, 5));
+        BorderPane.setAlignment(descriptionLabel, Pos.TOP_LEFT);
+
+        rightPane.setTop(titleLabel);
+        rightPane.setCenter(descriptionLabel);
+        tooltipPane.setRight(rightPane);
+
+        tooltip = new Tooltip();
+        tooltip.setGraphic(tooltipPane);
+        //
 
         load(fxmlLoader);
     }
@@ -102,6 +141,10 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
 
         imageView.setPreserveRatio(true);
         imageView.setImage(image);
+        if(!enabled)
+        {
+            applyGrayScaleEffect();
+        }
         scaleTransition.setDuration(Duration.millis(100));
         scaleTransition.setInterpolator(Interpolator.EASE_BOTH);
         scaleTransition.setNode(this);
@@ -109,10 +152,26 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
         fadeTransition.setDuration(Duration.millis(100));
         fadeTransition.setNode(this);
 
+        Tooltip.install(this, tooltip);
+
         scaleTransition.setAutoReverse(true);
         setOnMouseEntered(this);
         setOnMouseExited(this);
         setOnMouseClicked(this);
+    }
+
+    private void applyGrayScaleEffect()
+    {
+        ColorAdjust grayScaleEffects = new ColorAdjust();
+        grayScaleEffects.setSaturation(-1);
+        imageView.setEffect(grayScaleEffects);
+    }
+
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+        if(!enabled)applyGrayScaleEffect();
+        else setEffect(null);
     }
 
     public Card getCard()
@@ -126,17 +185,9 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
         if(transition == SCALE_TRANSITION)playScaleTransition(event);
         else playFadeTransition(event);
 
-        if(event.getEventType().equals(MouseEvent.MOUSE_ENTERED))
+        if(event.getEventType().equals(MouseEvent.MOUSE_CLICKED))
         {
-            if(MatchScene.getInstance().getCardDescriptionLabel() != null)MatchScene.getInstance().getCardDescriptionLabel().setText(card.getDescription());
-        }
-        else if(event.getEventType().equals(MouseEvent.MOUSE_EXITED))
-        {
-            if(MatchScene.getInstance().getCardDescriptionLabel() != null)MatchScene.getInstance().getCardDescriptionLabel().setText("");
-        }
-        else if(event.getEventType().equals(MouseEvent.MOUSE_CLICKED))
-        {
-            if(clickListener != null)clickListener.onCardClick(this);
+            if(clickListener != null && enabled)clickListener.onCardClick(this);
         }
     }
 

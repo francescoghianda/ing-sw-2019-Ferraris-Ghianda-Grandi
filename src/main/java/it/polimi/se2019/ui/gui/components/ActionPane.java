@@ -1,7 +1,6 @@
 package it.polimi.se2019.ui.gui.components;
 
 import it.polimi.se2019.ui.gui.GUI;
-import it.polimi.se2019.ui.gui.MatchScene;
 import it.polimi.se2019.utils.constants.GameColor;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

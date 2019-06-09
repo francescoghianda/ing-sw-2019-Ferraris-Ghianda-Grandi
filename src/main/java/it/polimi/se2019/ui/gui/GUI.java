@@ -10,15 +10,20 @@ import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.ui.gui.dialogs.CloseDialog;
 import it.polimi.se2019.ui.gui.value.ValueObserver;
+import it.polimi.se2019.utils.logging.Logger;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Tooltip;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -41,10 +46,33 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
 
     }
 
+    private void setTooltipIndefiniteDuration()
+    {
+        try
+        {
+            Field behaviorField = Tooltip.class.getDeclaredField("BEHAVIOR");
+            behaviorField.setAccessible(true);
+            Object behavior = behaviorField.get(null);
+
+            Field timerField = behavior.getClass().getDeclaredField("hideTimer");
+            timerField.setAccessible(true);
+            Timeline timer = (Timeline) timerField.get(behavior);
+
+            timer.getKeyFrames().clear();
+            timer.getKeyFrames().add(new KeyFrame(Duration.INDEFINITE));
+        }
+        catch (Exception e)
+        {
+            Logger.exception(e);
+        }
+    }
+
     @Override
     public void start(Stage primaryStage)
     {
-        window = new Stage();
+        window = primaryStage;
+
+        setTooltipIndefiniteDuration();
 
         sceneManager = SceneManager.createSceneManager(window, this);
 
@@ -64,7 +92,6 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     @Override
     public void update(GameData data)
     {
-        System.out.println("UPDATE");
         sceneManager.getMatchScene().update(data);
     }
 
@@ -169,6 +196,8 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     @Override
     public String chooseOrCancel(Bundle<String, ArrayList<String>> options)
     {
+        //TODO aggiungere possibilità di annullare l'azione
+
         MatchScene matchScene = MatchScene.getInstance();
         SceneManager.runOnFxThread(() -> matchScene.setOptions(options.getFirst(), options.getSecond()));
         return new ValueObserver<String>().get(matchScene.selectedOption);
@@ -177,7 +206,9 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     @Override
     public String choose(Bundle<String, ArrayList<String>> options)
     {
-        return null;
+        MatchScene matchScene = MatchScene.getInstance();
+        SceneManager.runOnFxThread(() -> matchScene.setOptions(options.getFirst(), options.getSecond()));
+        return new ValueObserver<String>().get(matchScene.selectedOption);
     }
 
     @Override

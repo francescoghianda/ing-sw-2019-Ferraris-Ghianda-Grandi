@@ -49,7 +49,7 @@ public class GameController implements TimerListener
 
     private RoundManager roundManager;
 
-    private int playersForStart = 1;
+    private int playersForStart = 2;
 
     private boolean gameStarted;
 
@@ -117,7 +117,6 @@ public class GameController implements TimerListener
     {
         Player currentPlayer = roundManager.next();
 
-
         try
         {
             if(roundManager.isFirstRound() || !currentPlayer.isFirstRoundPlayed()) firstRound(currentPlayer);
@@ -146,7 +145,6 @@ public class GameController implements TimerListener
         catch (ConnectionErrorException e)
         {
             Logger.error("Connection error during "+currentPlayer.getUsername()+"'s round!");
-            currentPlayer.getClientConnection().stop();
         }
         finally
         {

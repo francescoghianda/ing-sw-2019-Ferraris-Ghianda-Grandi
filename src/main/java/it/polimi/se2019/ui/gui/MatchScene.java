@@ -55,12 +55,11 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     private ChoosePane choosePane;
 
     @FXML
-    private Label cardDescriptionLabel;
+    private PlayersInfoTable playersInfoTable;
 
 
     private final ObjectPropertyBase<GameData> gameDataProperty;
 
-    //private GameData gameData;
     private boolean chooseBlock;
     private boolean chooseWeaponFromPlayer;
     private boolean chooseWeaponFromBlock;
@@ -108,11 +107,6 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         return instance;
     }
 
-    public Label getCardDescriptionLabel()
-    {
-        return cardDescriptionLabel;
-    }
-
     public ObjectProperty<GameData> getGameDataProperty()
     {
         return gameDataProperty;
@@ -121,27 +115,6 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     public void update(GameData data)
     {
         Platform.runLater(() -> gameDataProperty.set(data));
-
-        /*if(firstUpdate)
-        {
-            Platform.runLater(() ->
-            {
-                actionPane.setColor(data.getPlayer().getColor());
-                board.setColor(data.getPlayer().getColor());
-                choosePane.setColor(data.getPlayer().getColor());
-            });
-            firstUpdate = false;
-        }
-
-        mapView.update(data.getMap());
-        mapView.setRemainingSkulls(data.getRemainingSkulls(), data.getDeaths());
-        board.update(data.getPlayer());
-
-        Platform.runLater(() ->
-        {
-            weaponsCardPane.updateCards(data.getPlayer().getWeapons(), this);
-            powerUpsCardPane.updateCards(data.getPlayer().getPowerUps(), this);
-        });*/
     }
 
     public void addCard(Card card)
@@ -160,14 +133,10 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         actionPane.setOnActionClickListener(this);
         actionPane.disableAll();
         choosePane.setOnOptionChosenListener(this);
-        cardDescriptionLabel.setFont(new Font(15));
-        cardDescriptionLabel.setStyle("-fx-text-fill: white");
-        cardDescriptionLabel.setPadding(new Insets(0, 0, 0, 20));
+
 
         gameDataProperty.addListener((observable, oldData, gameData) ->
         {
-            System.out.println("AAAA");
-
 
             if(firstUpdate)
             {
@@ -183,6 +152,7 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
             mapView.setRemainingSkulls(gameData.getRemainingSkulls(), gameData.getDeaths());
             weaponsCardPane.updateCards(gameData.getPlayer().getWeapons(), this);
             powerUpsCardPane.updateCards(gameData.getPlayer().getPowerUps(), this);
+            playersInfoTable.update();
         });
 
     }

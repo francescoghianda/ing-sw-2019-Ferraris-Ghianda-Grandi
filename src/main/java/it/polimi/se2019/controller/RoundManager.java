@@ -20,9 +20,7 @@ public class RoundManager
     public Player next()
     {
         Player nextPlayer = getNextPlayer();
-        System.out.println(getRoundNumber());
         while (!nextPlayer.getClientConnection().isConnected() || !nextPlayer.getClientConnection().isLogged())nextPlayer = getNextPlayer();
-        roundIndex++;
         return nextPlayer;
     }
 
@@ -30,13 +28,14 @@ public class RoundManager
     {
         if(playerIndex >= players.size())
         {
-            playerIndex = 0;
             if(roundIndex >= players.size())roundNumber++;
+            playerIndex = 0;
             roundIndex = 0;
         }
 
         Player currentPlayer = players.get(playerIndex);
         playerIndex++;
+        roundIndex++;
         return currentPlayer;
     }
 

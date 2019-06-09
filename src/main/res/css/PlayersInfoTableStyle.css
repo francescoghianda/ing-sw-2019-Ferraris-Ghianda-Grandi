@@ -1,0 +1,41 @@
+.table-view
+{
+    -fx-base: transparent;
+    -fx-text-alignment: center;
+    -fx-control-inner-background: transparent;
+    -fx-background-color: transparent;
+    -fx-table-cell-border-color: transparent;
+    -fx-table-header-border-color: white;
+    -fx-padding: 5;
+}
+
+.table-view .cell
+{
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-table-cell-background-color: transparent;
+    -fx-font-size: 10pt;
+}
+
+.table-view .column-header
+{
+    -fx-font-size: 12pt;
+    -fx-text-fill: white;
+    -fx-alignment: center;
+    -fx-opacity: 1;
+}
+
+.table-view .column-header-background
+{
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header, .table-view .filler
+{
+    -fx-border-width: 0 0 1 0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent white transparent;
+    -fx-border-insets: 0 10 1 0;
+}
