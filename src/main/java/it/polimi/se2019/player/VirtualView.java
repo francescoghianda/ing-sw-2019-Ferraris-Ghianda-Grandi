@@ -3,6 +3,7 @@ package it.polimi.se2019.player;
 import it.polimi.se2019.card.Card;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
+import it.polimi.se2019.controller.Match;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
@@ -52,8 +53,13 @@ public class VirtualView implements UI
         if(ClientsManager.getInstance().getDisconnectedClientsUsername().contains(username))
         {
             ClientsManager.getInstance().registerClient(client);
-            reconnected = true;
-            client.getGameController().playerReconnected(client);
+
+            if(client.getMatch().getState() != Match.State.ENDED)
+            {
+                client.getGameController().playerReconnected(client);
+                reconnected = true;
+            }
+
             Logger.warning("Client "+username+" has reconnected!");
         }
         else

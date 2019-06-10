@@ -2,6 +2,7 @@ package it.polimi.se2019.network;
 
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameController;
+import it.polimi.se2019.controller.Match;
 import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.player.VirtualView;
@@ -41,4 +42,5 @@ public interface ClientConnection
     User getUser();
     VirtualView getVirtualView();
     GameController getGameController();
+    Match getMatch();
 }

@@ -7,7 +7,7 @@ import static junit.framework.TestCase.fail;
 public class GameControllerTest
 {
 
-    @Test
+    /*@Test
     public void startGameWithoutPlayerTest()
     {
         GameController controller = new GameController();
@@ -21,7 +21,7 @@ public class GameControllerTest
         {
             assert true;
         }
-    }
+    }*/
 
     @Test
     public void createTooManyPlayerTest()

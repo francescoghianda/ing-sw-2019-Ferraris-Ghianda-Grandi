@@ -16,13 +16,11 @@ public class SocketServer implements NetworkServer, Runnable, OnClientDisconnect
     private ServerSocket serverSocket;
     private Thread serverThread;
     private boolean running;
-    private GameController gameController;
     private ClientsManager clientsManager;
 
-    public SocketServer(GameController controller)
+    public SocketServer()
     {
         this.serverThread = new Thread(this);
-        this.gameController = controller;
         clientsManager = ClientsManager.getInstance();
     }
 
@@ -83,7 +81,7 @@ public class SocketServer implements NetworkServer, Runnable, OnClientDisconnect
             try
             {
                 Logger.info("Waiting for clients...");
-                SocketClientConnection client = new SocketClientConnection(serverSocket.accept(), this, gameController);
+                SocketClientConnection client = new SocketClientConnection(serverSocket.accept(), this);
                 Logger.info("Client connected!");
                 clientsManager.registerClient(client.setOnClientDisconnectionListener(this));
                 client.start();

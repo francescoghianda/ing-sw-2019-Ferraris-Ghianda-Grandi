@@ -49,12 +49,15 @@ public class GameController implements TimerListener
 
     private RoundManager roundManager;
 
-    private int playersForStart = 2;
+    private int playersForStart = 1;
 
     private boolean gameStarted;
 
-    public GameController()
+    private final Match match;
+
+    public GameController(Match match)
     {
+        this.match = match;
         this.clientsManager = ClientsManager.getInstance();
         availablePlayerColors = new ArrayList<>(Arrays.asList(GameColor.values()));
         availablePlayerColors.remove(GameColor.RED);
@@ -264,7 +267,7 @@ public class GameController implements TimerListener
 
     }
 
-    public void startGame()
+    private void startGame()
     {
         if(players.isEmpty())throw new StartGameWithoutPlayerException();
         shuffleDecks();
@@ -345,9 +348,17 @@ public class GameController implements TimerListener
 
         sendUpdate(player);
 
-        if(players.size() >= playersForStart) startTimer();
+        if(players.size() >= playersForStart)
+        {
+            match.startGame();
+        }
 
         return player;
+    }
+
+    public void startGameTimer()
+    {
+        startTimer();
     }
 
     private void sendUpdate(Player player)

@@ -18,20 +18,17 @@ import java.rmi.server.UnicastRemoteObject;
 public class RmiServer extends UnicastRemoteObject implements NetworkServer, ServerInterface, OnClientDisconnectionListener
 {
     public static final String SERVER_NAME = "Server";
-    private transient GameController gameController;
     private transient boolean running;
     private transient ClientsManager clientsManager;
 
 
     /**
      * Create a RMI server
-     * @param controller The current game controller
      * @throws RemoteException
      */
-    public  RmiServer(GameController controller) throws RemoteException
+    public  RmiServer() throws RemoteException
     {
         super();
-        this.gameController = controller;
         clientsManager = ClientsManager.getInstance();
     }
 
@@ -71,7 +68,7 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
     public synchronized void registerClient(CallbackInterface clientStub) throws RemoteException
     {
         Logger.info("Client connected!");
-        ClientConnection clientConnection = new RmiClientConnection(clientStub, this, gameController).setOnClientDisconnectionListener(this);
+        ClientConnection clientConnection = new RmiClientConnection(clientStub, this).setOnClientDisconnectionListener(this);
         new ConnectionController(clientConnection).setOnClientDisconnectionListener(this).start();
         clientConnection.getVirtualView().login();
     }

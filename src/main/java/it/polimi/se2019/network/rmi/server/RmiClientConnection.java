@@ -2,6 +2,8 @@ package it.polimi.se2019.network.rmi.server;
 
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameController;
+import it.polimi.se2019.controller.Match;
+import it.polimi.se2019.controller.MatchManager;
 import it.polimi.se2019.network.*;
 import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
@@ -18,7 +20,6 @@ public class RmiClientConnection implements ClientConnection
     private final RmiServer server;
 
     private boolean logged;
-    private GameController gameController;
 
     private OnClientDisconnectionListener clientDisconnectionListener;
 
@@ -33,11 +34,9 @@ public class RmiClientConnection implements ClientConnection
      * Create a new connection with the client
      * @param callback The callback of the client
      * @param server The current RMI server
-     * @param gameController The current game controller
      */
-    public RmiClientConnection(CallbackInterface callback, RmiServer server, GameController gameController)
+    public RmiClientConnection(CallbackInterface callback, RmiServer server)
     {
-        this.gameController = gameController;
         this.callback = callback;
         this.server = server;
         this.connected = true;
@@ -145,7 +144,11 @@ public class RmiClientConnection implements ClientConnection
     public void setLogged(boolean logged, boolean reconnected)
     {
         this.logged = logged;
-        if(!reconnected && logged)user.setPlayer(gameController.createPlayer(this));
+        if(!reconnected && logged)
+        {
+            user.setMatch(MatchManager.getInstance().getMatch());
+            user.setPlayer(user.getMatch().getGameController().createPlayer(this));
+        }
     }
 
     @Override
@@ -157,7 +160,13 @@ public class RmiClientConnection implements ClientConnection
     @Override
     public GameController getGameController()
     {
-        return gameController;
+        return user.getMatch().getGameController();
+    }
+
+    @Override
+    public Match getMatch()
+    {
+        return user.getMatch();
     }
 
     @Override

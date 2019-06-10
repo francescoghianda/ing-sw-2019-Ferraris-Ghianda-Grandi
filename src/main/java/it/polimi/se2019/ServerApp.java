@@ -47,14 +47,12 @@ public class ServerApp
 
     private void startServer(int serverMode, int port1, int port2)
     {
-        GameController controller = new GameController();
-
         if(serverMode == BOTH_SERVER_MODE)
         {
             try
             {
-                server1 = new SocketServer(controller);
-                server2 = new RmiServer(controller);
+                server1 = new SocketServer();
+                server2 = new RmiServer();
             }
             catch (RemoteException e)
             {
@@ -68,14 +66,14 @@ public class ServerApp
         {
             if(serverMode == SOCKET_MODE)
             {
-                server1 = new SocketServer(controller);
+                server1 = new SocketServer();
                 server1.startServer(port1);
             }
             else if(serverMode == RMI_MODE)
             {
                 try
                 {
-                    server1 = new RmiServer(controller);
+                    server1 = new RmiServer();
                     server1.startServer(port2);
                 }
                 catch (RemoteException e)

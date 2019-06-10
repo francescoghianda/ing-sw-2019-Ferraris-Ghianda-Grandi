@@ -2,6 +2,8 @@ package it.polimi.se2019.network.socket.server;
 
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameController;
+import it.polimi.se2019.controller.Match;
+import it.polimi.se2019.controller.MatchManager;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
@@ -23,7 +25,6 @@ public class SocketClientConnection implements Runnable, ClientConnection
     private SocketServer server;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
-    private final GameController controller;
 
     private ClientsManager clientsManager;
 
@@ -37,9 +38,8 @@ public class SocketClientConnection implements Runnable, ClientConnection
     private final User user;
     private final VirtualView view;
 
-    SocketClientConnection(Socket client, SocketServer server, GameController controller) throws IOException
+    SocketClientConnection(Socket client, SocketServer server) throws IOException
     {
-        this.controller = controller;
         this.clientsManager = ClientsManager.getInstance();
 
         this.client = client;
@@ -222,7 +222,11 @@ public class SocketClientConnection implements Runnable, ClientConnection
     public void setLogged(boolean logged, boolean reconnected)
     {
         this.logged = logged;
-        if(!reconnected && logged)user.setPlayer(controller.createPlayer(this));
+        if(!reconnected && logged)
+        {
+            user.setMatch(MatchManager.getInstance().getMatch());
+            user.setPlayer(user.getMatch().getGameController().createPlayer(this));
+        }
     }
 
     @Override
@@ -235,7 +239,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
     @Override
     public GameController getGameController()
     {
-        return controller;
+        return user.getMatch().getGameController();
     }
 
     @Override
@@ -251,14 +255,15 @@ public class SocketClientConnection implements Runnable, ClientConnection
     }
 
     @Override
+    public Match getMatch()
+    {
+        return user.getMatch();
+    }
+
+    @Override
     public SocketServer getServer()
     {
         return server;
-    }
-
-    public GameController getGameCotroller()
-    {
-        return controller;
     }
 
     public SocketClientConnection setOnClientDisconnectionListener(OnClientDisconnectionListener listener)

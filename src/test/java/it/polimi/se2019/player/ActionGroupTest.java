@@ -1,6 +1,8 @@
 package it.polimi.se2019.player;
 
 import it.polimi.se2019.controller.GameController;
+import it.polimi.se2019.controller.Match;
+import it.polimi.se2019.controller.MatchManager;
 import it.polimi.se2019.network.rmi.server.RmiClientConnection;
 import it.polimi.se2019.utils.constants.GameColor;
 import org.junit.Assert;
@@ -19,9 +21,10 @@ public class ActionGroupTest
     @Before
     public void setUp()
     {
-        GameController controller = new GameController();
-        player = new Player(GameColor.BLUE, controller, new RmiClientConnection(null, null, controller));
-        player2 = new Player(GameColor.PURPLE, controller, new RmiClientConnection(null, null, controller));
+        Match match = MatchManager.getInstance().getMatch();
+
+        player = new Player(GameColor.BLUE, match.getGameController(), new RmiClientConnection(null, null));
+        player2 = new Player(GameColor.PURPLE, match.getGameController(), new RmiClientConnection(null, null));
     }
 
     @Test
