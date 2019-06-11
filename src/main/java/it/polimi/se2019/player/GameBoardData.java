@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 
 public class GameBoardData implements Serializable
 {
+    public static final long serialVersionUID = 10L;
+
     private final int redAmmo;
     private final int blueAmmo;
     private final int yellowAmmo;

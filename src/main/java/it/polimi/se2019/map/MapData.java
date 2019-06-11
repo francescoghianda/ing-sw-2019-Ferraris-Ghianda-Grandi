@@ -6,6 +6,8 @@ import java.util.List;
 
 public class MapData implements Serializable
 {
+    public static final long serialVersionUID = 3L;
+
     private final int mapNumber;
     private final BlockData[][] blocks;
     private final String cliMap;

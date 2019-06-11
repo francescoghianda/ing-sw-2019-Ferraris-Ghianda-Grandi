@@ -5,7 +5,6 @@ import it.polimi.se2019.network.NetworkClient;
 import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
-import javafx.concurrent.Task;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -42,8 +41,6 @@ public class SocketClient implements Runnable, NetworkClient
         try
         {
             running = false;
-            ois.close();
-            oos.close();
             socket.close();
         }
         catch (IOException e)
@@ -66,34 +63,27 @@ public class SocketClient implements Runnable, NetworkClient
                 if(incomeMessage.getType() == Message.Type.REQUEST)
                 {
 
-                    Task<Void> messageTask = new Task<Void>()
+
+                    Thread messageThread = new Thread(() ->
                     {
-                        @Override
-                        protected Void call()
+                        if(incomeMessage instanceof CancellableActionRequest)
                         {
-                            if(incomeMessage instanceof CancellableActionRequest)
+                            try
                             {
-                                try
-                                {
-                                    Serializable obj = ((CancellableActionRequest)incomeMessage).apply(getUI());
-                                    sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), obj, Response.Status.OK));
-                                }
-                                catch (CanceledActionException e)
-                                {
-                                    sendMessageToServer(new Response("ACTION_CANCELED", null, Response.Status.ACTION_CANCELED));
-                                }
-                            }
-                            else
-                            {
-                                Serializable obj = ((ActionRequest)incomeMessage).apply(getUI());
+                                Serializable obj = ((CancellableActionRequest)incomeMessage).apply(getUI());
                                 sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), obj, Response.Status.OK));
                             }
-
-                            return null;
+                            catch (CanceledActionException e)
+                            {
+                                sendMessageToServer(new Response("ACTION_CANCELED", null, Response.Status.ACTION_CANCELED));
+                            }
                         }
-                    };
-
-                    Thread messageThread = new Thread(messageTask);
+                        else
+                        {
+                            Serializable obj = ((ActionRequest)incomeMessage).apply(getUI());
+                            sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), obj, Response.Status.OK));
+                        }
+                    });
                     messageThread.setDaemon(true);
                     messageThread.setName("Request ("+incomeMessage.getMessage()+") thread");
                     messageThread.start();
@@ -101,33 +91,19 @@ public class SocketClient implements Runnable, NetworkClient
                 }
                 else if(incomeMessage.getType() == Message.Type.ASYNC_MESSAGE)
                 {
-                    Task<Void> messageTask = new Task<Void>()
-                    {
-                        @Override
-                        protected Void call()
-                        {
-                            ((AsyncMessage)incomeMessage).accept(getUI());
-                            return null;
-                        }
-                    };
-                    messageTask.exceptionProperty().addListener((observable, oldValue, newValue) ->
-                    {
-                        newValue.printStackTrace();
-                    });
-                    Thread messageThread = new Thread(messageTask);
+                    Thread messageThread = new Thread(() -> ((AsyncMessage)incomeMessage).accept(getUI()));
                     messageThread.setName("AsyncMessage ("+incomeMessage.getMessage()+") thread");
                     messageThread.start();
                 }
             }
 
-            oos.close();
-            ois.close();
+            socket.close();
 
         }
         catch (IOException | ClassNotFoundException e)
         {
             Logger.exception(e);
-            running = false;
+            stop();
         }
     }
 
@@ -159,7 +135,7 @@ public class SocketClient implements Runnable, NetworkClient
     {
         try
         {
-            oos.writeObject(message);
+            oos.writeUnshared(message);
             oos.flush();
         }
         catch (IOException e)

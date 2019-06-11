@@ -6,7 +6,6 @@ import java.io.Serializable;
 
 public class Response extends Message
 {
-
     public enum Status
     {
         OK, ACTION_CANCELED

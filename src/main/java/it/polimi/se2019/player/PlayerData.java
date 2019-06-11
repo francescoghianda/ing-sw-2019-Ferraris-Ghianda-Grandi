@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 public class PlayerData implements Serializable
 {
+    public static final long serialVersionUID = 9L;
+
     private final String username;
     private final GameColor color;
     private final ArrayList<Card> weapons;

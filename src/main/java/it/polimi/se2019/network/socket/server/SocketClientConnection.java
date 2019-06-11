@@ -46,6 +46,8 @@ public class SocketClientConnection implements Runnable, ClientConnection
         this.server = server;
         this.connected = true;
 
+        client.setTcpNoDelay(true);
+
         this.user = new User();
         this.view = new VirtualView(this);
 

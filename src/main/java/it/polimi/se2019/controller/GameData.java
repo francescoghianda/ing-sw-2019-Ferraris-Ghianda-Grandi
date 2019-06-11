@@ -1,16 +1,16 @@
 package it.polimi.se2019.controller;
 
-import it.polimi.se2019.map.BlockData;
 import it.polimi.se2019.map.MapData;
 import it.polimi.se2019.player.PlayerData;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GameData implements Serializable
 {
+    public static final long serialVersionUID = 1L;
+
     private final MapData map;
     private final PlayerData player;
     private final int remainingSkulls;

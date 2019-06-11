@@ -6,6 +6,8 @@ import java.io.Serializable;
 
 public abstract class Message implements Serializable
 {
+    public static final long serialVersionUID = 7L;
+
     public enum Type
     {
         ASYNC_MESSAGE, REQUEST, RESPONSE

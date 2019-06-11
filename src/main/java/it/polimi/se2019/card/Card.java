@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public abstract class Card implements Serializable
 {
+	public static final long serialVersionUID = 5L;
+
 	private String name;
 	private String description;
 	private String id;

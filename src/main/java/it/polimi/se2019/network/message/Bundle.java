@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class Bundle<T1 extends Serializable, T2 extends Serializable> implements Serializable
 {
+    public static final long serialVersionUID = 8L;
+
     private final T1 obj1;
     private final T2 obj2;
 

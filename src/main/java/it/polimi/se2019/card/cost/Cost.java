@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class Cost implements Serializable
 {
+    public static final long serialVersionUID = 6L;
+
     private final int red, blue, yellow;
 
     public Cost(int red, int blue, int yellow)

@@ -9,6 +9,8 @@ import java.util.HashMap;
 
 public class BlockData implements Serializable
 {
+    public static final long serialVersionUID = 2L;
+
     private final int x;
     private final int y;
     private final boolean spawnPoint;
