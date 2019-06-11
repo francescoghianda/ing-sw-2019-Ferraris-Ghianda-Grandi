@@ -31,8 +31,7 @@ public class Block implements Serializable
 
 	private ArrayList<Player> players;
 
-	private final int x;
-	private final int y;
+	private final Coordinates coordinates;
 
 	private boolean drawBackground = false;
 
@@ -43,8 +42,7 @@ public class Block implements Serializable
 		this.weaponCards = new ArrayList<>();
 		this.players = new ArrayList<>();
 		this.spawnPoint = spawnPoint;
-		this.x = x;
-		this.y = y;
+		coordinates = new Coordinates(x, y);
 		this.room = room;
 
 	}
@@ -102,7 +100,7 @@ public class Block implements Serializable
 
 	public Coordinates getCoordinates()
 	{
-		return new Coordinates(x, y);
+		return coordinates;
 	}
 
 	public boolean addWeaponCard(WeaponCard weaponCard)
@@ -183,18 +181,21 @@ public class Block implements Serializable
 
 	public void setDoor(Block block)
 	{
+		int x = coordinates.getX();
+		int y = coordinates.getY();
+
 		if(!block.isNear(this))throw new NotNearBlockException();
 		int side;
-		if(this.x == block.x && this.y > block.y)side = UPPER_SIDE;
-		else if(this.x == block.x && this.y < block.y)side = LOWER_SIDE;
-		else if(this.y == block.y && this.x > block.x)side = LEFT_SIDE;
+		if(x == block.getX() && y > block.getY())side = UPPER_SIDE;
+		else if(x == block.getX() && y < block.getY())side = LOWER_SIDE;
+		else if(y == block.getY() && x > block.getX())side = LEFT_SIDE;
 		else side = RIGHT_SIDE;
 		doors[side] = block;
 	}
 
 	public int getManhattanDistanceFrom(Block block)
 	{
-		return Math.abs(getX() - block.getX())+ Math.abs(getY() - block.getY());
+		return coordinates.getManhattanDistanceFrom(block.getCoordinates());
 	}
 
 	public int getDistanceFrom(Block block)
@@ -204,12 +205,12 @@ public class Block implements Serializable
 
 	public int getX()
 	{
-		return x;
+		return coordinates.getX();
 	}
 
 	public int getY()
 	{
-		return y;
+		return coordinates.getY();
 	}
 
 	public Room getRoom()
@@ -225,26 +226,26 @@ public class Block implements Serializable
 
 	public Block getBottomBlock()
 	{
-		if(y >= 2)return null;
-		return room.getMap().getMapMatrix()[y+1][x];
+		if(getY() >= 2)return null;
+		return room.getMap().getMapMatrix()[getY()+1][getX()];
 	}
 
 	public Block getUpperBlock()
 	{
-		if(y <= 0)return null;
-		return room.getMap().getMapMatrix()[y-1][x];
+		if(getY() <= 0)return null;
+		return room.getMap().getMapMatrix()[getY()-1][getX()];
 	}
 
 	public Block getRightBlock()
 	{
-		if(x >= 3)return null;
-		return room.getMap().getMapMatrix()[y][x+1];
+		if(getX() >= 3)return null;
+		return room.getMap().getMapMatrix()[getY()][getX()+1];
 	}
 
 	public Block getLeftBlock()
 	{
-		if(x <= 0)return null;
-		return room.getMap().getMapMatrix()[y][x-1];
+		if(getX() <= 0)return null;
+		return room.getMap().getMapMatrix()[getY()][getX()-1];
 	}
 
 	public Block getSideBlock(int side)
@@ -272,13 +273,13 @@ public class Block implements Serializable
 	public boolean isNear(Block block)
 	{
 		if(block == null)return false;
-		if(block.getX() == x)
+		if(block.getX() == getX())
 		{
-			return block.getY() == y + 1 || block.getY() == y - 1;
+			return block.getY() == getY() + 1 || block.getY() == getY() - 1;
 		}
-		else if(block.getY() == y)
+		else if(block.getY() == getY())
 		{
-			return block.getX() == x + 1 || block.getX() == x - 1;
+			return block.getX() == getX() + 1 || block.getX() == getX() - 1;
 		}
 
 		return false;
@@ -305,7 +306,7 @@ public class Block implements Serializable
 	@Override
 	public String toString()
 	{
-		return "("+x+", "+y+") - "+room.getColor().name().charAt(0);
+		return "("+getX()+", "+getY()+") - "+room.getColor().name().charAt(0);
 	}
 
 
@@ -327,12 +328,12 @@ public class Block implements Serializable
 		HashMap<Coordinates, Integer> distances = new HashMap<>();
 		ArrayList<PlayerData> playersData = new ArrayList<>();
 
-		paths.forEach((block, path) -> distances.put(new Coordinates(block.x, block.y), path.get(0).getLength()));
+		paths.forEach((block, path) -> distances.put(new Coordinates(block.getX(), block.getY()), path.get(0).getLength()));
 		players.forEach(player -> playersData.add(player.getData()));
 
 		String ammoCardId = ammoCard == null ? null : ammoCard.getId();
 
-		return new BlockData(x, y, spawnPoint, ammoCardId, new ArrayList<>(weaponCards), distances, playersData);
+		return new BlockData(getX(), getY(), spawnPoint, ammoCardId, new ArrayList<>(weaponCards), distances, playersData);
 	}
 
 }

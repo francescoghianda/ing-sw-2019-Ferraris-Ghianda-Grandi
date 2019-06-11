@@ -12,7 +12,9 @@ public class MapDrawerTest
     {
         Map map = Map.createMap(4);
 
-        MapDrawer generator = new MapDrawer(15, 11);
+        MapDrawer generator = new MapDrawer(25, 21);
+
+        String mapstr = generator.drawMap(map);
 
         System.out.println(generator.drawMap(map));
     }

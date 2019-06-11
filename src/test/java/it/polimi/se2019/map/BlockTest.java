@@ -106,5 +106,46 @@ public class BlockTest
 
     }
 
+    @Test
+    public void sameNumberOfPathTest()
+    {
+        blocks.forEach(block1 ->
+                blocks.forEach(block2 ->
+                {
+                    List<Path> paths1 = block1.getAllPathsTo(block2);
+                    List<Path> paths2 = block2.getAllPathsTo(block1);
+
+                    if(paths1.size() != paths2.size())fail();
+                }));
+    }
+
+    @Test
+    public void sameLengthPathTest()
+    {
+        blocks.forEach(block1 ->
+                blocks.forEach(block2 ->
+                {
+                    if(!block1.equals(block2) && block1.getRandomPathTo(block2).getLength() != block2.getRandomPathTo(block1).getLength())fail();
+                }));
+    }
+
+    @Test
+    public void allPathsHaveSameLengthTest()
+    {
+        blocks.forEach(block1 ->
+                blocks.forEach(block2 ->
+                {
+                    List<Path> paths = block1.getAllPathsTo(block2);
+                    if(paths.size() > 0)
+                    {
+                        int length = paths.get(0).getLength();
+                        paths.forEach(path ->
+                        {
+                            if(path.getLength() != length)fail();
+                        });
+                    }
+                }));
+    }
+
 
 }

@@ -25,6 +25,11 @@ public final class Coordinates implements Serializable
         return y;
     }
 
+    public int getManhattanDistanceFrom(Coordinates coordinates)
+    {
+        return Math.abs(getX() - coordinates.getX())+ Math.abs(getY() - coordinates.getY());
+    }
+
     @Override
     public final boolean equals(Object coords)
     {

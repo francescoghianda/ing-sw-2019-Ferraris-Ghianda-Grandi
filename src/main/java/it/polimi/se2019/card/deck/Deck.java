@@ -22,7 +22,6 @@ public class Deck<T extends Card>
 		this.cards = new ArrayList<>(cards);
 	}
 
-
 	public void addCard(T card)
 	{
 		cards.add(card);

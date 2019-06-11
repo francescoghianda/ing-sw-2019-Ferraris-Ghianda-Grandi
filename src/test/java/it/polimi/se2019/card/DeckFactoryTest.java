@@ -47,7 +47,6 @@ public class DeckFactoryTest
     public void parseAmmoCardsTest()
     {
         Deck<AmmoCard> ammoCards = deckFactory.createAmmoDeck();
-        System.out.println(ammoCards);
         if(ammoCards.size() != 36)fail();
     }
 }
