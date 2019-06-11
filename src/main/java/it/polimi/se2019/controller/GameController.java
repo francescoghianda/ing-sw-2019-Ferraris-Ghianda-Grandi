@@ -7,17 +7,15 @@ import it.polimi.se2019.card.deck.DeckFactory;
 import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.card.weapon.OptionalEffect;
 import it.polimi.se2019.card.weapon.WeaponCard;
+import it.polimi.se2019.controller.settings.MatchSettings;
 import it.polimi.se2019.map.Block;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.map.Map;
-import it.polimi.se2019.map.Path;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.network.message.ConnectionErrorException;
-import it.polimi.se2019.network.message.RequestFactory;
 import it.polimi.se2019.player.*;
-import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.constants.GameMode;
 import it.polimi.se2019.utils.logging.Logger;
@@ -39,6 +37,7 @@ public class GameController implements TimerListener
     private GameMode gameMode;
     private ClientsManager clientsManager;
     private Timer timer;
+    private int startTimerSeconds;
 
     private Deck<AmmoCard> ammoCardDeck;
     private Deck<WeaponCard> weaponCardDeck;
@@ -49,7 +48,7 @@ public class GameController implements TimerListener
 
     private RoundManager roundManager;
 
-    private int playersForStart = 1;
+    private int playersForStart;
 
     private boolean gameStarted;
 
@@ -62,9 +61,14 @@ public class GameController implements TimerListener
         availablePlayerColors = new ArrayList<>(Arrays.asList(GameColor.values()));
         availablePlayerColors.remove(GameColor.RED);
         gameMode = GameMode.NORMAL;
-        remainingSkulls = 8;
+
+        MatchSettings settings = MatchSettings.getInstance();
+
+        remainingSkulls = settings.getSkullNumber();
+        playersForStart = settings.getPlayersNumber();
+        startTimerSeconds = settings.getStartTimerSeconds();
         deaths = 0;
-        map = Map.createMap();
+        map = Map.createMap(settings.getMapNumber());
 
         random = new Random();
         players = new ArrayList<>();
@@ -306,7 +310,7 @@ public class GameController implements TimerListener
     private void startTimer()
     {
         Timer.destroyTimer("startCountdown");
-        timer = Timer.createTimer("startCountdown", 1);
+        timer = Timer.createTimer("startCountdown", startTimerSeconds);
         timer.addTimerListener(this);
         timer.start();
     }
