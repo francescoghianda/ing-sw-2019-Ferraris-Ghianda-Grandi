@@ -50,6 +50,18 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
         messageThread.start();
     }
 
+    public void sendMessageToServer(Message message)
+    {
+        try
+        {
+            server.sendMessageToServer(message, stub);
+        }
+        catch (RemoteException e)
+        {
+            Logger.exception(e);
+        }
+    }
+
     @Override
     public boolean isConnected()
     {

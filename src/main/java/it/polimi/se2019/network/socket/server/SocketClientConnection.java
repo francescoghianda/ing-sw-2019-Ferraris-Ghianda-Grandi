@@ -28,6 +28,8 @@ public class SocketClientConnection implements Runnable, ClientConnection
 
     private ClientsManager clientsManager;
 
+    private MessageHandler messageHandler;
+
     private OnClientDisconnectionListener clientDisconnectionListener;
 
     private volatile boolean getResponse;
@@ -50,6 +52,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
 
         this.user = new User();
         this.view = new VirtualView(this);
+        this.messageHandler = new MessageHandler(this);
 
         try
         {
@@ -96,16 +99,26 @@ public class SocketClientConnection implements Runnable, ClientConnection
         {
             try
             {
-                Response message = (Response) ois.readObject();
+                Message message = (Message) ois.readObject();
 
-                if(getResponse)
+                if(message.getType() == Message.Type.RESPONSE)
                 {
-                    synchronized (this)
+                    if(getResponse)
                     {
-                        response = message;
-                        getResponse = false;
-                        this.notifyAll();
+                        synchronized (this)
+                        {
+                            response = (Response) message;
+                            getResponse = false;
+                            this.notifyAll();
+                        }
                     }
+                }
+                else
+                {
+                    Thread messageThread = new Thread(() -> messageHandler.handle(message));
+                    messageThread.setDaemon(true);
+                    messageThread.setName("Thread handling message "+message);
+                    messageThread.start();
                 }
 
             }
@@ -166,7 +179,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
     @Override
     public synchronized Response getResponseTo(CancellableActionRequest request) throws CanceledActionException
     {
-        if(!connected)throw new CanceledActionException(CanceledActionException.Cause.ERROR);
+        if(!connected)throw new ConnectionErrorException();
         try
         {
             requestThread = Thread.currentThread();
@@ -191,7 +204,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
     @Override
     public synchronized Response getResponseTo(ActionRequest request)
     {
-        if(!connected)return null;
+        if(!connected)throw new ConnectionErrorException();
         try
         {
             requestThread = Thread.currentThread();

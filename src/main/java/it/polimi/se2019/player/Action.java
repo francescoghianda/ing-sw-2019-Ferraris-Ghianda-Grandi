@@ -5,7 +5,7 @@ import java.io.Serializable;
 public enum Action implements Serializable
 {
 
-	MOVE(true), FIRE(true), GRAB(true), RELOAD(true), USE_POWER_UP(true), END_ROUND(false);
+	MOVE(true), FIRE(true), GRAB(true), RELOAD(true), USE_POWER_UP(true), END_ACTION(false), END_ROUND(false);
 
 	public static final long serialVersionUID = 11L;
 

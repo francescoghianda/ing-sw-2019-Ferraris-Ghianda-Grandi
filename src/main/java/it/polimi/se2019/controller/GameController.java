@@ -126,27 +126,15 @@ public class GameController implements TimerListener
 
         try
         {
+            currentPlayer.getView().roundStart();
+
             if(roundManager.isFirstRound() || !currentPlayer.isFirstRoundPlayed()) firstRound(currentPlayer);
 
-            Action[] possibleActions;
-
-            while ((possibleActions = ActionsGroup.getPossibleActions(currentPlayer)).length > 0)
+            boolean continueRound = executeAction(currentPlayer);
+            if(continueRound)
             {
-                Action chosen = currentPlayer.getView().chooseActionFrom(possibleActions);
-
-                if(chosen == Action.END_ROUND)break;
-
-                try
-                {
-                    executeAction(chosen, currentPlayer);
-                }
-                catch (CanceledActionException e)
-                {
-                    Logger.warning("Player "+currentPlayer.getUsername()+" has canceled action. "+e.getCanceledCause()+" - "+e.getCauseMessage());
-                    continue;
-                }
-
-                sendBroadcastUpdate();
+                currentPlayer.resetExecutedAction();
+                executeAction(currentPlayer);
             }
         }
         catch (ConnectionErrorException e)
@@ -155,12 +143,101 @@ public class GameController implements TimerListener
         }
         finally
         {
+            currentPlayer.getView().roundEnd();
+
             currentPlayer.resetExecutedAction();
 
             refillMap();
             sendBroadcastUpdate();
+
+            respawnKilledPlayers();
+
             nextRound();
         }
+    }
+
+    private void respawnKilledPlayers()
+    {
+        players.forEach(player ->
+        {
+            if(player.getGameBoard().getTotalReceivedDamage() >= 11)
+            {
+                countPoints(player);
+                respawn(player);
+            }
+        });
+    }
+
+    private void countPoints(Player killedPlayer)
+    {
+        LinkedHashMap<Player, Integer> damage = killedPlayer.getGameBoard().getReceivedDamage();
+
+
+    }
+
+    private void respawn(Player player)
+    {
+        PowerUpCard powerUp = player.powerUpsSize() <= 0 ? powerUpCardDeck.getFirstCard() : null;
+
+        try
+        {
+            String chosenId = player.getView().chooseSpawnPoint(powerUp, null);
+            PowerUpCard chosenPowerUp = PowerUpCard.findById(chosenId);
+            Block spawnPoint = map.findRoomByColor(chosenPowerUp.getColor()).getSpawnPoint();
+
+            if(powerUp == null)player.removePowerUp(chosenPowerUp);
+            powerUpCardDeck.addCard(chosenPowerUp);
+
+            player.getGameBoard().resetDamageAndMarks();
+            player.setBlock(spawnPoint);
+            sendBroadcastUpdate();
+        }
+        catch (ConnectionErrorException e)
+        {
+            if(powerUp != null)
+            {
+                Block spawnPoint = map.findRoomByColor(powerUp.getColor()).getSpawnPoint();
+                powerUpCardDeck.addCard(powerUp);
+                player.setBlock(spawnPoint);
+            }
+            else
+            {
+                PowerUpCard powerUpCard = player.getRandomPowerUp();
+                player.removePowerUp(powerUpCard);
+                powerUpCardDeck.addCard(powerUpCard);
+                Block spawnPoint = map.findRoomByColor(powerUpCard.getColor()).getSpawnPoint();
+                player.setBlock(spawnPoint);
+            }
+            player.getGameBoard().resetDamageAndMarks();
+            sendBroadcastUpdate();
+        }
+
+    }
+
+    private boolean executeAction(Player currentPlayer)
+    {
+        Action[] possibleActions;
+
+        while ((possibleActions = ActionsGroup.getPossibleActions(currentPlayer)).length > 0)
+        {
+            Action chosen = currentPlayer.getView().chooseActionFrom(possibleActions);
+
+            if(chosen == Action.END_ROUND)return false;
+            if(chosen == Action.END_ACTION)break;
+
+            try
+            {
+                executeAction(chosen, currentPlayer);
+            }
+            catch (CanceledActionException e)
+            {
+                Logger.warning("Player "+currentPlayer.getUsername()+" has canceled action. "+e.getCanceledCause()+" - "+e.getCauseMessage());
+                continue;
+            }
+
+            sendBroadcastUpdate();
+        }
+        return true;
     }
 
     private void executeAction(Action action, Player player) throws CanceledActionException
@@ -250,10 +327,9 @@ public class GameController implements TimerListener
     {
         PowerUpCard option1 = powerUpCardDeck.getFirstCard();
         PowerUpCard option2 = powerUpCardDeck.getFirstCard();
-        String chosenId = player.getView().chooseSpawnPoint(option1, option2);
-
         try
         {
+            String chosenId = player.getView().chooseSpawnPoint(option1, option2);
             PowerUpCard chosen = option1.getId().equals(chosenId) ? option1 : option2;
             Block spawnPoint = map.findRoomByColor(chosen.getColor()).getSpawnPoint();
             powerUpCardDeck.addCard(chosen);

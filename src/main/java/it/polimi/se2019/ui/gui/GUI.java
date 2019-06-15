@@ -15,15 +15,22 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tooltip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -34,6 +41,8 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     private static Stage window;
 
     private SceneManager sceneManager;
+
+    private MediaPlayer roundStartSound;
 
     public GUI()
     {
@@ -74,7 +83,20 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
 
         setTooltipIndefiniteDuration();
 
+        try
+        {
+            roundStartSound = new MediaPlayer(new Media(getClass().getResource("/sounds/round_start.mp3").toURI().toString()));
+            roundStartSound.setOnEndOfMedia(() -> roundStartSound.stop());
+        }
+        catch (URISyntaxException e)
+        {
+            e.printStackTrace();
+        }
+
         sceneManager = SceneManager.createSceneManager(window, this);
+
+        window.heightProperty().addListener((observable, oldValue, newValue) -> onSizeChange(window.getWidth(), newValue.doubleValue()));
+        window.widthProperty().addListener((observable, oldValue, newValue) -> onSizeChange(newValue.doubleValue(), window.getHeight()));
 
         sceneManager.setScene(SceneManager.START_MENU_SCENE);
 
@@ -140,7 +162,14 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     public void gameStarted()
     {
         sceneManager.setScene(SceneManager.MATCH_SCENE);
-        SceneManager.runOnFxThread(window::centerOnScreen);
+        //SceneManager.runOnFxThread(window::centerOnScreen);
+        SceneManager.runOnFxThread(() ->
+        {
+            //window.setResizable(true);
+            //window.setMinHeight(GUI.getScreenHeight()/1.06);
+            //window.setMinWidth(GUI.getScreenWidth()/1.2);
+            window.centerOnScreen();
+        });
     }
 
     @Override
@@ -216,8 +245,8 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     {
         SceneManager.runOnFxThread(() ->
         {
-            MatchScene.getInstance().addCard(option1);
-            MatchScene.getInstance().addCard(option2);
+            if(option1 != null)MatchScene.getInstance().addCard(option1);
+            if(option2 != null)MatchScene.getInstance().addCard(option2);
             MatchScene.getInstance().setOptions("Seleziona il potenziamento che vuoi scartare");
         });
         return new ValueObserver<String>().get(sceneManager.getMatchScene().selectedSpawnPoint);
@@ -247,6 +276,18 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     {
         //TODO
         return null;
+    }
+
+    @Override
+    public void roundStart()
+    {
+        SceneManager.runOnFxThread(() -> roundStartSound.play());
+    }
+
+    @Override
+    public void roundEnd()
+    {
+
     }
 
     @Override
@@ -284,6 +325,16 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
         return window.getHeight();
     }
 
+    public static double getMinStageWidth()
+    {
+        return GUI.getScreenWidth()/1.2;
+    }
+
+    public static double getMinStageHeight()
+    {
+        return GUI.getScreenHeight()/1.06;
+    }
+
     public static double getScreenWidth()
     {
         return Screen.getPrimary().getVisualBounds().getWidth();
@@ -315,4 +366,10 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     {
 
     }
+
+    public void onSizeChange(double width, double height)
+    {
+        sceneManager.getMatchScene().setSize(width, height);
+    }
+
 }

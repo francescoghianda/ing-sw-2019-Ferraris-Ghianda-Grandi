@@ -30,6 +30,8 @@ public class RmiClientConnection implements ClientConnection
 
     private boolean connected;
 
+    private MessageHandler messageHandler;
+
     /**
      * Create a new connection with the client
      * @param callback The callback of the client
@@ -42,6 +44,7 @@ public class RmiClientConnection implements ClientConnection
         this.connected = true;
         this.user = new User();
         this.view = new VirtualView(this);
+        this.messageHandler = new MessageHandler(this);
         this.clientsManager = ClientsManager.getInstance();
     }
 
@@ -92,7 +95,7 @@ public class RmiClientConnection implements ClientConnection
     @Override
     public Response getResponseTo(CancellableActionRequest request) throws CanceledActionException
     {
-        if(!connected)throw new CanceledActionException(CanceledActionException.Cause.ERROR);
+        if(!connected)throw new ConnectionErrorException();
         try
         {
             Response response = callback.sendRequest(request);
@@ -110,7 +113,7 @@ public class RmiClientConnection implements ClientConnection
     @Override
     public Response getResponseTo(ActionRequest request)
     {
-        if(!connected)return null;
+        if(!connected)throw new ConnectionErrorException();
         try
         {
             return callback.sendRequest(request);
@@ -121,6 +124,14 @@ public class RmiClientConnection implements ClientConnection
             connected = false;
             throw  new ConnectionErrorException();
         }
+    }
+
+    public void handleMessage(Message message)
+    {
+        Thread messageThread = new Thread(()-> messageHandler.handle(message));
+        messageThread.setDaemon(true);
+        messageThread.setName("Thread handling "+message);
+        messageThread.start();
     }
 
     @Override

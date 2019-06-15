@@ -139,6 +139,18 @@ public class VirtualView implements UI
     }
 
     @Override
+    public void roundStart()
+    {
+        client.sendMessageToClient(new AsyncMessage("round_start", UI::roundStart));
+    }
+
+    @Override
+    public void roundEnd()
+    {
+        client.sendMessageToClient(new AsyncMessage("round_end", UI::roundEnd));
+    }
+
+    @Override
     public String chooseOrCancel(Bundle<String, ArrayList<String>> options) throws CanceledActionException
     {
         return (String) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_or_cancel", ui -> ui.chooseOrCancel(options))).getContent();

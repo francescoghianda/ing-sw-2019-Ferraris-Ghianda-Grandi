@@ -11,6 +11,7 @@ import it.polimi.se2019.utils.constants.GameColor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * creates a player
@@ -168,6 +169,12 @@ public class Player implements Serializable
 		{
 			powerUps.add(powerUpCard);
 		}
+	}
+
+	public PowerUpCard getRandomPowerUp()
+	{
+		if(powerUps.isEmpty())return null;
+		else return powerUps.get(new Random().nextInt(powerUps.size()));
 	}
 
 	public int weaponsSize()

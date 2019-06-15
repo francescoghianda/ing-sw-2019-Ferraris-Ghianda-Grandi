@@ -113,6 +113,16 @@ public class CLI implements UI
     }
 
     @Override
+    public void roundStart() {
+
+    }
+
+    @Override
+    public void roundEnd() {
+
+    }
+
+    @Override
     public boolean notEnoughAmmo(boolean askToSellPowerUp)
     {
         return false;

@@ -60,4 +60,10 @@ public abstract class Message implements Serializable
     {
         return this.sender;
     }
+
+    @Override
+    public String toString()
+    {
+        return "["+type+"] "+contentMessage;
+    }
 }

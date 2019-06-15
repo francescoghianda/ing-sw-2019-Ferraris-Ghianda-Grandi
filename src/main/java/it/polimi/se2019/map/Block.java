@@ -223,6 +223,11 @@ public class Block implements Serializable
 		return this.ammoCard;
 	}
 
+	public boolean contaisGrabbable()
+	{
+		return ammoCard != null || !weaponCards.isEmpty();
+	}
+
 
 	public Block getBottomBlock()
 	{

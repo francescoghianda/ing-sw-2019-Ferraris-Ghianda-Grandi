@@ -1,5 +1,6 @@
 package it.polimi.se2019.network.rmi.server;
 
+import it.polimi.se2019.network.message.Message;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
 
 import java.rmi.Remote;
@@ -13,4 +14,5 @@ public interface ServerInterface extends Remote
      * @throws RemoteException
      */
     void registerClient(CallbackInterface rmiClient) throws RemoteException;
+    void sendMessageToServer(Message message, CallbackInterface sender) throws RemoteException;
 }

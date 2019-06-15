@@ -3,7 +3,6 @@ package it.polimi.se2019.network.message;
 public class RequestFactory
 {
 
-
     private RequestFactory()
     {
 

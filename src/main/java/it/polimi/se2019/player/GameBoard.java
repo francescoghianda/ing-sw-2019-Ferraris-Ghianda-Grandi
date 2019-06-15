@@ -1,13 +1,11 @@
 package it.polimi.se2019.player;
 
 import it.polimi.se2019.card.cost.Cost;
+import it.polimi.se2019.ui.cli.Option;
 import it.polimi.se2019.utils.constants.GameColor;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 /**
  * Defines the gameboard of the game
@@ -21,6 +19,7 @@ public class GameBoard implements Serializable
     private int yellowAmmo;
     private int skulls;
     private int aviableActions;
+    private int points;
 
     private Cost lastPay;
 
@@ -38,6 +37,32 @@ public class GameBoard implements Serializable
         int total = 0;
         for(Integer damage : receivedDamage.values())total += damage;
         return total;
+    }
+
+    public void resetDamageAndMarks()
+    {
+        receivedDamage.clear();
+        markers.clear();
+    }
+
+    public void addPoints(int points)
+    {
+        this.points += points;
+    }
+
+    public int getPoints()
+    {
+        return points;
+    }
+
+    public LinkedHashMap<Player, Integer> getReceivedDamage()
+    {
+        return new LinkedHashMap<>(receivedDamage);
+    }
+
+    public Optional<Player> getFirstBloodPlayer()
+    {
+        return receivedDamage.keySet().stream().findFirst();
     }
 
     public int getReceivedDamage(Player player)
@@ -78,6 +103,10 @@ public class GameBoard implements Serializable
     public void addDamage(Player player, int damage)
     {
         if(damage < 0)throw new NegativeValueException();
+
+        damage += markers.getOrDefault(player, 0);
+        markers.replace(player, 0);
+
         if(receivedDamage.containsKey(player)) receivedDamage.replace(player, receivedDamage.get(player)+damage);
         else receivedDamage.put(player, damage);
     }

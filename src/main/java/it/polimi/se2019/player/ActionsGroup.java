@@ -167,6 +167,9 @@ public class ActionsGroup
 
 		possibleAction = possibleAction.stream().distinct().collect(Collectors.toCollection(ArrayList::new));
 
+		if(possibleAction.contains(Action.FIRE) && player.weaponsSize() <= 0)possibleAction.remove(Action.FIRE);
+		if(possibleAction.contains(Action.GRAB) && !player.getBlock().contaisGrabbable())possibleAction.remove(Action.GRAB);
+
 		Action[] intArray = new Action[possibleAction.size()];
 
 		return possibleAction.toArray(intArray);

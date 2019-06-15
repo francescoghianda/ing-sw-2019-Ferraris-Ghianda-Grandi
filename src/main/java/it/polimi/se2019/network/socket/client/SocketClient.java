@@ -131,7 +131,7 @@ public class SocketClient implements Runnable, NetworkClient
         return true;
     }
 
-    private void sendMessageToServer(Message message)
+    public void sendMessageToServer(Message message)
     {
         try
         {
