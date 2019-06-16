@@ -193,6 +193,9 @@ public class CardPane extends StackPane implements Initializable
         setMaxWidth(GUI.getScreenWidth()/4);
         setMinWidth(GUI.getScreenWidth()/4);
 
+        //setMaxWidth(GUI.getMinStageWidth()/4);
+        //setMinWidth(GUI.getMinStageWidth()/4);
+
         setMinHeight(0);
 
         Image emptySlotImage;

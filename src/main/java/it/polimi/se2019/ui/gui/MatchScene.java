@@ -24,6 +24,7 @@ import javafx.scene.text.Font;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -73,6 +74,8 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     final CancelableValue<Card> selectedWeapon;
     final CancelableValue<Card> selectedPowerUp;
 
+    //private List<Resizable> resizableComponents;
+
     private MatchScene()
     {
         super();
@@ -81,6 +84,8 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         fxmlLoader.setRoot(this);
 
         gameDataProperty = new SimpleObjectProperty<>();
+
+        //resizableComponents = new ArrayList<>();
 
         try
         {
@@ -181,7 +186,15 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
             else if(action == Action.GRAB)actionPane.enable(ActionPane.GRAB_ACTION);
             else if(action == Action.RELOAD)actionPane.enable(ActionPane.RELOAD_ACTION);
         }
+        actionPane.enable(ActionPane.END_ACTION);
         actionPane.enable(ActionPane.END_ROUND);
+    }
+
+    public void setSize(double width, double height)
+    {
+        System.out.println(width+" - "+height);
+
+        //resizableComponents.forEach(resizable -> resizable.resize(width, height));
     }
 
     @Override
@@ -267,6 +280,9 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         else if(action == ActionPane.RELOAD_ACTION)selectedAction.set(Action.RELOAD);
         else if(action == ActionPane.GRAB_ACTION)selectedAction.set(Action.GRAB);
         else if(action == ActionPane.END_ROUND)selectedAction.set(Action.END_ROUND);
+        else if(action == ActionPane.END_ACTION)selectedAction.set(Action.END_ACTION);
+
+        actionPane.disableAll();
     }
 
     @Override

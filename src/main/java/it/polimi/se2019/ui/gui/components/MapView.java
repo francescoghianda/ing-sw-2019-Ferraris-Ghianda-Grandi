@@ -344,6 +344,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         setMapNumber(MapNumber.MAP_1);
 
         double height = GUI.getScreenHeight()/1.4;
+        //double height = GUI.getMinStageHeight()/1.4;
 
         leftImage.setFitHeight(height);
         rightImage.setFitHeight(height);

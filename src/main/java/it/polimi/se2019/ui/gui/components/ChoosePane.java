@@ -91,6 +91,9 @@ public class ChoosePane extends AnchorPane implements Initializable
         optionButton.setMinHeight(GUI.getScreenHeight()/20);
         optionButton.setMinWidth(GUI.getScreenWidth()/24);
 
+        //optionButton.setMinHeight(GUI.getMinStageHeight()/20);
+        //optionButton.setMinWidth(GUI.getMinStageWidth()/24);
+
         tilePane.getChildren().add(optionButton);
     }
 
@@ -114,6 +117,10 @@ public class ChoosePane extends AnchorPane implements Initializable
         setPrefHeight(GUI.getScreenHeight()/5);
         setMaxWidth(GUI.getScreenWidth()/4);
         setMinWidth(GUI.getScreenWidth()/4);
+
+        //setPrefHeight(GUI.getMinStageHeight()/5);
+        //setMaxWidth(GUI.getMinStageWidth()/4);
+        //setMinWidth(GUI.getMinStageWidth()/4);
 
         label.setStyle("-fx-text-fill: white");
 

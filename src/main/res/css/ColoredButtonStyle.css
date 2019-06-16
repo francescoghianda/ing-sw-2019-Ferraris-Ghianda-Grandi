@@ -3,8 +3,6 @@
     -fx-background-radius: 100, 100, 100, 100;
     -fx-border-color: white;
     -fx-border-radius: 100, 100, 100, 100;
-    -fx-font-size: 20;
-    -fx-text-fill: black;
 }
 .button:disabled
 {

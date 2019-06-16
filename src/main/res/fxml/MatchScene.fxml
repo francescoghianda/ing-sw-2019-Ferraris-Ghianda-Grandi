@@ -3,19 +3,17 @@
 <?import javafx.scene.layout.*?>
 <?import it.polimi.se2019.ui.gui.components.*?>
 
-<?import javafx.scene.control.Label?>
 <fx:root fx:id="borderPane" type="GridPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
 
+    <!--
+    <rowConstraints>
+        <RowConstraints percentHeight="80"/>
+        <RowConstraints percentHeight="20"/>
+    </rowConstraints>
 
-    <HBox alignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BASELINE" GridPane.halignment="CENTER"
-          GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
-        <ActionPane fx:id="actionPane"/>
-        <BoardView fx:id="board" color="GREEN"/>
+    -->
 
-    </HBox>
-
-    <MapView fx:id="mapView" GridPane.rowIndex="0" GridPane.halignment="CENTER" GridPane.valignment="TOP"
-             GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS" maxHeight="1000"/>
+    <MapView fx:id="mapView" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS" maxHeight="1000"/>
 
     <GridPane fx:id="cardGridPane" GridPane.rowIndex="0" GridPane.columnIndex="1">
         <rowConstraints>
@@ -24,7 +22,6 @@
             <RowConstraints percentHeight="20"/>
         </rowConstraints>
 
-
         <children>
             <CardPane fx:id="weaponsCardPane" title="Le tue armi" type="weapon" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
             <CardPane fx:id="powerUpsCardPane" title="I tuoi potenziamenti" type="poweup" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
@@ -32,9 +29,12 @@
                 <PlayersInfoTable fx:id="playersInfoTable" maxHeight="Infinity" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" />
             </AnchorPane>
         </children>
-
     </GridPane>
 
+    <HBox alignment="CENTER" GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.valignment="BASELINE" GridPane.halignment="CENTER" GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
+        <ActionPane fx:id="actionPane"/>
+        <BoardView fx:id="board" color="GREEN"/>
+    </HBox>
 
     <ChoosePane fx:id="choosePane" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 </fx:root>

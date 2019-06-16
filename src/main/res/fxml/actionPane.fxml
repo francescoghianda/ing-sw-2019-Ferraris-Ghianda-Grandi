@@ -3,18 +3,15 @@
 <?import javafx.scene.layout.*?>
 
 <?import it.polimi.se2019.ui.gui.components.ColoredButton?>
-<fx:root type="Pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="179.0" prefWidth="260.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml">
-   <VBox fx:id="vbox" alignment="CENTER" spacing="5.0" prefWidth="260.0">
-      <TilePane fx:id="tilePane" alignment="CENTER" hgap="5.0" vgap="5.0" prefWidth="260.0">
-         <children>
-            <ColoredButton fx:id="moveButton" onAction="#onAction" maxHeight="7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="64.0" prefWidth="104.0"/>
-            <ColoredButton fx:id="fireButton" onAction="#onAction" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false"/>
-            <ColoredButton fx:id="grabButton" onAction="#onAction" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false"/>
-            <ColoredButton fx:id="reloadButton" onAction="#onAction" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false"/>
-         </children>
-      </TilePane>
-      <ColoredButton fx:id="endRoundButton" text="Termina il turno" textAlignment="CENTER" onAction="#onAction"/>
-   </VBox>
+<fx:root type="TilePane" alignment="CENTER" hgap="5" vgap="5" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml">
+   <children>
+      <ColoredButton fx:id="moveButton" onAction="#onAction" maxHeight="7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="64.0" prefWidth="104.0"/>
+      <ColoredButton fx:id="fireButton" onAction="#onAction" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false"/>
+      <ColoredButton fx:id="grabButton" onAction="#onAction" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false"/>
+      <ColoredButton fx:id="reloadButton" onAction="#onAction" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false"/>
+      <ColoredButton fx:id="endActionButton" text="Termina azione" onAction="#onAction" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false"/>
+      <ColoredButton fx:id="endRoundButton" text="Termina turno" onAction="#onAction" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false"/>
+   </children>
 </fx:root>
 
 
