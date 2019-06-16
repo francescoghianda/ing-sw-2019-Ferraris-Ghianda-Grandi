@@ -1,9 +1,6 @@
 package it.polimi.se2019.network.socket.server;
 
-import it.polimi.se2019.controller.CanceledActionException;
-import it.polimi.se2019.controller.GameController;
-import it.polimi.se2019.controller.Match;
-import it.polimi.se2019.controller.MatchManager;
+import it.polimi.se2019.controller.*;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
 import it.polimi.se2019.network.OnClientDisconnectionListener;
@@ -11,9 +8,13 @@ import it.polimi.se2019.network.User;
 import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.player.VirtualView;
 import it.polimi.se2019.utils.logging.Logger;
+import it.polimi.se2019.utils.timer.Timer;
+import it.polimi.se2019.utils.timer.TimerAdapter;
+import it.polimi.se2019.utils.timer.TimerListener;
 
 import java.io.*;
 import java.net.Socket;
+import java.sql.Time;
 
 public class SocketClientConnection implements Runnable, ClientConnection
 {
@@ -32,10 +33,13 @@ public class SocketClientConnection implements Runnable, ClientConnection
 
     private OnClientDisconnectionListener clientDisconnectionListener;
 
+    private volatile boolean timeout;
     private volatile boolean getResponse;
     private volatile Response response;
+    private volatile String requestId;
 
     private Thread requestThread;
+    private Timer requestTimeOutTimer;
 
     private final User user;
     private final VirtualView view;
@@ -103,7 +107,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
 
                 if(message.getType() == Message.Type.RESPONSE)
                 {
-                    if(getResponse)
+                    if(getResponse && ((Response)message).getRequestId().equals(requestId))
                     {
                         synchronized (this)
                         {
@@ -147,7 +151,7 @@ public class SocketClientConnection implements Runnable, ClientConnection
         });
     }
 
-    private void sendMessageToClient(Message message)
+    private synchronized void sendMessageToClient(Message message)
     {
         if(!connected)return;
         try
@@ -177,19 +181,12 @@ public class SocketClientConnection implements Runnable, ClientConnection
     }
 
     @Override
-    public synchronized Response getResponseTo(CancellableActionRequest request) throws CanceledActionException
+    public synchronized Response getResponseTo(CancellableActionRequest request, TimeoutTime timeoutTime) throws CanceledActionException, ConnectionErrorException, TimeOutException
     {
         if(!connected)throw new ConnectionErrorException();
         try
         {
-            requestThread = Thread.currentThread();
-            getResponse = true;
-            sendMessageToClient(request);
-            while (getResponse)
-            {
-                this.wait();
-            }
-            requestThread = null;
+            sendRequest(request, timeoutTime);
             if(response.getStatus() == Response.Status.ACTION_CANCELED)throw new CanceledActionException(CanceledActionException.Cause.CANCELED_BY_USER);
             return response;
         }
@@ -202,19 +199,12 @@ public class SocketClientConnection implements Runnable, ClientConnection
     }
 
     @Override
-    public synchronized Response getResponseTo(ActionRequest request)
+    public synchronized Response getResponseTo(ActionRequest request, TimeoutTime timeoutTime) throws ConnectionErrorException, TimeOutException
     {
         if(!connected)throw new ConnectionErrorException();
         try
         {
-            requestThread = Thread.currentThread();
-            getResponse = true;
-            sendMessageToClient(request);
-            while (getResponse)
-            {
-                this.wait();
-            }
-            requestThread = null;
+            sendRequest(request, timeoutTime);
             return response;
         }
         catch (InterruptedException e)
@@ -223,6 +213,50 @@ public class SocketClientConnection implements Runnable, ClientConnection
             lostConnection();
             throw new ConnectionErrorException();
         }
+    }
+
+    private synchronized void sendRequest(Message request, TimeoutTime timeoutTime) throws InterruptedException, ConnectionErrorException, TimeOutException
+    {
+        requestThread = Thread.currentThread();
+        requestId = request.getMessageId();
+        getResponse = true;
+        timeout = false;
+
+        if(!timeoutTime.isIndeterminate())startTimer(request.getMessage(), timeoutTime.getSeconds());
+
+        sendMessageToClient(request);
+        while (getResponse)
+        {
+            if(timeout)
+            {
+                timeout = false;
+                getResponse = false;
+                requestThread = null;
+                throw new TimeOutException();
+            }
+            this.wait();
+        }
+        if(requestTimeOutTimer != null)requestTimeOutTimer.stop();
+        requestThread = null;
+    }
+
+    private synchronized void startTimer(String requestMessage, int timeoutSeconds)
+    {
+        String timerName = getUser().getUsername()+"-"+requestMessage+"-timer";
+        Timer.destroyTimer(timerName);
+        requestTimeOutTimer = Timer.createTimer(timerName, timeoutSeconds);
+        requestTimeOutTimer.addTimerListener(new TimerAdapter() {
+            @Override
+            public void onTimerEnd(String timerName)
+            {
+                synchronized (SocketClientConnection.this)
+                {
+                    timeout = true;
+                    SocketClientConnection.this.notifyAll();
+                }
+            }
+        });
+        requestTimeOutTimer.start();
     }
 
     private void lostConnection()

@@ -1,6 +1,7 @@
 package it.polimi.se2019.network.socket.client;
 
 import it.polimi.se2019.controller.CanceledActionException;
+import it.polimi.se2019.controller.TimeOutException;
 import it.polimi.se2019.network.NetworkClient;
 import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.ui.UI;
@@ -62,26 +63,31 @@ public class SocketClient implements Runnable, NetworkClient
 
                 if(incomeMessage.getType() == Message.Type.REQUEST)
                 {
-
-
                     Thread messageThread = new Thread(() ->
                     {
-                        if(incomeMessage instanceof CancellableActionRequest)
+                        try
                         {
-                            try
+                            if(incomeMessage instanceof CancellableActionRequest)
                             {
-                                Serializable obj = ((CancellableActionRequest)incomeMessage).apply(getUI());
-                                sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), obj, Response.Status.OK));
+                                try
+                                {
+                                    Serializable obj = ((CancellableActionRequest)incomeMessage).apply(getUI());
+                                    sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), incomeMessage.getMessageId(), obj, Response.Status.OK));
+                                }
+                                catch (CanceledActionException e)
+                                {
+                                    sendMessageToServer(new Response("ACTION_CANCELED", incomeMessage.getMessageId(), null, Response.Status.ACTION_CANCELED));
+                                }
                             }
-                            catch (CanceledActionException e)
+                            else
                             {
-                                sendMessageToServer(new Response("ACTION_CANCELED", null, Response.Status.ACTION_CANCELED));
+                                Serializable obj = ((ActionRequest)incomeMessage).apply(getUI());
+                                sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), incomeMessage.getMessageId(), obj, Response.Status.OK));
                             }
                         }
-                        else
+                        catch (TimeOutException e)
                         {
-                            Serializable obj = ((ActionRequest)incomeMessage).apply(getUI());
-                            sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), obj, Response.Status.OK));
+                            Logger.info("Timeout on "+incomeMessage);
                         }
                     });
                     messageThread.setDaemon(true);
@@ -131,7 +137,12 @@ public class SocketClient implements Runnable, NetworkClient
         return true;
     }
 
-    public void sendMessageToServer(Message message)
+    public void sendAsyncMessageToServer(AsyncMessage message)
+    {
+        sendMessageToServer(message);
+    }
+
+    private synchronized void sendMessageToServer(Message message)
     {
         try
         {

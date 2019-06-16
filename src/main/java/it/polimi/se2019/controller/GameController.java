@@ -141,6 +141,10 @@ public class GameController implements TimerListener
         {
             Logger.error("Connection error during "+currentPlayer.getUsername()+"'s round!");
         }
+        catch (TimeOutException e)
+        {
+            Logger.info("Player "+currentPlayer.getUsername()+" has finished his time");
+        }
         finally
         {
             currentPlayer.getView().roundEnd();
@@ -192,7 +196,7 @@ public class GameController implements TimerListener
             player.setBlock(spawnPoint);
             sendBroadcastUpdate();
         }
-        catch (ConnectionErrorException e)
+        catch (ConnectionErrorException | TimeOutException e)
         {
             if(powerUp != null)
             {
@@ -257,7 +261,6 @@ public class GameController implements TimerListener
             case USE_POWER_UP:
                 
                 break;
-
         }
     }
 
@@ -338,7 +341,7 @@ public class GameController implements TimerListener
             player.setFirstRoundPlayed(true);
             sendBroadcastUpdate();
         }
-        catch (ConnectionErrorException e)
+        catch (ConnectionErrorException | TimeOutException e)
         {
             powerUpCardDeck.addCard(option1);
             powerUpCardDeck.addCard(option2);
