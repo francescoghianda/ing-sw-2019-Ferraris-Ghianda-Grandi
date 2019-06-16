@@ -13,6 +13,7 @@ public class Timer implements Runnable
     private String name;
     private volatile int seconds;
     private volatile boolean running;
+    private volatile boolean stoped;
 
     private Thread thread;
 
@@ -63,6 +64,7 @@ public class Timer implements Runnable
     public void stop()
     {
         running = false;
+        stoped = true;
     }
 
     @Override
@@ -74,7 +76,12 @@ public class Timer implements Runnable
         while(running)
         {
             long startTime = System.currentTimeMillis();
-            for(TimerListener listener : listeners)listener.onTimerTick(name, seconds-elapsedSeconds);
+            for(TimerListener listener : listeners)
+            {
+                if(stoped)break;
+                listener.onTimerTick(name, seconds-elapsedSeconds);
+            }
+            if(stoped)break;
             long delta = System.currentTimeMillis()-startTime;
             if(delta < 1000)
             {
@@ -96,6 +103,10 @@ public class Timer implements Runnable
             elapsedSeconds++;
             if(seconds-elapsedSeconds <= 0)running = false;
         }
-        for(TimerListener listener: listeners)listener.onTimerEnd(name);
+        if(!stoped)
+        {
+            for(TimerListener listener: listeners)listener.onTimerEnd(name);
+        }
+
     }
 }

@@ -3,6 +3,7 @@ package it.polimi.se2019.ui;
 import it.polimi.se2019.card.Card;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
+import it.polimi.se2019.controller.TimeOutException;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
@@ -28,6 +29,9 @@ public interface UI extends GameEventHandler
     void youAreFirstPlayer();
     void firstPlayerIs(String firstPlayerUsername);
     void connectionRefused();
+    void roundStart();
+    void roundEnd();
+    void timeout();
 
     boolean notEnoughAmmo(boolean askToSellPowerUp);
     String chooseOrCancel(Bundle<String, ArrayList<String>> options) throws CanceledActionException;

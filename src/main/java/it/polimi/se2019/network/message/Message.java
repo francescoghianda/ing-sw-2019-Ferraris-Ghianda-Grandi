@@ -3,10 +3,13 @@ package it.polimi.se2019.network.message;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public abstract class Message implements Serializable
 {
     public static final long serialVersionUID = 7L;
+
+    private final String messageId;
 
     public enum Type
     {
@@ -28,12 +31,18 @@ public abstract class Message implements Serializable
         this.contentMessage = message;
         this.content = content;
         this.type = type;
+        this.messageId = UUID.randomUUID().toString();
     }
 
     public Message setSender(CallbackInterface sender)
     {
         this.sender = sender;
         return this;
+    }
+
+    public String getMessageId()
+    {
+        return messageId;
     }
 
     public Type getType()
@@ -64,6 +73,6 @@ public abstract class Message implements Serializable
     @Override
     public String toString()
     {
-        return "["+type+"] "+contentMessage;
+        return "["+type+"] "+"Id = "+messageId+", Message = "+contentMessage;
     }
 }

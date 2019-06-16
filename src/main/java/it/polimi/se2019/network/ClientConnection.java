@@ -3,6 +3,7 @@ package it.polimi.se2019.network;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.controller.Match;
+import it.polimi.se2019.controller.TimeOutException;
 import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.player.VirtualView;
@@ -26,9 +27,9 @@ public interface ClientConnection
      * @param request The message to send
      * @return The response message
      */
-    Response getResponseTo(CancellableActionRequest request) throws CanceledActionException;
+    Response getResponseTo(CancellableActionRequest request, TimeoutTime timeoutTime) throws CanceledActionException, ConnectionErrorException, TimeOutException;
 
-    Response getResponseTo(ActionRequest request);
+    Response getResponseTo(ActionRequest request, TimeoutTime timeoutTime) throws ConnectionErrorException, TimeOutException;
 
     /**
      * Close the connection with the client

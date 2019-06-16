@@ -123,6 +123,12 @@ public class CLI implements UI
     }
 
     @Override
+    public void timeout()
+    {
+
+    }
+
+    @Override
     public boolean notEnoughAmmo(boolean askToSellPowerUp)
     {
         return false;

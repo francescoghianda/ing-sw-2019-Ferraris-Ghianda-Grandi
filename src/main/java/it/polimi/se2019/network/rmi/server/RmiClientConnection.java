@@ -1,15 +1,13 @@
 package it.polimi.se2019.network.rmi.server;
 
-import it.polimi.se2019.controller.CanceledActionException;
-import it.polimi.se2019.controller.GameController;
-import it.polimi.se2019.controller.Match;
-import it.polimi.se2019.controller.MatchManager;
+import it.polimi.se2019.controller.*;
 import it.polimi.se2019.network.*;
 import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.network.rmi.client.CallbackInterface;
 import it.polimi.se2019.player.VirtualView;
 
 import java.rmi.RemoteException;
+import java.util.concurrent.*;
 
 /**
  * Class that manage the connection with the client and his data
@@ -79,7 +77,7 @@ public class RmiClientConnection implements ClientConnection
     }
 
     @Override
-    public synchronized void sendMessageToClient(AsyncMessage message)
+    public void sendMessageToClient(AsyncMessage message)
     {
         if(!connected)return;
         try
@@ -93,16 +91,19 @@ public class RmiClientConnection implements ClientConnection
     }
 
     @Override
-    public Response getResponseTo(CancellableActionRequest request) throws CanceledActionException
+    public synchronized Response getResponseTo(CancellableActionRequest request, TimeoutTime timeoutTime) throws CanceledActionException, ConnectionErrorException, TimeOutException
     {
         if(!connected)throw new ConnectionErrorException();
         try
         {
-            Response response = callback.sendRequest(request);
+            FutureTask<Response> task = new FutureTask<>(() -> callback.sendRequest(request));
+
+            Response response = sendRequest(task, timeoutTime);
+
             if(response.getStatus() == Response.Status.ACTION_CANCELED)throw new CanceledActionException(CanceledActionException.Cause.CANCELED_BY_USER);
             return response;
         }
-        catch (RemoteException e)
+        catch (InterruptedException | ExecutionException e)
         {
             clientDisconnectionListener.onClientDisconnection(this);
             connected = false;
@@ -111,19 +112,47 @@ public class RmiClientConnection implements ClientConnection
     }
 
     @Override
-    public Response getResponseTo(ActionRequest request)
+    public synchronized Response getResponseTo(ActionRequest request, TimeoutTime timeoutTime) throws ConnectionErrorException, TimeOutException
     {
         if(!connected)throw new ConnectionErrorException();
         try
         {
-            return callback.sendRequest(request);
+            FutureTask<Response> task = new FutureTask<>(() -> callback.sendRequest(request));
+            return sendRequest(task, timeoutTime);
         }
-        catch (RemoteException e)
+        catch (InterruptedException | ExecutionException e)
         {
             clientDisconnectionListener.onClientDisconnection(this);
             connected = false;
-            throw  new ConnectionErrorException();
+            throw new ConnectionErrorException();
         }
+    }
+
+    private Response sendRequest(FutureTask<Response> task, TimeoutTime timeoutTime) throws InterruptedException, ExecutionException, TimeOutException
+    {
+        Thread taskThread = new Thread(task);
+        taskThread.setDaemon(true);
+        taskThread.start();
+
+        Response response;
+
+        if(timeoutTime.isIndeterminate())
+        {
+            response = task.get();
+        }
+        else
+        {
+            try
+            {
+                response = task.get(timeoutTime.getSeconds(), TimeUnit.SECONDS);
+            }
+            catch (TimeoutException e)
+            {
+                throw new TimeOutException();
+            }
+        }
+
+        return response;
     }
 
     public void handleMessage(Message message)

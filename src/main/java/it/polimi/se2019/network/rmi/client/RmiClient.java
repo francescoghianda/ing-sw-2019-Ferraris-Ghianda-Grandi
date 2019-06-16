@@ -1,6 +1,7 @@
 package it.polimi.se2019.network.rmi.client;
 
 import it.polimi.se2019.controller.CanceledActionException;
+import it.polimi.se2019.controller.TimeOutException;
 import it.polimi.se2019.network.NetworkClient;
 import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.network.rmi.server.RmiServer;
@@ -42,14 +43,6 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
         this.ui = ui;
     }
 
-    @Override
-    public synchronized void sendAsyncMessage(AsyncMessage message) throws RemoteException
-    {
-        Thread messageThread = new Thread(() -> message.accept(getUI()));
-        messageThread.setName("AsyncMessage ("+message.getMessage()+") thread");
-        messageThread.start();
-    }
-
     public void sendMessageToServer(Message message)
     {
         try
@@ -69,23 +62,45 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     }
 
     @Override
+    public void sendAsyncMessage(AsyncMessage message) throws RemoteException
+    {
+        Thread messageThread = new Thread(() -> message.accept(getUI()));
+        messageThread.setName("AsyncMessage ("+message.getMessage()+") thread");
+        messageThread.start();
+    }
+
+    @Override
     public synchronized Response sendRequest(CancellableActionRequest request) throws RemoteException, CanceledActionException
     {
         try
         {
             Serializable obj = request.apply(getUI());
-            return new Response("Response to "+request.getMessage(), obj, Response.Status.OK).setSender(stub);
+            return new Response("Response to "+request.getMessage(), request.getMessageId(), obj, Response.Status.OK).setSender(stub);
         }
         catch (CanceledActionException e)
         {
-            return new Response("Response to "+request.getMessage(), null, Response.Status.ACTION_CANCELED).setSender(stub);
+            return new Response("Response to "+request.getMessage(), request.getMessageId(), null, Response.Status.ACTION_CANCELED).setSender(stub);
+        }
+        catch (TimeOutException e)
+        {
+            Logger.info("Timeout on "+request);
+            return null;
         }
     }
 
+    @Override
     public synchronized Response sendRequest(ActionRequest request)
     {
-        Serializable obj = request.apply(getUI());
-        return new Response("Response to "+request.getMessage(), obj, Response.Status.OK).setSender(stub);
+        try
+        {
+            Serializable obj = request.apply(getUI());
+            return new Response("Response to "+request.getMessage(), request.getMessageId(), obj, Response.Status.OK).setSender(stub);
+        }
+        catch (TimeOutException e)
+        {
+            Logger.info("Timeout on "+request);
+            return null;
+        }
     }
 
     public ServerInterface getServer()

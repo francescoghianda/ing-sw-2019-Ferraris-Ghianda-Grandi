@@ -32,6 +32,7 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class GUI extends Application implements UI, EventHandler<WindowEvent>
@@ -39,9 +40,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     private static final String TITLE = "Adrenalina";
 
     private static Stage window;
-
     private SceneManager sceneManager;
-
     private MediaPlayer roundStartSound;
 
     public GUI()
@@ -109,6 +108,12 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
 
         //gameStarted();
 
+    }
+
+    @Override
+    public void timeout()
+    {
+        ValueObserver.timeout();
     }
 
     @Override

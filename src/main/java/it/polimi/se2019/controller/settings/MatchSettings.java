@@ -15,7 +15,7 @@ public class MatchSettings
     private Setting<Integer> skullNumber;
     private Setting<Integer> playersNumber;
     private Setting<Integer> startTimerSeconds;
-    private Setting<Integer> roundTimerSeconds;
+    private Setting<Integer> responseTimerSeconds;
     private Setting<Integer> mapNumber;
 
     private MatchSettings()
@@ -43,8 +43,8 @@ public class MatchSettings
             loadInteger(playersNumber);
             startTimerSeconds = new Setting<>("start_timer_seconds", 10);
             loadInteger(startTimerSeconds);
-            roundTimerSeconds = new Setting<>("round_timer_seconds", 120);
-            loadInteger(roundTimerSeconds);
+            responseTimerSeconds = new Setting<>("round_timer_seconds", 120);
+            loadInteger(responseTimerSeconds);
             mapNumber = new Setting<>("map_number", -1);
             loadInteger(mapNumber);
         }
@@ -95,9 +95,9 @@ public class MatchSettings
         return startTimerSeconds.get();
     }
 
-    public int getRoundTimerSeconds()
+    public int getResponseTimerSeconds()
     {
-        return roundTimerSeconds.get();
+        return responseTimerSeconds.get();
     }
 
     public int getMapNumber()

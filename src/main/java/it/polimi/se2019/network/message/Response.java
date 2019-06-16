@@ -12,16 +12,23 @@ public class Response extends Message
     }
 
     private final Status status;
+    private final String requestId;
 
-    public Response(String message, Serializable content, Status status)
+    public Response(String message, String requestId, Serializable content, Status status)
     {
         super(message, content, Type.RESPONSE);
         this.status = status;
+        this.requestId = requestId;
     }
 
     public Status getStatus()
     {
         return this.status;
+    }
+
+    public String getRequestId()
+    {
+        return requestId;
     }
 
     public Response setSender(CallbackInterface sender)

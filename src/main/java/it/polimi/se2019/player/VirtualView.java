@@ -4,12 +4,11 @@ import it.polimi.se2019.card.Card;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.controller.Match;
+import it.polimi.se2019.controller.settings.MatchSettings;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.ClientsManager;
-import it.polimi.se2019.network.message.AsyncMessage;
-import it.polimi.se2019.network.message.Bundle;
-import it.polimi.se2019.network.message.RequestFactory;
+import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
@@ -20,10 +19,12 @@ import java.util.Arrays;
 public class VirtualView implements UI
 {
     private final ClientConnection client;
+    private TimeoutTime timeoutTime;
 
     public VirtualView(ClientConnection client)
     {
         this.client = client;
+        timeoutTime = TimeoutTime.seconds(MatchSettings.getInstance().getResponseTimerSeconds());
     }
 
     @Override
@@ -41,11 +42,11 @@ public class VirtualView implements UI
     @Override
     public String login()
     {
-        String username = (String) client.getResponseTo(RequestFactory.newActionRequest("username", UI::login)).getContent();
+        String username = (String) client.getResponseTo(RequestFactory.newActionRequest("username", UI::login), TimeoutTime.INDETERMINATE).getContent();
 
         while(ClientsManager.getInstance().getConnectedClientsUsername().contains(username))
         {
-            username = (String) client.getResponseTo(RequestFactory.newActionRequest("invalid_username", UI::login)).getContent();
+            username = (String) client.getResponseTo(RequestFactory.newActionRequest("invalid_username", UI::login), TimeoutTime.INDETERMINATE).getContent();
         }
 
         client.getUser().setUsername(username);
@@ -70,6 +71,12 @@ public class VirtualView implements UI
         client.setLogged(true, reconnected);
 
         return username;
+    }
+
+    @Override
+    public void timeout()
+    {
+        client.sendMessageToClient(new AsyncMessage("timeout", UI::timeout));
     }
 
     @Override
@@ -131,7 +138,7 @@ public class VirtualView implements UI
     {
         if(askToSellPowerUp)
         {
-            return (Boolean) client.getResponseTo(RequestFactory.newActionRequest("not_enough_ammo", ui -> ui.notEnoughAmmo(true))).getContent();
+            return (Boolean) client.getResponseTo(RequestFactory.newActionRequest("not_enough_ammo", ui -> ui.notEnoughAmmo(true)), timeoutTime).getContent();
         }
 
         client.sendMessageToClient(new AsyncMessage("not_enough_ammo", ui -> ui.notEnoughAmmo(false)));
@@ -153,7 +160,7 @@ public class VirtualView implements UI
     @Override
     public String chooseOrCancel(Bundle<String, ArrayList<String>> options) throws CanceledActionException
     {
-        return (String) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_or_cancel", ui -> ui.chooseOrCancel(options))).getContent();
+        return (String) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_or_cancel", ui -> ui.chooseOrCancel(options)), timeoutTime).getContent();
     }
 
     public String chooseOrCancel(String question, String... options) throws CanceledActionException
@@ -163,7 +170,7 @@ public class VirtualView implements UI
 
     public String choose(Bundle<String, ArrayList<String>> options)
     {
-        return (String) client.getResponseTo(RequestFactory.newActionRequest("choose", ui -> ui.choose(options))).getContent();
+        return (String) client.getResponseTo(RequestFactory.newActionRequest("choose", ui -> ui.choose(options)), timeoutTime).getContent();
     }
 
     public String choose(String question, String... options)
@@ -174,43 +181,43 @@ public class VirtualView implements UI
     @Override
     public String chooseSpawnPoint(Card option1, Card option2)
     {
-        return (String) client.getResponseTo(RequestFactory.newActionRequest("choose_spawn_point", ui -> ui.chooseSpawnPoint(option1, option2))).getContent();
+        return (String) client.getResponseTo(RequestFactory.newActionRequest("choose_spawn_point", ui -> ui.chooseSpawnPoint(option1, option2)), timeoutTime).getContent();
     }
 
     @Override
     public Action chooseActionFrom(Action[] possibleActions)
     {
-        return (Action) client.getResponseTo(RequestFactory.newActionRequest("choose_action", ui -> ui.chooseActionFrom(possibleActions))).getContent();
+        return (Action) client.getResponseTo(RequestFactory.newActionRequest("choose_action", ui -> ui.chooseActionFrom(possibleActions)), timeoutTime).getContent();
     }
 
     @Override
     public Coordinates chooseBlock(int maxDistance) throws CanceledActionException
     {
-        return (Coordinates) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_block", ui -> ui.chooseBlock(maxDistance))).getContent();
+        return (Coordinates) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_block", ui -> ui.chooseBlock(maxDistance)), timeoutTime).getContent();
     }
 
     @Override
     public Coordinates chooseBlockFrom(ArrayList<Coordinates> coordinates) throws CanceledActionException
     {
-        return (Coordinates) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_block_from", ui -> ui.chooseBlockFrom(coordinates))).getContent();
+        return (Coordinates) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_block_from", ui -> ui.chooseBlockFrom(coordinates)), timeoutTime).getContent();
     }
 
     @Override
     public Card chooseWeaponFromPlayer() throws CanceledActionException
     {
-        return (Card) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_weapon_from_player", UI::chooseWeaponFromPlayer)).getContent();
+        return (Card) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_weapon_from_player", UI::chooseWeaponFromPlayer), timeoutTime).getContent();
     }
 
     @Override
     public Card chooseWeaponFromBlock() throws CanceledActionException
     {
-        return (Card) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_weapon_from_block", UI::chooseWeaponFromBlock)).getContent();
+        return (Card) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_weapon_from_block", UI::chooseWeaponFromBlock), timeoutTime).getContent();
     }
 
     @Override
     public Card choosePowerUp() throws CanceledActionException
     {
-        return (Card) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_power_up", UI::choosePowerUp)).getContent();
+        return (Card) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_power_up", UI::choosePowerUp), timeoutTime).getContent();
     }
 
     @Override

@@ -83,7 +83,9 @@ public class BoardView extends StackPane implements Initializable
         backgroundImage.setImage(background);
 
         backgroundImage.setPreserveRatio(true);
+        //backgroundImage.setFitHeight(GUI.getMinStageHeight()/5);
         backgroundImage.setFitHeight(GUI.getScreenHeight()/5);
+        //setPrefHeight(GUI.getMinStageHeight()/5);
         setPrefHeight(GUI.getScreenHeight()/5);
         setPrefWidth(backgroundImage.getBoundsInParent().getWidth());
 
