@@ -153,9 +153,9 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        //setStyle("-fx-background-image: url('/img/texture3.png')");
+        setStyle("-fx-background-image: url('/img/texture3.png')");
 
-        setGridLinesVisible(true);
+        //setGridLinesVisible(true);
 
         //cardGridPane.setMaxHeight(GUI.getScreenHeight()/1.4);
         mapView.setOnBlockClickListener(this);
@@ -164,7 +164,7 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         choosePane.setOnOptionChosenListener(this);
 
 
-        bottomHBox.setBackground(new Background(new BackgroundFill(new Color(1, 0, 0, 0.5), null, null)));
+        //bottomHBox.setBackground(new Background(new BackgroundFill(new Color(1, 0, 0, 0.5), null, null)));
 
         gameDataProperty.addListener((observable, oldData, gameData) ->
         {

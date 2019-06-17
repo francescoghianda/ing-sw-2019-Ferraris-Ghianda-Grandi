@@ -139,20 +139,19 @@ public class ActionPane extends VBox implements Initializable
     {
         //setPrefHeight(GUI.getScreenHeight()/5);
         //setMaxHeight(GUI.getScreenHeight()/5);
-        setMaxWidth(GUI.getScreenWidth()/8);
-        setMinWidth(GUI.getScreenWidth()/8);
-
         setMaxWidth(Double.MAX_VALUE);
+        setMinWidth(230);
 
         tilePane.setPrefColumns(2);
         tilePane.setPrefRows(3);
 
-        setBackground(new Background(new BackgroundFill(Color.MAGENTA, null, null)));
+        //setBackground(new Background(new BackgroundFill(Color.MAGENTA, null, null)));
 
         heightProperty().addListener((observable, oldValue, newValue) ->
-        {
-            tilePane.setPrefTileHeight(newValue.doubleValue()/4);
-        });
+                tilePane.setPrefTileHeight(newValue.doubleValue()/4));
+
+        widthProperty().addListener((observable, oldValue, newValue) ->
+                tilePane.setPrefTileWidth(newValue.doubleValue()/3));
 
         //prefTileWidthProperty().bind(widthProperty().divide(2).subtract(getHgap()*2));
 

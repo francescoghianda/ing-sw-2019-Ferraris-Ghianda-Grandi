@@ -268,7 +268,7 @@ public class BoardView extends StackPane implements Initializable
         minWidth(0);
         maxWidth(Double.MAX_VALUE);
 
-        setBackground(new Background(new BackgroundFill(Color.MAGENTA, null, null)));
+        //setBackground(new Background(new BackgroundFill(Color.MAGENTA, null, null)));
 
         heightProperty().addListener((observable, oldValue, newValue) ->
         {

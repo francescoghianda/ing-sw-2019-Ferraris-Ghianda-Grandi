@@ -371,9 +371,9 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         setPickOnBounds(false);
         pane.setPickOnBounds(false);
 
-        setBackground(new Background(new BackgroundFill(Color.AQUA, null, null)));
+        //setBackground(new Background(new BackgroundFill(Color.AQUA, null, null)));
 
-        hBox.setBackground(new Background(new BackgroundFill(Color.BLANCHEDALMOND, null, null)));
+        //hBox.setBackground(new Background(new BackgroundFill(Color.BLANCHEDALMOND, null, null)));
 
         hBox.heightProperty().addListener((observable, oldValue, newValue) ->
         {
