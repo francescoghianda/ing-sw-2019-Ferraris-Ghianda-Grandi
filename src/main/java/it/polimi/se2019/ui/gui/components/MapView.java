@@ -127,6 +127,17 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         else afterScale.add(task);
     }
 
+    private void repaint()
+    {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        paintDecks();
+
+        mapBlocks.forEach(this::repaintBlock);
+
+    }
+
     double getScale()
     {
         return scale;
@@ -149,6 +160,10 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
 
     private void paintDecks()
     {
+        GameData gameData = MatchScene.getInstance().getGameDataProperty().getValue();
+
+        if(gameData == null)return;
+
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         double pwuX = 1086*scale + getLeftImageWidth();
@@ -160,8 +175,6 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         double wpY = 523*scale;
         double wpWidth = 242*scale;
         double wpHeight = 402*scale;
-
-        GameData gameData = MatchScene.getInstance().getGameDataProperty().getValue();
 
         paintDeck(gc, powerUpDeckImage, pwuX, pwuY, pwuWidth, pwuHeight, gameData.getPowerUpDeckSize());
         paintDeck(gc, weaponDeckImage, wpX, wpY, wpWidth, wpHeight, gameData.getWeaponDeckSize());
@@ -338,6 +351,9 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
     {
         initialized = true;
 
+        setMinHeight(0);
+        hBox.setMinHeight(0);
+
         leftImage.setPreserveRatio(true);
         rightImage.setPreserveRatio(true);
 
@@ -355,6 +371,19 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         setPickOnBounds(false);
         pane.setPickOnBounds(false);
 
+        setBackground(new Background(new BackgroundFill(Color.AQUA, null, null)));
+
+        hBox.setBackground(new Background(new BackgroundFill(Color.BLANCHEDALMOND, null, null)));
+
+        hBox.heightProperty().addListener((observable, oldValue, newValue) ->
+        {
+            //System.out.println("Map hBox height = "+newValue.doubleValue());
+
+            leftImage.setFitHeight(newValue.doubleValue());
+            rightImage.setFitHeight(newValue.doubleValue());
+
+        });
+
         hBox.widthProperty().addListener((observable, oldValue, newValue) ->
                 canvas.setWidth(leftImage.getBoundsInParent().getWidth()+rightImage.getBoundsInParent().getWidth()));
 
@@ -370,6 +399,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
                     Logger.debug("SCALE COMPUTED");
                     afterScale.forEach(Runnable::run);
                     paintSkulls(4, 4);
+                    repaint();
                 });
 
         pane.maxWidthProperty().bind(canvas.widthProperty());

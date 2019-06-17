@@ -6,13 +6,13 @@
 <?import javafx.scene.canvas.Canvas?>
 <fx:root type="StackPane" xmlns:fx="http://javafx.com/fxml">
 
-    <HBox fx:id="hBox" spacing="NaN" alignment="CENTER_RIGHT">
+    <HBox fx:id="hBox" spacing="NaN" alignment="CENTER_LEFT">
         <ImageView fx:id="leftImage"/>
         <ImageView fx:id="rightImage"/>
     </HBox>
 
 
-    <Canvas fx:id="canvas" StackPane.alignment="CENTER_RIGHT"/>
-    <Pane fx:id="pane" StackPane.alignment="CENTER_RIGHT"/>
+    <Canvas fx:id="canvas" StackPane.alignment="CENTER_LEFT"/>
+    <Pane fx:id="pane" StackPane.alignment="CENTER_LEFT"/>
 
 </fx:root>

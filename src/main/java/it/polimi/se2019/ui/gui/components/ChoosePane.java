@@ -115,12 +115,14 @@ public class ChoosePane extends AnchorPane implements Initializable
     public void initialize(URL location, ResourceBundle resources)
     {
         setPrefHeight(GUI.getScreenHeight()/5);
-        setMaxWidth(GUI.getScreenWidth()/4);
-        setMinWidth(GUI.getScreenWidth()/4);
+        //setMaxWidth(GUI.getScreenWidth()/4);
+        //setMinWidth(GUI.getScreenWidth()/4);
 
         //setPrefHeight(GUI.getMinStageHeight()/5);
         //setMaxWidth(GUI.getMinStageWidth()/4);
         //setMinWidth(GUI.getMinStageWidth()/4);
+
+
 
         label.setStyle("-fx-text-fill: white");
 

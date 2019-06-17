@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class ActionPane extends TilePane implements Initializable
+public class ActionPane extends VBox implements Initializable
 {
     public static final int MOVE_ACTION = 0;
     public static final int FIRE_ACTION = 1;
@@ -24,6 +24,9 @@ public class ActionPane extends TilePane implements Initializable
     public static final int RELOAD_ACTION = 3;
     public static final int END_ROUND = 4;
     public static final int END_ACTION = 5;
+
+    @FXML
+    private TilePane tilePane;
 
     @FXML
     private ColoredButton moveButton;
@@ -134,9 +137,19 @@ public class ActionPane extends TilePane implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        setPrefHeight(GUI.getScreenHeight()/5);
-        setMaxHeight(GUI.getScreenHeight()/5);
+        //setPrefHeight(GUI.getScreenHeight()/5);
+        //setMaxHeight(GUI.getScreenHeight()/5);
         setMaxWidth(GUI.getScreenWidth()/8);
+        setMinWidth(GUI.getScreenWidth()/8);
+
+        setMaxWidth(Double.MAX_VALUE);
+
+        tilePane.setPrefColumns(2);
+        tilePane.setPrefRows(3);
+
+        setBackground(new Background(new BackgroundFill(Color.MAGENTA, null, null)));
+
+        //prefTileWidthProperty().bind(widthProperty().divide(2).subtract(getHgap()*2));
 
         //setPrefHeight(GUI.getMinStageHeight()/5);
         //setMaxHeight(GUI.getMinStageHeight()/5);

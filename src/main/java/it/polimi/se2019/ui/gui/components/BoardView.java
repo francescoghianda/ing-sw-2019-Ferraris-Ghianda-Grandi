@@ -14,6 +14,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -26,9 +28,6 @@ import java.util.function.BinaryOperator;
 
 public class BoardView extends StackPane implements Initializable
 {
-    @FXML
-    private StackPane pane;
-
     @FXML
     private ImageView backgroundImage;
 
@@ -92,6 +91,11 @@ public class BoardView extends StackPane implements Initializable
         canvas.setHeight(backgroundImage.getFitHeight());
         canvas.setWidth(getPrefWidth());
 
+        computeScale();
+    }
+
+    private void computeScale()
+    {
         scale = canvas.getHeight()/background.getHeight();
     }
 
@@ -257,5 +261,32 @@ public class BoardView extends StackPane implements Initializable
     public void initialize(URL location, ResourceBundle resources)
     {
         setColor(GameColor.WHITE);
+
+        minHeight(0);
+        maxHeight(Double.MAX_VALUE);
+
+        minWidth(0);
+        maxWidth(Double.MAX_VALUE);
+
+        setBackground(new Background(new BackgroundFill(Color.MAGENTA, null, null)));
+
+        heightProperty().addListener((observable, oldValue, newValue) ->
+        {
+            backgroundImage.setFitHeight(newValue.doubleValue());
+            canvas.setHeight(newValue.doubleValue());
+            canvas.setWidth(backgroundImage.getBoundsInParent().getWidth());
+            setWidth(backgroundImage.getBoundsInParent().getWidth());
+            computeScale();
+            if(player != null)update(player);
+        });
+
+        widthProperty().addListener((observable, oldValue, newValue) ->
+        {
+            setWidth(backgroundImage.getBoundsInParent().getWidth());
+            canvas.setWidth(backgroundImage.getBoundsInParent().getWidth());
+            computeScale();
+            if(player != null)update(player);
+        });
+
     }
 }

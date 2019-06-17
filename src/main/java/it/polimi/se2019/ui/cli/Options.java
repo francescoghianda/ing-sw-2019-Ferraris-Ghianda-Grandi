@@ -15,7 +15,7 @@ public class Options<T>
     private String question;
     private OnOptionSelectedListener listener;
     private ArrayList<Option<T>> options;
-    private Scanner scanner;
+    private CancelableReader reader;
     private boolean firstDefault;
 
     public Options(String question, boolean firstDefault)
@@ -23,7 +23,7 @@ public class Options<T>
         this.options = new ArrayList<>();
         this.question = question;
         this.firstDefault = firstDefault;
-        scanner = new Scanner(System.in);
+        reader= new CancelableReader(System.in);
     }
 
     public Options setOptionListener(OnOptionSelectedListener listener)
@@ -54,7 +54,7 @@ public class Options<T>
      *
      * @return
      */
-    public Option<T> show()
+    public Option<T> show() throws CanceledInputException
     {
         if(options.isEmpty())return null;
         StringBuilder output = new StringBuilder();
@@ -67,7 +67,7 @@ public class Options<T>
         do
         {
             GameConsole.out.print(output.toString());
-            response = scanner.nextLine().trim();
+            response = reader.nextLine().trim();
             if(firstDefault && response.isEmpty())
             {
                 selected = options.get(0);

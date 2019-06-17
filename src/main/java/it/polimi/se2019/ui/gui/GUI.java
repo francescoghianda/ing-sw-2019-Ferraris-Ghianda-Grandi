@@ -43,6 +43,8 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     private SceneManager sceneManager;
     private MediaPlayer roundStartSound;
 
+    private double ratio = 1;
+
     public GUI()
     {
 
@@ -94,6 +96,18 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
 
         sceneManager = SceneManager.createSceneManager(window, this);
 
+        //window.setMinHeight(getScreenHeight()/1.2);
+
+        /*window.widthProperty().addListener((observable, oldValue, newValue) ->
+        {
+            window.setHeight(newValue.doubleValue()/1.55555555);
+        });
+
+        window.heightProperty().addListener((observable, oldValue, newValue) ->
+        {
+            window.setWidth(newValue.doubleValue()*1.55555555);
+        });*/
+
         window.heightProperty().addListener((observable, oldValue, newValue) -> onSizeChange(window.getWidth(), newValue.doubleValue()));
         window.widthProperty().addListener((observable, oldValue, newValue) -> onSizeChange(newValue.doubleValue(), window.getHeight()));
 
@@ -102,11 +116,12 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
         window.setTitle(TITLE);
         window.setResizable(false);
         window.setOnCloseRequest(this);
+
         window.show();
         window.centerOnScreen();
 
 
-        //gameStarted();
+        gameStarted();
 
     }
 
@@ -167,10 +182,11 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     public void gameStarted()
     {
         sceneManager.setScene(SceneManager.MATCH_SCENE);
+
         //SceneManager.runOnFxThread(window::centerOnScreen);
         SceneManager.runOnFxThread(() ->
         {
-            //window.setResizable(true);
+            window.setResizable(true);
             //window.setMinHeight(GUI.getScreenHeight()/1.06);
             //window.setMinWidth(GUI.getScreenWidth()/1.2);
             window.centerOnScreen();

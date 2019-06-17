@@ -4,7 +4,7 @@
 
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.canvas.Canvas?>
-<fx:root type="StackPane" fx:id="pane" maxWidth="1120" prefWidth="1120" maxHeight="274" prefHeight="274" xmlns:fx="http://javafx.com/fxml" >
+<fx:root type="StackPane" xmlns:fx="http://javafx.com/fxml" >
     <ImageView fx:id="backgroundImage"/>
     <Canvas fx:id="canvas"/>
 </fx:root>

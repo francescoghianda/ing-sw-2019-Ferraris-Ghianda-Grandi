@@ -100,8 +100,8 @@ public class CardPane extends StackPane implements Initializable
         if(cardNumber > 3)throw new CardPaneOutOfBoundsException();
 
         CardView cardView = new CardView(card, CardView.SCALE_TRANSITION);
-        if(type.equals("weapon"))cardView.setMaxWidth(getMaxWidth()/4.5);
-        else cardView.setMaxWidth(getMaxWidth()/4.7);
+        if(type.equals("weapon"))cardView.setMaxWidth(getWidth()/4.5);
+        else cardView.setMaxWidth(getWidth()/4.7);
 
         cardView.setOnCardViewClickListener(listener);
 
@@ -165,7 +165,7 @@ public class CardPane extends StackPane implements Initializable
         emptySlot2.setImage(image);
         emptySlot3.setImage(image);
 
-        double maxWidth = getMaxWidth()/3.8;
+        double maxWidth = getWidth()/3.8;
         emptySlot1.setFitWidth(maxWidth);
         emptySlot2.setFitWidth(maxWidth);
         emptySlot3.setFitWidth(maxWidth);
@@ -186,15 +186,22 @@ public class CardPane extends StackPane implements Initializable
         cardSlot3.setPadding(insets);
     }
 
+    private void resize(CardView cardView)
+    {
+        if(type.equals("weapon"))cardView.setMaxWidth(getWidth()/4.5);
+        else cardView.setMaxWidth(getWidth()/4.7);
+    }
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
         setMaxWidth(GUI.getScreenWidth()/4);
-        setMinWidth(GUI.getScreenWidth()/4);
+        //setMinWidth(GUI.getScreenWidth()/4);
 
         //setMaxWidth(GUI.getMinStageWidth()/4);
         //setMinWidth(GUI.getMinStageWidth()/4);
+
 
         setMinHeight(0);
 
@@ -204,6 +211,16 @@ public class CardPane extends StackPane implements Initializable
         else emptySlotImage = new Image(getClass().getResourceAsStream("/img/powerup_slot.png"));
 
         initSlots(emptySlotImage);
+
+        widthProperty().addListener((observable, oldValue, newValue) ->
+        {
+            initSlots(emptySlotImage);
+
+            if(cardSlot1.getChildren().size() > 0)resize((CardView) cardSlot1.getChildren().get(0));
+            if(cardSlot2.getChildren().size() > 0)resize((CardView) cardSlot2.getChildren().get(0));
+            if(cardSlot3.getChildren().size() > 0)resize((CardView) cardSlot3.getChildren().get(0));
+
+        });
 
         titleLabel.setText(title);
         titleLabel.minHeightProperty().bind(heightProperty().multiply(0.2));

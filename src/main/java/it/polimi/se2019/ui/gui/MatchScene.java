@@ -14,17 +14,24 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -56,7 +63,22 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     private ChoosePane choosePane;
 
     @FXML
+    private HBox bottomHBox;
+
+    @FXML
     private PlayersInfoTable playersInfoTable;
+
+    @FXML
+    private ColumnConstraints col0;
+
+    @FXML
+    private ColumnConstraints col1;
+
+    @FXML
+    private RowConstraints row0;
+
+    @FXML
+    private RowConstraints row1;
 
 
     private final ObjectPropertyBase<GameData> gameDataProperty;
@@ -131,14 +153,18 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        setStyle("-fx-background-image: url('/img/texture3.png')");
+        //setStyle("-fx-background-image: url('/img/texture3.png')");
 
-        cardGridPane.setMaxHeight(GUI.getScreenHeight()/1.4);
+        setGridLinesVisible(true);
+
+        //cardGridPane.setMaxHeight(GUI.getScreenHeight()/1.4);
         mapView.setOnBlockClickListener(this);
         actionPane.setOnActionClickListener(this);
         actionPane.disableAll();
         choosePane.setOnOptionChosenListener(this);
 
+
+        bottomHBox.setBackground(new Background(new BackgroundFill(new Color(1, 0, 0, 0.5), null, null)));
 
         gameDataProperty.addListener((observable, oldData, gameData) ->
         {
@@ -192,7 +218,7 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
 
     public void setSize(double width, double height)
     {
-        System.out.println(width+" - "+height);
+        //System.out.println(width+" - "+height);
 
         //resizableComponents.forEach(resizable -> resizable.resize(width, height));
     }

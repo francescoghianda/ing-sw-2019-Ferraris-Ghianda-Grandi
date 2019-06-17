@@ -15,7 +15,7 @@ public class FormattedInput
 
     private String question;
     private String regex;
-    private Scanner scanner;
+    private CancelableReader reader;
     private Predicate<String> predicate;
 
     private String defaultResponse;
@@ -34,7 +34,7 @@ public class FormattedInput
         this.regex = regex;
         this.useRegex = true;
         this.usePredicate = false;
-        this.scanner = new Scanner(System.in);
+        this.reader = new CancelableReader(System.in);
     }
 
     /**
@@ -48,7 +48,7 @@ public class FormattedInput
         this.predicate = predicate;
         this.useRegex = false;
         this.usePredicate = true;
-        this.scanner = new Scanner(System.in);
+        this.reader = new CancelableReader(System.in);
     }
 
     /**
@@ -64,7 +64,7 @@ public class FormattedInput
         this.regex = regex;
         this.useRegex = true;
         this.usePredicate = true;
-        this.scanner = new Scanner(System.in);
+        this.reader = new CancelableReader(System.in);
     }
 
     public FormattedInput setDefaultResponse(String defaultResponse)
@@ -73,13 +73,13 @@ public class FormattedInput
         return this;
     }
 
-    public String show()
+    public String show() throws CanceledInputException
     {
         String response;
         while(true)
         {
             GameConsole.out.print(question);
-            response = scanner.nextLine();
+            response = reader.nextLine();
             if(defaultResponse != null && response.isEmpty())response = defaultResponse;
             boolean matchRegex = useRegex && response.matches(regex);
             boolean matchPredicate = useRegex ? usePredicate && matchRegex && predicate.test(response) : usePredicate && predicate.test(response);
