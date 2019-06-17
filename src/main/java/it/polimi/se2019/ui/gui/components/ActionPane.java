@@ -149,6 +149,11 @@ public class ActionPane extends VBox implements Initializable
 
         setBackground(new Background(new BackgroundFill(Color.MAGENTA, null, null)));
 
+        heightProperty().addListener((observable, oldValue, newValue) ->
+        {
+            tilePane.setPrefTileHeight(newValue.doubleValue()/4);
+        });
+
         //prefTileWidthProperty().bind(widthProperty().divide(2).subtract(getHgap()*2));
 
         //setPrefHeight(GUI.getMinStageHeight()/5);
