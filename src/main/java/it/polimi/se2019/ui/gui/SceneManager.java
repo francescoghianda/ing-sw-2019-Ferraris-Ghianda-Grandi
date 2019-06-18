@@ -4,11 +4,15 @@ import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.ui.gui.value.ValueObserver;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class SceneManager
 {
+
+    private SimpleObjectProperty<Scene> onSceneSelectedProperty;
 
     public static final int LOGIN_SCENE = 1;
     public static final int START_MENU_SCENE = 2;
@@ -30,6 +34,7 @@ public class SceneManager
     {
         this.stage = stage;
         this.client = new NetworkInterface(ui);
+        this.onSceneSelectedProperty = new SimpleObjectProperty<>();
     }
 
     static SceneManager createSceneManager(Stage stage, UI ui)
@@ -52,6 +57,11 @@ public class SceneManager
         matchScene = new Scene(MatchScene.getInstance());
     }
 
+    public ReadOnlyObjectProperty<Scene> onSceneSelectedProperty()
+    {
+        return onSceneSelectedProperty;
+    }
+
     public MatchScene getMatchScene()
     {
         return (MatchScene)matchScene.getRoot();
@@ -71,6 +81,13 @@ public class SceneManager
     {
         if(!Platform.isFxApplicationThread())Platform.runLater(() -> select(scene));
         else select(scene);
+
+        onSceneSelectedProperty.set(scene);
+    }
+
+    public Scene getCurrentScene()
+    {
+        return onSceneSelectedProperty.getValue();
     }
 
     public static Scene getScene(int scene)

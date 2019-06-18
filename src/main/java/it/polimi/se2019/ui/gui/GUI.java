@@ -19,6 +19,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tooltip;
 import javafx.scene.media.Media;
@@ -100,7 +101,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
 
         ChangeListener<Number> sizeChangedListener = (observable, oldValue, newValue) ->
         {
-            window.setMinWidth(window.getHeight()*1.48);
+            if(sceneManager.getCurrentScene().equals(SceneManager.matchScene))window.setMinWidth(window.getHeight()*1.48);
         };
 
         window.widthProperty().addListener(sizeChangedListener);
@@ -122,6 +123,11 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
 
         gameStarted();
 
+    }
+
+    public static Stage getWindow()
+    {
+        return window;
     }
 
     @Override
@@ -181,15 +187,15 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     public void gameStarted()
     {
         sceneManager.setScene(SceneManager.MATCH_SCENE);
-
         //SceneManager.runOnFxThread(window::centerOnScreen);
-        SceneManager.runOnFxThread(() ->
+        /*SceneManager.runOnFxThread(() ->
         {
             window.setResizable(true);
             window.setMinHeight(GUI.getScreenHeight()/1.5);
             window.setHeight(GUI.getScreenHeight()/1.1);
+            window.setWidth(window.getMinWidth());
             window.centerOnScreen();
-        });
+        });*/
     }
 
     @Override

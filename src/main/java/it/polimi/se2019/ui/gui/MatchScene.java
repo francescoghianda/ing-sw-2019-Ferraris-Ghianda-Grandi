@@ -22,11 +22,13 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 
 
 import java.io.IOException;
@@ -157,14 +159,58 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
 
         //setGridLinesVisible(true);
 
-        //cardGridPane.setMaxHeight(GUI.getScreenHeight()/1.4);
         mapView.setOnBlockClickListener(this);
         actionPane.setOnActionClickListener(this);
         actionPane.disableAll();
         choosePane.setOnOptionChosenListener(this);
 
-
         //bottomHBox.setBackground(new Background(new BackgroundFill(new Color(1, 0, 0, 0.5), null, null)));
+
+
+        ChangeListener<Number> bottomBoxSizeChangeListener = (observable, oldValue, newValue) ->
+        {
+            if(!GUI.getWindow().isMaximized())actionPane.setMinWidth(getWidth()*(col0.getPercentWidth()/100) - board.getWidth());
+        };
+
+        bottomHBox.widthProperty().addListener(bottomBoxSizeChangeListener);
+        bottomHBox.heightProperty().addListener(bottomBoxSizeChangeListener);
+
+        widthProperty().addListener(bottomBoxSizeChangeListener);
+
+        SceneManager.getInstance().onSceneSelectedProperty().addListener((observable, oldValue, newValue) ->
+        {
+            if(newValue.equals(SceneManager.matchScene))
+            {
+                Stage window = GUI.getWindow();
+                window.setResizable(true);
+                window.setMinHeight(GUI.getScreenHeight()/1.5);
+                window.setHeight(GUI.getScreenHeight()/1.1);
+                window.setWidth(window.getMinWidth());
+                window.centerOnScreen();
+                actionPane.setMinWidth(getWidth()*(col0.getPercentWidth()/100) - board.getWidth());
+            }
+        });
+
+        GUI.getWindow().maximizedProperty().addListener((observable, oldValue, newValue) ->
+        {
+            Thread thread = new Thread(() ->
+            {
+                try
+                {
+                    Thread.sleep(200);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+
+                Platform.runLater(() ->
+                        actionPane.setMinWidth(getWidth()*(col0.getPercentWidth()/100) - board.getWidth()));
+
+            });
+            thread.start();
+        });
+
 
         gameDataProperty.addListener((observable, oldData, gameData) ->
         {

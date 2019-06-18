@@ -140,7 +140,9 @@ public class ActionPane extends VBox implements Initializable
         //setPrefHeight(GUI.getScreenHeight()/5);
         //setMaxHeight(GUI.getScreenHeight()/5);
         setMaxWidth(Double.MAX_VALUE);
-        setMinWidth(230);
+        //setMinWidth(GUI.getScreenWidth()/11.4);
+
+        System.out.println(GUI.getScreenWidth()/11.4);
 
         tilePane.setPrefColumns(2);
         tilePane.setPrefRows(3);
@@ -152,6 +154,7 @@ public class ActionPane extends VBox implements Initializable
 
         widthProperty().addListener((observable, oldValue, newValue) ->
                 tilePane.setPrefTileWidth(newValue.doubleValue()/3));
+
 
         //prefTileWidthProperty().bind(widthProperty().divide(2).subtract(getHgap()*2));
 
