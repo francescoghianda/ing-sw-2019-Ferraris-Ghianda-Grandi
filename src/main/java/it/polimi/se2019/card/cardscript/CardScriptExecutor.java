@@ -30,6 +30,7 @@ public class CardScriptExecutor
     private Block contextBlock;
     private HashMap<String, Player> players;
     private HashMap<String, Block> blocks;
+    private HashMap<String, Boolean> answers;
 
     private WeaponCard weapon;
     private PowerUpCard powerUp;
@@ -54,6 +55,7 @@ public class CardScriptExecutor
             commands.put("mark", getClass().getDeclaredMethod("mark", String.class));
             commands.put("move", getClass().getDeclaredMethod("move", String.class));
             commands.put("enable", getClass().getDeclaredMethod("enable", String.class));
+            commands.put("askif", getClass().getDeclaredMethod("askif", String.class));
             commands.put("pay", getClass().getDeclaredMethod("pay", String.class));
         }
         catch (NoSuchMethodException e)
@@ -116,13 +118,17 @@ public class CardScriptExecutor
 
     public void execute() throws CanceledActionException
     {
-        for (String line : currScript)
+        boolean jumpToEndIf = false;
+        for (int i = 0; i < currScript.length; i++)
         {
+            String line = currScript[i];
             if(!(line.isEmpty() || line.startsWith("#")))
             {
                 try
                 {
-                    executeLine(line);
+                    if(line.startsWith("if") && !IF(line))jumpToEndIf = true;
+                    if(line.equals("endif"))jumpToEndIf = false;
+                    if(!jumpToEndIf)executeLine(line, i);
                 }
                 catch (InvocationTargetException e)
                 {
@@ -130,17 +136,37 @@ public class CardScriptExecutor
                     {
                         throw new CanceledActionException(((CanceledActionException)e.getCause()).getCanceledCause());
                     }
+                    else if(e.getCause() instanceof CardScriptErrorException)
+                    {
+                        Logger.exception(new CardScriptErrorException("["+i+"] "+ e.getMessage()));
+                        continue;
+                    }
                     Logger.exception(e);
+                    System.exit(0);
                 }
-                catch (IllegalAccessException e1)
+                catch (CardScriptErrorException e1)
                 {
-                    Logger.exception(e1);
+                    Logger.exception(new CardScriptErrorException("["+i+"] "+ e1.getMessage()));
+                }
+                catch (IllegalAccessException e2)
+                {
+                    Logger.exception(e2);
+                    System.exit(0);
                 }
             }
         }
     }
 
-    private void executeLine(String line) throws InvocationTargetException, IllegalAccessException
+    private boolean IF(String line)
+    {
+        String[] split = line.split(" ");
+        if(split.length != 2 || split[1].trim().isEmpty())throw new CardScriptErrorException("Syntax error!");
+        if(answers.containsKey(split[1].trim()))throw new CardScriptErrorException("Variable "+split[1]+" doesn't exist!");
+
+        return answers.get(split[1].trim());
+    }
+
+    private void executeLine(String line, int lineNumber) throws InvocationTargetException, IllegalAccessException
     {
         StringBuilder commandBuilder = new StringBuilder();
         boolean executed = false;
@@ -150,7 +176,7 @@ public class CardScriptExecutor
             commandBuilder.append(chars[i]);
             if(commands.containsKey(commandBuilder.toString()))
             {
-                commands.get(commandBuilder.toString()).invoke(this, line.substring(i+1).trim());
+                commands.get(commandBuilder.toString()).invoke(this, line.substring(i+1).trim(), lineNumber);
                 executed = true;
                 break;
             }
@@ -164,6 +190,7 @@ public class CardScriptExecutor
         {
             OptionalEffect effect = weapon.getOptionalEffect(param);
             if(effect != null)effect.setEnabled(true);
+            else Logger.warning("Effect "+param+" doesn't exist!");
         }
     }
 
@@ -229,6 +256,19 @@ public class CardScriptExecutor
                 contextPlayer.addDamagedPlayer(player);
             });
         else throw new CardScriptErrorException();
+    }
+
+    private void askif(String param)
+    {
+        String[] params = param.split("->");
+        if(params.length != 2)throw new CardScriptErrorException();
+        String question = params[0];
+        String varName = params[1].trim();
+        if(question.isEmpty() || varName.isEmpty() || !question.startsWith("(") || !question.endsWith(")"))throw new CardScriptErrorException("Syntax error");
+        if(answers.containsKey(varName))throw new CardScriptErrorException(params[1]+" already exist!");
+
+        String answer = contextPlayer.getView().choose(question, "Si", "No");
+        answers.put(varName, answer.equals("Si"));
     }
 
     private void pay(String param)
