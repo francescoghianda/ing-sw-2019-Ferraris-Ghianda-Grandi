@@ -16,10 +16,7 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tooltip;
 import javafx.scene.media.Media;
@@ -30,10 +27,8 @@ import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import java.lang.reflect.Field;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class GUI extends Application implements UI, EventHandler<WindowEvent>
@@ -43,8 +38,6 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     private static Stage window;
     private SceneManager sceneManager;
     private MediaPlayer roundStartSound;
-
-    private double ratio = 1;
 
     public GUI()
     {
@@ -101,7 +94,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
 
         ChangeListener<Number> sizeChangedListener = (observable, oldValue, newValue) ->
         {
-            if(sceneManager.getCurrentScene().equals(SceneManager.matchScene))window.setMinWidth(window.getHeight()*1.48);
+            if(sceneManager.getCurrentScene().equals(SceneManager.getScene(SceneManager.MATCH_SCENE)))window.setMinWidth(window.getHeight()*1.48);
         };
 
         window.widthProperty().addListener(sizeChangedListener);
@@ -121,7 +114,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
         window.centerOnScreen();
 
 
-        gameStarted();
+        //gameStarted();
 
     }
 
@@ -179,29 +172,20 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     {
         SceneManager.runOnFxThread(()->
         {
-            if(!SceneManager.waitScene.isTimerVisible())SceneManager.waitScene.showTimer(true);
+            if(!((WaitScene)SceneManager.getSceneRoot(SceneManager.WAIT_SCENE)).isTimerVisible())((WaitScene)SceneManager.getSceneRoot(SceneManager.WAIT_SCENE)).showTimer(true);
         });
     }
 
     @Override
     public void gameStarted()
     {
-        sceneManager.setScene(SceneManager.MATCH_SCENE);
-        //SceneManager.runOnFxThread(window::centerOnScreen);
-        /*SceneManager.runOnFxThread(() ->
-        {
-            window.setResizable(true);
-            window.setMinHeight(GUI.getScreenHeight()/1.5);
-            window.setHeight(GUI.getScreenHeight()/1.1);
-            window.setWidth(window.getMinWidth());
-            window.centerOnScreen();
-        });*/
+        SceneManager.runOnFxThread(() -> sceneManager.setScene(SceneManager.MATCH_SCENE));
     }
 
     @Override
     public void showTimerCountdown(int remainSeconds)
     {
-        SceneManager.runOnFxThread(()-> SceneManager.waitScene.updateTimer(remainSeconds));
+        SceneManager.runOnFxThread(()-> ((WaitScene)SceneManager.getSceneRoot(SceneManager.WAIT_SCENE)).updateTimer(remainSeconds));
     }
 
     @Override
@@ -219,7 +203,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     @Override
     public void connectionRefused()
     {
-        SceneManager.startMenuScene.connectionRefused();
+        ((StartMenuScene)SceneManager.getSceneRoot(SceneManager.START_MENU_SCENE)).connectionRefused();
     }
 
     @Override
@@ -300,8 +284,9 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
 
     public Coordinates chooseBlockFrom(ArrayList<Coordinates> coordinates)throws CanceledActionException
     {
-        //TODO
-        return null;
+        MatchScene matchScene = MatchScene.getInstance();
+        SceneManager.runOnFxThread(() -> matchScene.chooseBlock(coordinates));
+        return new ValueObserver<Coordinates>().get(matchScene.selectedBlock);
     }
 
     @Override

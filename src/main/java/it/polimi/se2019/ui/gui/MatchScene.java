@@ -34,6 +34,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -89,7 +90,6 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     private boolean chooseWeaponFromPlayer;
     private boolean chooseWeaponFromBlock;
     private boolean choosePowerUp;
-    private int maxDistance;
     private boolean firstUpdate;
     final Value<String> selectedSpawnPoint;
     final Value<Action> selectedAction;
@@ -179,7 +179,7 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
 
         SceneManager.getInstance().onSceneSelectedProperty().addListener((observable, oldValue, newValue) ->
         {
-            if(newValue.equals(SceneManager.matchScene))
+            if(newValue.equals(SceneManager.getScene(SceneManager.MATCH_SCENE)))
             {
                 Stage window = GUI.getWindow();
                 window.setResizable(true);
@@ -191,24 +191,14 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
             }
         });
 
+        GUI.getWindow().fullScreenProperty().addListener((observable, oldValue, newValue) ->
+        {
+            adjustSize();
+        });
+
         GUI.getWindow().maximizedProperty().addListener((observable, oldValue, newValue) ->
         {
-            Thread thread = new Thread(() ->
-            {
-                try
-                {
-                    Thread.sleep(200);
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-
-                Platform.runLater(() ->
-                        actionPane.setMinWidth(getWidth()*(col0.getPercentWidth()/100) - board.getWidth()));
-
-            });
-            thread.start();
+            adjustSize();
         });
 
 
@@ -232,6 +222,26 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
             playersInfoTable.update();
         });
 
+    }
+
+    private void adjustSize()
+    {
+        Thread thread = new Thread(() ->
+        {
+            try
+            {
+                Thread.sleep(250);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+
+            Platform.runLater(() ->
+                    actionPane.setMinWidth(getWidth()*(col0.getPercentWidth()/100) - board.getWidth()));
+
+        });
+        thread.start();
     }
 
     public void setOptions(String question, String... options)
@@ -305,7 +315,16 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     {
         chooseBlock = true;
         choosePane.setText("Seleziona un blocco (Distanza massima: "+maxDistance+")");
-        this.maxDistance = maxDistance;
+        mapView.enableBlocks(maxDistance);
+        mapView.setColored(true);
+    }
+
+    public void chooseBlock(ArrayList<Coordinates> coordinates)
+    {
+        chooseBlock = true;
+        choosePane.setText("Seleziona un blocco");
+        mapView.enableBlocks(coordinates);
+        mapView.setColored(true);
     }
 
     public void choosePowerUp()
@@ -330,16 +349,12 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     public void onBlockClick(int blockX, int blockY)
     {
         BlockData clicked = gameDataProperty.getValue().getMap().getBlock(blockX, blockY);
-        int playerX = gameDataProperty.getValue().getPlayer().getX();
-        int playerY = gameDataProperty.getValue().getPlayer().getY();
-        BlockData playerBlock = gameDataProperty.getValue().getMap().getBlock(playerX, playerY);
-        if(playerBlock == null)return;
-        int distance = gameDataProperty.getValue().getMap().getDistance(playerBlock, clicked);
 
-        if(chooseBlock && distance <= maxDistance)
+        if(chooseBlock)
         {
             chooseBlock = false;
             choosePane.clear();
+            mapView.setColored(false);
             selectedBlock.set(new Coordinates(clicked.getX(), clicked.getY()));
         }
     }

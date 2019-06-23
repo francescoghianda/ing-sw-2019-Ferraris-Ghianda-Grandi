@@ -2,7 +2,9 @@ package it.polimi.se2019.ui.gui.components;
 
 import it.polimi.se2019.card.Card;
 import it.polimi.se2019.controller.GameData;
+import it.polimi.se2019.controller.Match;
 import it.polimi.se2019.map.BlockData;
+import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.map.MapData;
 import it.polimi.se2019.ui.gui.GUI;
 import it.polimi.se2019.ui.gui.MatchScene;
@@ -89,6 +91,32 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         afterScale = new ArrayList<>();
         loadAmmoCardImages();
         loadFxml();
+    }
+
+    public void enableBlocks(ArrayList<Coordinates> coordinates)
+    {
+        mapBlocks.forEach(block -> block.setEnabled(coordinates.contains(block.getCoordinates())));
+    }
+
+    public void enableBlocks(int maxDistanceFromPlayer)
+    {
+        MatchScene matchScene = MatchScene.getInstance();
+        int playerX = matchScene.getGameDataProperty().getValue().getPlayer().getX();
+        int playerY = matchScene.getGameDataProperty().getValue().getPlayer().getY();
+        BlockData playerBlock = matchScene.getGameDataProperty().getValue().getMap().getBlock(playerX, playerY);
+        if(playerBlock == null)return;
+
+        mapBlocks.forEach(block ->
+        {
+            BlockData blockData = matchScene.getGameDataProperty().getValue().getMap().getBlock(block.getMapX(), block.getMapY());
+            int distance = matchScene.getGameDataProperty().getValue().getMap().getDistance(playerBlock, blockData);
+            block.setEnabled(distance <= maxDistanceFromPlayer);
+        });
+    }
+
+    public void setColored(boolean colored)
+    {
+        mapBlocks.forEach(block -> block.setColored(colored));
     }
 
     private void setMapNumber(MapNumber mapNumber)
@@ -440,7 +468,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         {
             for(MapBlock mapBlock : mapBlocks)
             {
-                if(mapBlock.isActive())
+                if(mapBlock.isActive() && mapBlock.isEnabled())
                 {
                     clickListener.onBlockClick(mapBlock.getMapX(), mapBlock.getMapY());
                     break;

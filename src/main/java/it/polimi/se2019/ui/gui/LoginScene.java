@@ -1,83 +1,92 @@
 package it.polimi.se2019.ui.gui;
 
 import it.polimi.se2019.ui.gui.value.Value;
-import javafx.event.EventHandler;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 
-public class LoginScene extends Scene implements EventHandler<MouseEvent>
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class LoginScene extends BorderPane implements Initializable
 {
-    public static final Value<String> username = new Value<>();
 
-    private Label messageLabel;
-    private Label usernameLabel;
+    @FXML
+    private Pane formBg;
+
+    @FXML
     private TextField usernameTextFiled;
-    private Button loginButton;
-    private BorderPane formBg;
+
+    @FXML
     private GridPane gridPane;
 
+    private Label messageLabel;
 
-    public LoginScene()
+    public static final Value<String> username = new Value<>();
+
+    LoginScene()
     {
-        super(new BorderPane(), 600, 403);
-        getStylesheets().add("css/StartMenuStyle.css");
-
-        BorderPane layout = (BorderPane)getRoot();
-        formBg = new BorderPane();
-        formBg.setStyle("-fx-background-color: rgba(255,255,255,0.6);"+"-fx-background-radius: 20 20 20 20");
-        formBg.setMaxWidth(400);
-        formBg.setMaxHeight(50);
-
-        gridPane = new GridPane();
-        gridPane.setAlignment(Pos.CENTER);
-        gridPane.setHgap(20);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LoginScene.fxml"));
+        loader.setRoot(this);
+        loader.setController(this);
 
         messageLabel = new Label("Username non valido!");
         messageLabel.setStyle("-fx-text-fill: red");
-        usernameLabel = new Label("Username:");
-        usernameTextFiled = new TextField();
-        loginButton = new Button("Login");
 
-        gridPane.addRow(0, usernameLabel, usernameTextFiled);
-        formBg.setCenter(gridPane);
-
-        layout.setCenter(formBg);
-
-        HBox bottomBox = new HBox(loginButton);
-        bottomBox.setMinHeight(100);
-        bottomBox.setAlignment(Pos.CENTER);
-
-        layout.setBottom(bottomBox);
-
-        loginButton.setOnMouseClicked(this);
-
-    }
-
-    public LoginScene reset()
-    {
-        usernameTextFiled.setText("");
-        return this;
-    }
-
-    public void invalidUsername()
-    {
-        formBg.setMaxHeight(70);
-        if(!gridPane.getChildren().contains(messageLabel))gridPane.add(messageLabel, 1, 1);
+        load(loader);
     }
 
     @Override
-    public void handle(MouseEvent event)
+    public void initialize(URL location, ResourceBundle resources)
+    {
+        getStylesheets().add("css/StartMenuStyle.css");
+        formBg.setStyle("-fx-background-color: rgba(255,255,255,0.6);"+"-fx-background-radius: 20 20 20 20");
+    }
+
+    public void reset()
+    {
+        usernameTextFiled.setText("");
+    }
+
+    void invalidUsername()
+    {
+        formBg.setMaxHeight(70);
+
+        if(!gridPane.getChildren().contains(messageLabel))
+        {
+            gridPane.add(messageLabel, 1, 1);
+        }
+    }
+
+    @FXML
+    public void confirm(ActionEvent event)
     {
         if(usernameTextFiled.getText().isEmpty())
         {
             invalidUsername();
             return;
         }
+
         username.set(usernameTextFiled.getText());
     }
+
+    private void load(FXMLLoader loader)
+    {
+        try
+        {
+            loader.load();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
 }

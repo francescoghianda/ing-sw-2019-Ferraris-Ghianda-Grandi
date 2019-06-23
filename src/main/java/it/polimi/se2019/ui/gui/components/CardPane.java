@@ -49,15 +49,6 @@ public class CardPane extends StackPane implements Initializable
     private ImageView emptySlot3;
 
     @FXML
-    private StackPane slot1;
-
-    @FXML
-    private StackPane slot2;
-
-    @FXML
-    private StackPane slot3;
-
-    @FXML
     private VBox cardSlot1;
 
     @FXML

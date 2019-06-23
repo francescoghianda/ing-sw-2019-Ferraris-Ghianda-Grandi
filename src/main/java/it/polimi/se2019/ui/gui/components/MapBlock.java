@@ -34,6 +34,9 @@ public class MapBlock extends Rectangle2D implements CardView.OnCardViewClickLis
 
     private Random random;
 
+    private boolean enabled;
+    private boolean colored;
+
 
     public MapBlock(MapView mapView, double x, double y, double width, double height, double startXScaled, double startYScaled, Rectangle2D ammoRect)
     {
@@ -56,6 +59,23 @@ public class MapBlock extends Rectangle2D implements CardView.OnCardViewClickLis
 
         computePlayerPosition();
     }
+
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    public void setColored(boolean colored)
+    {
+        this.colored = colored;
+        mapView.repaintBlock(this);
+    }
+
 
     private void computePlayerPosition()
     {
@@ -124,11 +144,24 @@ public class MapBlock extends Rectangle2D implements CardView.OnCardViewClickLis
         gc.clearRect(getMinX(), getMinY(), getWidth(), getHeight());
         paintPlayers(gc);
         if(ammoImage != null)gc.drawImage(ammoImage, ammoRect.getMinX(), ammoRect.getMinY(), ammoRect.getWidth(), ammoRect.getHeight());
+
+        if(colored)
+        {
+            Color fill = enabled ? new Color(0, 1, 0, 0.4) : new Color(1, 0, 0, 0.4);
+            gc.setFill(fill);
+            gc.fillRect(getMinX(), getMinY(), getWidth(), getHeight());
+        }
+
         if(active)
         {
             gc.setFill(new Color(1, 1, 1, 0.2));
             gc.fillRect(getMinX(), getMinY(), getWidth(), getHeight());
         }
+    }
+
+    public Coordinates getCoordinates()
+    {
+        return new Coordinates(mapX, mapY);
     }
 
     private void paintPlayers(GraphicsContext gc)

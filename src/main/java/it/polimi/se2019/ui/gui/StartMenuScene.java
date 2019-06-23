@@ -2,127 +2,76 @@ package it.polimi.se2019.ui.gui;
 
 import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.utils.network.NetworkUtils;
-import javafx.event.EventHandler;
-import javafx.geometry.HPos;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 
-public class StartMenuScene extends Scene implements EventHandler<MouseEvent>
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class StartMenuScene extends BorderPane implements Initializable
 {
-    private Button searchServerBtn;
-    private Label ipLabel;
-    private Label portLabel;
-    private Label modeLabel;
-    private TextField ipTextFiled;
+    @FXML
+    private Pane formBg;
+
+    @FXML
     private TextField portTextFiled;
-    private RadioButton socketMode;
-    private RadioButton rmiMode;
-    private ToggleGroup toggleGroup;
+
+    @FXML
+    private TextField ipTextFiled;
+
+    @FXML
+    private Button searchServerBtn;
+
+    @FXML
     private ImageView loadingGifView;
 
-    private final String errorStyle = "-fx-background-color: rgba(255,0,0,0.45);" +
-            "-fx-text-fill: white";
+    @FXML
+    private RadioButton rmiMode;
+
+    private final String errorStyle = "-fx-background-color: rgba(255,0,0,0.45);" + "-fx-text-fill: white";
 
     public StartMenuScene()
     {
-        super(new BorderPane(), 600, 403);
+        super();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/StartMenuScene.fxml"));
+        loader.setRoot(this);
+        loader.setController(this);
+        load(loader);
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources)
+    {
         getStylesheets().add("css/StartMenuStyle.css");
 
-        BorderPane layout = (BorderPane)getRoot();
+        loadingGifView.setImage(new Image(getClass().getResourceAsStream("/img/loading.gif")));
 
-        StackPane form = new StackPane();
-        Pane formBg = new Pane();
-        formBg.setMaxWidth(360);
-        formBg.setMaxHeight(145);
         formBg.setStyle("-fx-background-color: rgba(255,255,255,0.6);"+"-fx-background-radius: 20 20 20 20");
-        StackPane.setAlignment(formBg, Pos.BOTTOM_CENTER);
-
-        GridPane gridPane = new GridPane();
-        gridPane.setHgap(20);
-        gridPane.setVgap(20);
-        gridPane.setAlignment(Pos.BOTTOM_CENTER);
-
-        ipLabel = new Label("IP:");
-        portLabel = new Label("Porta:");
-
-        GridPane.setHalignment(ipLabel, HPos.RIGHT);
-        GridPane.setHalignment(portLabel, HPos.RIGHT);
-
-        ipTextFiled = new TextField();
-        ipTextFiled.setMinSize(200, ipTextFiled.getMinHeight());
-
-        portTextFiled = new TextField();
-        portTextFiled.setMinSize(200, portTextFiled.getMinHeight());
-
         portTextFiled.textProperty().addListener((observable, oldValue, newValue) ->
         {
             if (!newValue.matches("\\d*"))portTextFiled.setText(oldValue);
         });
 
-        modeLabel = new Label("Modalità:");
-
-        toggleGroup = new ToggleGroup();
-        socketMode = new RadioButton("Socket");
-        socketMode.getStyleClass().add("outline");
-        socketMode.setSelected(true);
-        rmiMode = new RadioButton("RMI");
-
-        socketMode.setToggleGroup(toggleGroup);
-        rmiMode.setToggleGroup(toggleGroup);
-
-        HBox modeMenu = new HBox();
-        modeMenu.setSpacing(10);
-        modeMenu.getChildren().addAll(socketMode, rmiMode);
-
-        StackPane stackPane = new StackPane();
-        stackPane.setAlignment(Pos.CENTER);
-        stackPane.setMinHeight(150);
-        //VBox btnBox = new VBox();
-        //btnBox.setMinHeight(150);
-        //btnBox.setAlignment(Pos.CENTER);
-        searchServerBtn = new Button("Cerca server");
-
-        loadingGifView = new ImageView();
-
-        loadingGifView.setImage(new Image("/img/loading.gif"));
-        loadingGifView.setFitHeight(50);
-        loadingGifView.setFitWidth(50);
-        loadingGifView.setSmooth(true);
-        loadingGifView.setVisible(false);
-
-        stackPane.getChildren().addAll(searchServerBtn, loadingGifView);
-
-        gridPane.addRow(0, ipLabel, ipTextFiled);
-        gridPane.addRow(1, portLabel, portTextFiled);
-        gridPane.addRow(2, modeLabel, modeMenu);
-
-        form.getChildren().addAll(formBg, gridPane);
-
-        layout.setCenter(form);
-        layout.setBottom(stackPane);
-
-        searchServerBtn.setOnMouseEntered(e -> searchServerBtn.setStyle("-fx-border-color: red"));
-        searchServerBtn.setOnMouseExited(e -> searchServerBtn.setStyle("-fx-border-color: white"));
-        searchServerBtn.setOnMouseClicked(this);
-
     }
 
-    @Override
-    public void handle(MouseEvent event)
+    @FXML
+    public void search(ActionEvent event)
     {
-        if(event.getSource().equals(searchServerBtn) && event.getEventType().equals(MouseEvent.MOUSE_CLICKED))
+        if(event.getSource().equals(searchServerBtn))
         {
-             String ip = ipTextFiled.getText();
-             int port = portTextFiled.getText().isEmpty() ? 0 : Integer.parseInt(portTextFiled.getText());
-             boolean ok = true;
+            String ip = ipTextFiled.getText();
+            int port = portTextFiled.getText().isEmpty() ? 0 : Integer.parseInt(portTextFiled.getText());
+            boolean ok = true;
 
             if(!NetworkUtils.isIp(ip))
             {
@@ -130,6 +79,7 @@ public class StartMenuScene extends Scene implements EventHandler<MouseEvent>
                 ok = false;
             }
             else ipTextFiled.setStyle("");
+
             if(!NetworkUtils.isValidPort(port))
             {
                 portTextFiled.setStyle(errorStyle);
@@ -149,11 +99,21 @@ public class StartMenuScene extends Scene implements EventHandler<MouseEvent>
         }
     }
 
-    public void connectionRefused()
+    void connectionRefused()
     {
         searchServerBtn.setVisible(true);
         loadingGifView.setVisible(false);
     }
 
-
+    private void load(FXMLLoader loader)
+    {
+        try
+        {
+            loader.load();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

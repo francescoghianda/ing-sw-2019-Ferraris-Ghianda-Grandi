@@ -6,6 +6,7 @@ import it.polimi.se2019.ui.gui.value.ValueObserver;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -14,16 +15,15 @@ public class SceneManager
 
     private SimpleObjectProperty<Scene> onSceneSelectedProperty;
 
-    public static final int LOGIN_SCENE = 1;
-    public static final int START_MENU_SCENE = 2;
-    public static final int WAIT_SCENE = 3;
-    public static final int MATCH_SCENE = 4;
+    static final int LOGIN_SCENE = 1;
+    static final int START_MENU_SCENE = 2;
+    static final int WAIT_SCENE = 3;
+    static final int MATCH_SCENE = 4;
 
-
-    public static LoginScene loginScene;
-    public static StartMenuScene startMenuScene;
-    public static WaitScene waitScene;
-    public static Scene matchScene;
+    private static Scene loginScene;
+    private static Scene startMenuScene;
+    private static Scene waitScene;
+    private static Scene matchScene;
 
     private static SceneManager instance;
     private final Stage stage;
@@ -44,25 +44,20 @@ public class SceneManager
         return instance;
     }
 
-    public Stage getStage()
-    {
-        return this.stage;
-    }
-
     private static void initScene()
     {
-        loginScene = new LoginScene();
-        startMenuScene = new StartMenuScene();
-        waitScene = new WaitScene();
+        loginScene = new Scene(new LoginScene());
+        startMenuScene = new Scene(new StartMenuScene());
+        waitScene = new Scene(new WaitScene());
         matchScene = new Scene(MatchScene.getInstance());
     }
 
-    public ReadOnlyObjectProperty<Scene> onSceneSelectedProperty()
+    ReadOnlyObjectProperty<Scene> onSceneSelectedProperty()
     {
         return onSceneSelectedProperty;
     }
 
-    public MatchScene getMatchScene()
+    MatchScene getMatchScene()
     {
         return (MatchScene)matchScene.getRoot();
     }
@@ -85,12 +80,12 @@ public class SceneManager
         onSceneSelectedProperty.set(scene);
     }
 
-    public Scene getCurrentScene()
+    Scene getCurrentScene()
     {
         return onSceneSelectedProperty.getValue();
     }
 
-    public static Scene getScene(int scene)
+    static Scene getScene(int scene)
     {
         Scene selected = null;
 
@@ -113,6 +108,11 @@ public class SceneManager
         return selected;
     }
 
+    static Parent getSceneRoot(int scene)
+    {
+        return getScene(scene).getRoot();
+    }
+
     private void select(Scene scene)
     {
         stage.setScene(scene);
@@ -131,28 +131,22 @@ public class SceneManager
 
     public String getUsername()
     {
-        if(getScene().equals(loginScene)) runOnFxThread(loginScene::invalidUsername);
-        else setScene(loginScene.reset());
+        if(getScene().equals(loginScene)) runOnFxThread(((LoginScene)loginScene.getRoot())::invalidUsername);
+        else
+        {
+            ((LoginScene)loginScene.getRoot()).reset();
+            setScene(loginScene);
+        }
 
         return new ValueObserver<String>().get(LoginScene.username);
     }
 
-    public static void runOnFxThread(Runnable runnable)
+    static void runOnFxThread(Runnable runnable)
     {
         if(!Platform.isFxApplicationThread())
         {
             Platform.runLater(runnable);
         }
         else runnable.run();
-    }
-
-    public double getWidth()
-    {
-        return stage.getWidth();
-    }
-
-    public double getHeight()
-    {
-        return stage.getHeight();
     }
 }
