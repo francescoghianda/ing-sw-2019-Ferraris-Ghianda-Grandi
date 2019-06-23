@@ -1,18 +1,16 @@
 package it.polimi.se2019.ui.cli;
 
 import it.polimi.se2019.card.Card;
-import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.Coordinates;
-import it.polimi.se2019.map.Map;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
-import it.polimi.se2019.player.Player;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.network.NetworkUtils;
+import it.polimi.se2019.utils.string.Strings;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -36,11 +34,11 @@ public class CLI implements UI
     public synchronized void startUI()
     {
         GameConsole.startConsole();
-        GameConsole.out.println(CliString.TITLE);
-        Option<Integer> serverModeOption = new Options<Integer>(CliString.GET_CONNECTION_MODE, true).addOption("Socket", "S", NetworkInterface.SOCKET_MODE).addOption("RMI", "R", NetworkInterface.RMI_MODE).show();
-        String serverIp = new FormattedInput(CliString.GET_SERVER_IP, NetworkUtils::isIp).show();
-        int serverPort = Integer.parseInt(new FormattedInput(CliString.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, s -> NetworkUtils.isValidPort(Integer.parseInt(s))).show());
-        GameConsole.out.println(CliString.CONNECTING);
+        GameConsole.out.println(Strings.TITLE);
+        Option<Integer> serverModeOption = new Options<Integer>(Strings.GET_CONNECTION_MODE, true).addOption("Socket", "S", NetworkInterface.SOCKET_MODE).addOption("RMI", "R", NetworkInterface.RMI_MODE).show();
+        String serverIp = new FormattedInput(Strings.GET_SERVER_IP, NetworkUtils::isIp).show();
+        int serverPort = Integer.parseInt(new FormattedInput(Strings.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, s -> NetworkUtils.isValidPort(Integer.parseInt(s))).show());
+        GameConsole.out.println(Strings.CONNECTING);
         client.connect(serverIp, serverPort, serverModeOption.getValue());
     }
 
@@ -53,13 +51,13 @@ public class CLI implements UI
     @Override
     public String login()
     {
-        return new FormattedInput(CliString.GET_USERNAME, FormattedInput.USERNAME_REGEX).show();
+        return new FormattedInput(Strings.GET_USERNAME, FormattedInput.USERNAME_REGEX).show();
     }
 
     @Override
     public void logged()
     {
-        GameConsole.out.println(CliString.LOGGED);
+        GameConsole.out.println(Strings.LOGGED);
     }
 
     @Override
@@ -79,13 +77,13 @@ public class CLI implements UI
     @Override
     public void gameIsStarting()
     {
-        GameConsole.out.println(CliString.GAME_STARTING);
+        GameConsole.out.println(Strings.GAME_STARTING);
     }
 
     @Override
     public void gameStarted()
     {
-        GameConsole.out.println(CliString.GAME_STARTED);
+        GameConsole.out.println(Strings.GAME_STARTED);
     }
 
     @Override
@@ -97,19 +95,19 @@ public class CLI implements UI
     @Override
     public void youAreFirstPlayer()
     {
-        GameConsole.out.println(CliString.YOU_ARE_FIRST_PLAYER);
+        GameConsole.out.println(Strings.YOU_ARE_FIRST_PLAYER);
     }
 
     @Override
     public void firstPlayerIs(String firstPlayerUsername)
     {
-        GameConsole.out.printf(CliString.FIRST_PLAYER_IS+"\n", firstPlayerUsername);
+        GameConsole.out.printf(Strings.FIRST_PLAYER_IS+"\n", firstPlayerUsername);
     }
 
     @Override
     public void connectionRefused()
     {
-        GameConsole.out.println(CliString.CONNECTION_REFUSED);
+        GameConsole.out.println(Strings.CONNECTION_REFUSED);
     }
 
     @Override
@@ -151,7 +149,7 @@ public class CLI implements UI
     @Override
     public String chooseSpawnPoint(Card option1, Card option2)
     {
-        Options<Card> powerUpCardOptions = new Options<>(CliString.CHOOSE_SPAWN_POINT, false);
+        Options<Card> powerUpCardOptions = new Options<>(Strings.CHOOSE_SPAWN_POINT, false);
         powerUpCardOptions.addOption(option1.toString(), "1", option1).addOption(option2.toString(), "2", option2);
         return powerUpCardOptions.show().getValue().getId();
     }
@@ -204,7 +202,7 @@ public class CLI implements UI
     {
         if(event.getEventCode() == GameEvent.IS_YOUR_ROUND)
         {
-            GameConsole.out.println(CliString.IS_YOUR_ROUND);
+            GameConsole.out.println(Strings.IS_YOUR_ROUND);
         }
     }
 }

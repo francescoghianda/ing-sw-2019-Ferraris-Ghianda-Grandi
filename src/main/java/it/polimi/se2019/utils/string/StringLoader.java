@@ -1,11 +1,11 @@
-package it.polimi.se2019.ui.cli;
+package it.polimi.se2019.utils.string;
 
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.io.IOException;
 import java.util.*;
 
-class StringLoader
+public class StringLoader
 {
 
     private static HashMap<String, String> strings;
@@ -15,10 +15,10 @@ class StringLoader
 
     }
 
-    static String getString(String id)
+    public static String getString(String id)
     {
         if(strings == null)loadStrings();
-        return strings.getOrDefault(id, "ERROR LOADING STRING WITH ID: "+id);
+        return strings.getOrDefault(id, "Error loading string "+id);
     }
 
     private static void loadStrings()

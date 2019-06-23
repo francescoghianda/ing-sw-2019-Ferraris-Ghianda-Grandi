@@ -1,10 +1,10 @@
-package it.polimi.se2019.ui.cli;
+package it.polimi.se2019.utils.string;
 
 
 /**
  * containes the default strings printed by the CLI
  */
-public class CliString
+public class Strings
 {
     /*public static final String TITLE = "     _       _                      _ _             \n" +
             "    / \\   __| |_ __ ___ _ __   __ _| (_)_ __   __ _ \n" +

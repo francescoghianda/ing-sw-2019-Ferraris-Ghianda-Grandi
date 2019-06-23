@@ -1,8 +1,7 @@
 package it.polimi.se2019.ui.cli;
 
-import it.polimi.se2019.utils.logging.Logger;
+import it.polimi.se2019.utils.string.Strings;
 
-import java.util.Scanner;
 import java.util.function.Predicate;
 
 /**
@@ -84,7 +83,7 @@ public class FormattedInput
             boolean matchRegex = useRegex && response.matches(regex);
             boolean matchPredicate = useRegex ? usePredicate && matchRegex && predicate.test(response) : usePredicate && predicate.test(response);
             if(useRegex && usePredicate && matchRegex && matchPredicate || useRegex && !usePredicate && matchRegex || usePredicate && !useRegex && matchPredicate)break;
-            GameConsole.out.println(CliString.INVALID_INPUT);
+            GameConsole.out.println(Strings.INVALID_INPUT);
         }
         return response;
     }

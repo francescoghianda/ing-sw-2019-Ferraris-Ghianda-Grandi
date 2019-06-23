@@ -97,7 +97,7 @@ public class GameBoard implements Serializable
 
     /**
      * adds the received damage to the gameboard of this player
-     * @param player player who received the damage
+     * @param player the player who hit this player
      * @param damage received damage
      */
     public void addDamage(Player player, int damage)

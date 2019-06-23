@@ -1,5 +1,3 @@
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -8,10 +6,8 @@
     <Label fx:id="label" styleClass="outline" GridPane.rowIndex="0"/>
     <HBox GridPane.rowIndex="2" alignment="CENTER">
         <StackPane>
-            <children>
-                <Label fx:id="timerLabel" text="10" styleClass="outline" visible="false"/>
-                <ImageView fx:id="imageView" preserveRatio="true" fitHeight="150" visible="false"/>
-            </children>
+            <Label fx:id="timerLabel" text="10" styleClass="outline" visible="false"/>
+            <ImageView fx:id="imageView" preserveRatio="true" fitHeight="150" visible="false"/>
         </StackPane>
     </HBox>
 </fx:root>

@@ -1,13 +1,12 @@
 package it.polimi.se2019;
 
-import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.network.NetworkServer;
 import it.polimi.se2019.network.rmi.server.RmiServer;
 import it.polimi.se2019.network.socket.server.SocketServer;
 import it.polimi.se2019.ui.cli.FormattedInput;
 import it.polimi.se2019.ui.cli.Option;
 import it.polimi.se2019.ui.cli.Options;
-import it.polimi.se2019.ui.cli.CliString;
+import it.polimi.se2019.utils.string.Strings;
 import it.polimi.se2019.utils.constants.Ansi;
 import it.polimi.se2019.utils.logging.LogMessage;
 import it.polimi.se2019.utils.logging.Logger;
@@ -17,7 +16,6 @@ import org.fusesource.jansi.AnsiConsole;
 
 import java.io.*;
 import java.rmi.RemoteException;
-import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
 public class ServerApp
@@ -151,7 +149,7 @@ public class ServerApp
             if(socketPortStr == null || !NetworkUtils.isValidPort(socketPortStr))
             {
                 input = true;
-                socketPort = Integer.parseInt(new FormattedInput(CliString.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, port -> Integer.parseInt(port) >= 1024 && Integer.parseInt(port) <= 65535).setDefaultResponse(serverMode.getValue() == RMI_MODE ? "1099" : "0").show());
+                socketPort = Integer.parseInt(new FormattedInput(Strings.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, port -> Integer.parseInt(port) >= 1024 && Integer.parseInt(port) <= 65535).setDefaultResponse(serverMode.getValue() == RMI_MODE ? "1099" : "0").show());
             }
             else socketPort = Integer.parseInt(socketPortStr);
         }
@@ -163,7 +161,7 @@ public class ServerApp
             if(rmiPortStr == null || !NetworkUtils.isValidPort(rmiPortStr))
             {
                 input = true;
-                rmiPort = Integer.parseInt(new FormattedInput(CliString.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, port -> Integer.parseInt(port) >= 1024 && Integer.parseInt(port) <= 65535 && Integer.parseInt(port) != port1).setDefaultResponse(serverMode.getValue() == RMI_MODE ? "1099" : "0").show());
+                rmiPort = Integer.parseInt(new FormattedInput(Strings.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, port -> Integer.parseInt(port) >= 1024 && Integer.parseInt(port) <= 65535 && Integer.parseInt(port) != port1).setDefaultResponse(serverMode.getValue() == RMI_MODE ? "1099" : "0").show());
             }
             else rmiPort = Integer.parseInt(rmiPortStr);
         }

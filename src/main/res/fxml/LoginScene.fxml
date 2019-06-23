@@ -1,10 +1,6 @@
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.shape.Box?>
 <fx:root type="BorderPane" prefHeight="403" prefWidth="600" xmlns:fx="http://javafx.com/fxml">
     <center>
         <BorderPane fx:id="formBg" maxWidth="400" maxHeight="50">

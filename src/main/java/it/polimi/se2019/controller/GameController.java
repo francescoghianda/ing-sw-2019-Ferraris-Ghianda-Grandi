@@ -278,8 +278,9 @@ public class GameController implements TimerListener
         {
             chosenWeapon.fire(player);
         }
-        catch (CanceledActionException e)
+        catch (Exception e)
         {
+            e.printStackTrace();
             chosenWeapon.reset();
             throw e;
         }
@@ -300,23 +301,23 @@ public class GameController implements TimerListener
     private void useOptionalEffect(Player player, WeaponCard weapon) throws CanceledActionException
     {
         List<OptionalEffect> enabledEffects = weapon.getEnabledOptionalEffects();
-        if(!enabledEffects.isEmpty())
+        if(enabledEffects.isEmpty())return;
+
+        if(player.getView().choose("Vuoi usare un effetto opzionale?", "Si", "No").equals("Si"))
         {
-            if(player.getView().choose("Vuoi usare un effetto opzionale?", "Si", "No").equals("Si"))
+            ArrayList<String> optionalEffectNames = enabledEffects.stream().map(OptionalEffect::getName).collect(Collectors.toCollection(ArrayList::new));
+            String chosenEffect;
+            try
             {
-                ArrayList<String> optionalEffectNames = enabledEffects.stream().map(OptionalEffect::getName).collect(Collectors.toCollection(ArrayList::new));
-                String chosenEffect;
-                try
-                {
-                    chosenEffect = player.getView().chooseOrCancel(new Bundle<>("Che effetto vuoi usare?", optionalEffectNames));
-                }
-                catch (CanceledActionException e)
-                {
-                    return;
-                }
-                weapon.useOptionalEffect(player, weapon.getOptionalEffect(chosenEffect));
+                chosenEffect = player.getView().chooseOrCancel(new Bundle<>("Che effetto vuoi usare?", optionalEffectNames));
             }
+            catch (CanceledActionException e)
+            {
+                return;
+            }
+            weapon.useOptionalEffect(player, weapon.getOptionalEffect(chosenEffect));
         }
+
     }
 
     private Block selectBlock(Player player) throws CanceledActionException
