@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+
+
+
+<fx:root type="BorderPane" prefHeight="403" prefWidth="600" xmlns:fx="http://javafx.com/fxml">
+    <fx:define>
+        <ToggleGroup fx:id="toggleGroup" />
+    </fx:define>
+    <center>
+        <StackPane fx:id="form">
+            <Pane fx:id="formBg" maxWidth="360" maxHeight="145" StackPane.alignment="BOTTOM_CENTER"/>
+            <GridPane fx:id="gridPane" vgap="20" hgap="20" alignment="BOTTOM_CENTER">
+                <children>
+                    <Label text="IP:" GridPane.halignment="RIGHT" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <TextField fx:id="ipTextFiled" minWidth="200" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <Label text="Porta:" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <TextField fx:id="portTextFiled" minWidth="200" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <Label text="Modalità:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <HBox spacing="10" GridPane.rowIndex="2" GridPane.columnIndex="1">
+                        <RadioButton text="Socket" styleClass="outline" selected="true" toggleGroup="$toggleGroup"/>
+                        <RadioButton fx:id="rmiMode" text="RMI" toggleGroup="$toggleGroup"/>
+                    </HBox>
+                </children>
+            </GridPane>
+        </StackPane>
+    </center>
+    <bottom>
+        <StackPane alignment="CENTER" minHeight="150">
+            <children>
+                <Button fx:id="searchServerBtn" text="Cerca server" onAction="#search"/>
+                <ImageView fx:id="loadingGifView"  fitHeight="50" fitWidth="50" smooth="true" visible="false"/>
+            </children>
+        </StackPane>
+    </bottom>
+
+</fx:root>

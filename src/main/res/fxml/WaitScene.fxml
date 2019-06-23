@@ -1,0 +1,18 @@
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<fx:root type="GridPane" prefHeight="403" prefWidth="600" xmlns:fx="http://javafx.com/fxml" alignment="CENTER">
+    <Label fx:id="label" styleClass="outline" GridPane.rowIndex="0"/>
+    <HBox GridPane.rowIndex="2" alignment="CENTER">
+        <StackPane>
+            <children>
+                <Label fx:id="timerLabel" text="10" styleClass="outline" visible="false"/>
+                <ImageView fx:id="imageView" preserveRatio="true" fitHeight="150" visible="false"/>
+            </children>
+        </StackPane>
+    </HBox>
+</fx:root>
+
