@@ -1,7 +1,8 @@
 package it.polimi.se2019.card.powerup;
 
 import it.polimi.se2019.card.Card;
-import it.polimi.se2019.card.cardscript.CardScriptExecutor;
+import it.polimi.se2019.card.cardscript.Executor;
+import it.polimi.se2019.card.cardscript.Script;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.GameColor;
@@ -16,7 +17,7 @@ public class PowerUpCard extends Card
 	private transient String script;
 	private GameColor color;
 	private Use use;
-	private transient CardScriptExecutor scriptExecutor;
+	private transient Executor scriptExecutor;
 
 	public PowerUpCard()
 	{
@@ -36,13 +37,13 @@ public class PowerUpCard extends Card
 	public void apply(Player player) throws CanceledActionException
 	{
 		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))createScriptExecutor(player);
-		scriptExecutor.setScript(script);
-		scriptExecutor.execute();
+		scriptExecutor.executeScript(new Script(script));
 	}
 
 	private void createScriptExecutor(Player player)
 	{
-		scriptExecutor = CardScriptExecutor.getPowerUpScriptExecutor(player, this);
+		//scriptExecutor = CardScriptExecutor.getPowerUpScriptExecutor(player, this);
+		scriptExecutor = new Executor(player);
 	}
 
 	@Override
