@@ -13,8 +13,7 @@ public class LogicExpression
     private String expression;
     private HashMap<String, LogicExpression> subExpressions;
 
-    private HashMap<String, Player> players;
-    private HashMap<String, Block> blocks;
+    private Executor executor;
 
     public LogicExpression(String expression)
     {
@@ -25,15 +24,14 @@ public class LogicExpression
         if(containsSubExpression()) extractSubExpressions();
     }
 
-    public boolean evaluate(HashMap<String, Player> players, HashMap<String, Block> blocks, Object object)
+    public boolean evaluate(Executor executor, Object object) throws LogicExpressionEvaluationException
     {
-        this.players = players;
-        this.blocks = blocks;
+        this.executor = executor;
         String[] orElements = expression.split("\\|");
         return evaluateOrElements(orElements, object);
     }
 
-    private boolean evaluateOrElements(String[] orElements, Object object)
+    private boolean evaluateOrElements(String[] orElements, Object object) throws LogicExpressionEvaluationException
     {
         for(String orElement : orElements)
         {
@@ -43,7 +41,7 @@ public class LogicExpression
         return false;
     }
 
-    private boolean evaluateAndElements(String[] andElements, Object object)
+    private boolean evaluateAndElements(String[] andElements, Object object) throws LogicExpressionEvaluationException
     {
         for(String andElement : andElements)
         {
@@ -52,7 +50,7 @@ public class LogicExpression
         return true;
     }
 
-    private boolean evaluateElement(String element, Object obj)
+    private boolean evaluateElement(String element, Object obj) throws LogicExpressionEvaluationException
     {
         boolean not = false;
         boolean result;
@@ -64,12 +62,12 @@ public class LogicExpression
 
         if(element.startsWith("sub-"))
         {
-            result = subExpressions.get(element).evaluate(players, blocks, obj);
+            result = subExpressions.get(element).evaluate(executor, obj);
             if(not)return !result;
             else return result;
         }
 
-        Player contextPlayer = players.get("context_player");
+        Player contextPlayer = executor.getContextPlayer();
         Block block = null;
         Player player = null;
         boolean invert = false;
@@ -80,7 +78,7 @@ public class LogicExpression
             player = (Player)obj;
             isPlayer = true;
         }
-        else throw new CardScriptErrorException();
+        else throw new LogicExpressionEvaluationException();
 
         String[] split = expression.split(" ");
         if(expression.startsWith("!"))
@@ -92,12 +90,11 @@ public class LogicExpression
         switch (split[0])
         {
             case "visible":
-                result = isPlayer ? players.get(split[1]).getVisiblePlayers().contains(player) :
-                        players.get(split[1]).getVisibleBlocks().contains(block);
+                result = isPlayer ? getPlayer(split[1]).getVisiblePlayers().contains(player) : getPlayer(split[1]).getVisibleBlocks().contains(block);
                 break;
             case "equal":
-                result = isPlayer ? player.equals(players.get(split[1])) :
-                        block.equals(blocks.get(split[1]));
+                result = isPlayer ? player.equals(getPlayer(split[1])) :
+                        block.equals(getBlock(split[1]));
                 break;
             case "maxd":
                 result = isAtDistance(obj, split[1], split[2], MAX_DISTANCE);
@@ -109,10 +106,25 @@ public class LogicExpression
                 result = contextPlayer.getDamagedPlayers().contains(player);
                 break;
             default:
-                throw new CardScriptErrorException("Invalid keyword \""+split[0]+"\"");
+                throw new LogicExpressionEvaluationException("Invalid keyword \""+split[0]+"\"");
         }
         if(invert)return !result;
         return result;
+    }
+
+    private Player getPlayer(String varName) throws LogicExpressionEvaluationException
+    {
+        return executor.getPlayer(varName).orElseThrow(this::newException);
+    }
+
+    private Block getBlock(String varName) throws LogicExpressionEvaluationException
+    {
+        return executor.getBlock(varName).orElseThrow(this::newException);
+    }
+
+    private LogicExpressionEvaluationException newException()
+    {
+        return new LogicExpressionEvaluationException();
     }
 
     private boolean isDigit(String str)
@@ -122,32 +134,32 @@ public class LogicExpression
         return true;
     }
 
-    private boolean isAtDistance(Object obj, String param2, String distance, int maxOrMin)
+    private boolean isAtDistance(Object obj, String param2, String distance, int maxOrMin) throws LogicExpressionEvaluationException
     {
-        if(!isDigit(distance))throw new CardScriptErrorException();
+        if(!isDigit(distance))throw new LogicExpressionEvaluationException();
         int dist = Integer.parseInt(distance);
         Block block1;
         Block block2;
 
         if(obj instanceof Block)block1 = (Block)obj;
         else if(obj instanceof Player)block1 = ((Player)obj).getBlock();
-        else throw new CardScriptErrorException();
+        else throw new LogicExpressionEvaluationException();
 
-        if(isPlayer(param2))block2 = players.get(param2).getBlock();
-        else if(isBlock(param2))block2 = blocks.get(param2);
-        else throw new CardScriptErrorException();
+        if(isPlayer(param2))block2 = getPlayer(param2).getBlock();
+        else if(isBlock(param2))block2 = getBlock(param2);
+        else throw new LogicExpressionEvaluationException();
 
         return maxOrMin == MAX_DISTANCE ? block1.getManhattanDistanceFrom(block2) <= dist : block1.getManhattanDistanceFrom(block2) >= dist;
     }
 
-    private boolean isPlayer(String str)
+    private boolean isPlayer(String varName)
     {
-        return players.containsKey(str);
+        return executor.containsPlayer(varName);
     }
 
-    private boolean isBlock(String str)
+    private boolean isBlock(String varName)
     {
-        return blocks.containsKey(str);
+        return executor.containsBlock(varName);
     }
 
     private void removeExternalBrackets()

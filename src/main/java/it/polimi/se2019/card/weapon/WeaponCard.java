@@ -1,7 +1,8 @@
 package it.polimi.se2019.card.weapon;
 
 import it.polimi.se2019.card.Card;
-import it.polimi.se2019.card.cardscript.CardScriptExecutor;
+import it.polimi.se2019.card.cardscript.Executor;
+import it.polimi.se2019.card.cardscript.Script;
 import it.polimi.se2019.card.cost.Cost;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.player.Player;
@@ -30,7 +31,7 @@ public class WeaponCard extends Card
 
 	private boolean load;
 
-	private transient CardScriptExecutor scriptExecutor;
+	private transient Executor executor;
 
 	public WeaponCard()
 	{
@@ -67,24 +68,22 @@ public class WeaponCard extends Card
 
 	public void reset()
 	{
-		scriptExecutor.reset();
+		executor.reset();
 	}
 
 	public void fire(Player player)throws CanceledActionException
 	{
 		if(!load)throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION, "WEAPON NOT LOAD");
-		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))createScriptExecutor(player);
-		scriptExecutor.setScript(fireMode.equals(Mode.BASIC) ? basicModeScript : alternateModeScript);
-		scriptExecutor.execute();
+		if(executor == null || !executor.getContextPlayer().equals(player))createScriptExecutor(player);
+		executor.executeScript(new Script(fireMode.equals(Mode.BASIC) ? basicModeScript : alternateModeScript));
 	}
 
 	public boolean useOptionalEffect(Player player, OptionalEffect effect)throws CanceledActionException
 	{
 		if(!load)throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION);
 		if(!effect.isEnabled())throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION);
-		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))createScriptExecutor(player);
-		scriptExecutor.setScript(effect.getScript());
-		scriptExecutor.execute();
+		if(executor == null || !executor.getContextPlayer().equals(player))createScriptExecutor(player);
+		executor.executeScript(new Script(effect.getScript()));
 		return true;
 	}
 
@@ -96,7 +95,7 @@ public class WeaponCard extends Card
 
 	private void createScriptExecutor(Player player)
 	{
-		scriptExecutor = CardScriptExecutor.getWeaponScriptExecutor(player, this);
+		executor = new Executor(player);
 	}
 
 	public void setLoad(boolean load)
