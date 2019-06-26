@@ -4,10 +4,8 @@ public class CanceledActionException extends Exception
 {
     public enum Cause
     {
-        ERROR, IMPOSSIBLE_ACTION, CANCELED_BY_USER
+        ERROR, CANCELED_BY_USER
     }
-
-
 
     private final Cause cause;
     private final String message;

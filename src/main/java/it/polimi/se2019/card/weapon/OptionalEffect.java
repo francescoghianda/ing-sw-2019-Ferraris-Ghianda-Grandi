@@ -50,6 +50,11 @@ public class OptionalEffect
         this.cost = cost;
     }
 
+    public Cost getCost()
+    {
+        return cost;
+    }
+
     public String getName()
     {
         return this.name;

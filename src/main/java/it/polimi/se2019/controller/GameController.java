@@ -235,8 +235,12 @@ public class GameController implements TimerListener
             }
             catch (CanceledActionException e)
             {
-                Logger.warning("Player "+currentPlayer.getUsername()+" has canceled action. "+e.getCanceledCause()+" - "+e.getCauseMessage());
+                Logger.warning("The action "+chosen+" of player "+currentPlayer+" was canceled. Cause: "+e.getCanceledCause());
                 continue;
+            }
+            catch (ImpossibleActionException e)
+            {
+                Logger.warning("Impossible action: "+chosen+"; "+e.cause()+" - Player: "+currentPlayer);
             }
 
             sendBroadcastUpdate();
@@ -244,7 +248,7 @@ public class GameController implements TimerListener
         return true;
     }
 
-    private void executeAction(Action action, Player player) throws CanceledActionException
+    private void executeAction(Action action, Player player) throws CanceledActionException, ImpossibleActionException
     {
         switch (action)
         {
@@ -264,31 +268,22 @@ public class GameController implements TimerListener
         }
     }
 
-    private void fire(Player player) throws CanceledActionException
+    private void fire(Player player) throws ImpossibleActionException, CanceledActionException
     {
         WeaponCard chosenWeapon = WeaponCard.findCardById(player.getView().chooseWeaponFromPlayer().getId());
 
-        if(chosenWeapon == null || !chosenWeapon.isLoad())throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION);
+        if(chosenWeapon == null || !chosenWeapon.isLoad())throw new ImpossibleActionException(ImpossibleActionException.Cause.WEAPON_NOT_LOADED);
 
-        if(chosenWeapon.hasOptionalEffect())useOptionalEffect(player, chosenWeapon);
+        while (chosenWeapon.hasEnabledOptionalEffect())useOptionalEffect(player, chosenWeapon);
 
         if(chosenWeapon.hasAlternateFireMode())chooseFireMode(player, chosenWeapon);
 
-        try
-        {
-            chosenWeapon.fire(player);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            chosenWeapon.reset();
-            throw e;
-        }
+        chosenWeapon.fire(player, this);
 
-        if(chosenWeapon.hasOptionalEffect())useOptionalEffect(player, chosenWeapon);
+        while (chosenWeapon.hasEnabledOptionalEffect())useOptionalEffect(player, chosenWeapon);
 
+        if(chosenWeapon.isUsed())chosenWeapon.setLoad(false);
         chosenWeapon.reset();
-        chosenWeapon.setLoad(false);
     }
 
     private void chooseFireMode(Player player, WeaponCard weapon)
@@ -298,7 +293,7 @@ public class GameController implements TimerListener
         else weapon.setFireMode(WeaponCard.Mode.ALTERNATE_FIRE);
     }
 
-    private void useOptionalEffect(Player player, WeaponCard weapon) throws CanceledActionException
+    private void useOptionalEffect(Player player, WeaponCard weapon)
     {
         List<OptionalEffect> enabledEffects = weapon.getEnabledOptionalEffects();
         if(enabledEffects.isEmpty())return;
@@ -310,12 +305,13 @@ public class GameController implements TimerListener
             try
             {
                 chosenEffect = player.getView().chooseOrCancel(new Bundle<>("Che effetto vuoi usare?", optionalEffectNames));
+                weapon.useOptionalEffect(player, weapon.getOptionalEffect(chosenEffect), this);
             }
-            catch (CanceledActionException e)
+            catch (CanceledActionException | ImpossibleActionException e)
             {
                 return;
             }
-            weapon.useOptionalEffect(player, weapon.getOptionalEffect(chosenEffect));
+            weapon.getOptionalEffect(chosenEffect).setEnabled(false);
         }
 
     }
@@ -455,7 +451,7 @@ public class GameController implements TimerListener
         return new GameData(map.getData(), player.getData(), remainingSkulls, deaths, powerUpCardDeck.size(), weaponCardDeck.size());
     }
 
-    private void sendBroadcastUpdate()
+    public void sendBroadcastUpdate()
     {
         players.forEach(this::sendUpdate);
     }

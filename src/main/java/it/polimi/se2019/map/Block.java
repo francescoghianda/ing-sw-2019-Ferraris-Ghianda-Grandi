@@ -5,6 +5,7 @@ import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.utils.constants.Ansi;
+import org.omg.PortableInterceptor.DISCARDING;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -223,11 +224,33 @@ public class Block implements Serializable
 		return this.ammoCard;
 	}
 
-	public boolean contaisGrabbable()
+	public boolean containsGraspable()
 	{
 		return ammoCard != null || !weaponCards.isEmpty();
 	}
 
+	public Direction getDirectionFrom(Block block)
+	{
+		if(block.getX() < getX())
+		{
+			if(block.getY() == getY())return Direction.EAST;
+			if(block.getY() < getY())return Direction.SOUTH_EAST;
+			if(block.getY() > getY())return Direction.NORTH_EAST;
+		}
+		if(block.getX() > getX())
+		{
+			if(block.getY() == getY())return Direction.WEST;
+			if(block.getY() < getY())return Direction.SOUTH_WEST;
+			if(block.getY() > getY())return Direction.NORTH_WEST;
+		}
+		if(block.getX() == getX())
+		{
+			if(block.getY() < getY())return Direction.SOUTH;
+			if(block.getY() > getY()) return Direction.NORTH;
+		}
+
+		return Direction.NaD;
+	}
 
 	public Block getBottomBlock()
 	{

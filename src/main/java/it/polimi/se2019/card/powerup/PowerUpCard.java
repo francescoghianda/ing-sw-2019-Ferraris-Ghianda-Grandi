@@ -4,6 +4,8 @@ import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.cardscript.Executor;
 import it.polimi.se2019.card.cardscript.Script;
 import it.polimi.se2019.controller.CanceledActionException;
+import it.polimi.se2019.controller.GameController;
+import it.polimi.se2019.player.ImpossibleActionException;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.GameColor;
 
@@ -18,6 +20,7 @@ public class PowerUpCard extends Card
 	private GameColor color;
 	private Use use;
 	private transient Executor scriptExecutor;
+	private boolean used;
 
 	public PowerUpCard()
 	{
@@ -34,10 +37,27 @@ public class PowerUpCard extends Card
 		return cards.get(id);
 	}
 
-	public void apply(Player player) throws CanceledActionException
+	public void apply(Player player, GameController gameController) throws CanceledActionException, ImpossibleActionException
 	{
 		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))createScriptExecutor(player);
-		scriptExecutor.executeScript(new Script(script));
+		try
+		{
+			scriptExecutor.executeScript(new Script(script), gameController);
+		}
+		finally
+		{
+			used = scriptExecutor.isCardUsed();
+		}
+	}
+
+	public void reset()
+	{
+		used = false;
+	}
+
+	public boolean isUsed()
+	{
+		return used;
 	}
 
 	private void createScriptExecutor(Player player)

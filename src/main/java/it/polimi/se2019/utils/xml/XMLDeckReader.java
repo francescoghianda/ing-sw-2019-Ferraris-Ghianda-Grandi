@@ -108,11 +108,12 @@ public class XMLDeckReader
         /*String script = "select_player(visible context_player)->player1\n"+
                         "hit player1 3\n"+
                         "mark player1 1";*/
-        String script = "select_player(false,player1,maxd context_player 0)\n"+
+        String script = "select_block(player1,direction north)\n"+
+                "select_block(player2, same-direction-of player1)\n"+
                 "hit(player1, 3)\n"+
                 "ask_and_select(Vuoi spostare il il giocatore di un blocco?,block1,block,maxd player1 1)\n"+
                 "move(player1,block1)";
-        weaponCards.forEach(card -> card.setBasicModeScript(script));
+        //weaponCards.forEach(card -> card.setBasicModeScript(script));
 
         //
 

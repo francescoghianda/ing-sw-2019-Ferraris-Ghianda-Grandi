@@ -15,10 +15,10 @@
             </reload_cost>
             <basic_mode>
                 <cardscript>
-                    <line>select_player(visible context_player) -> player1</line>
-                    <line>hit player1 2</line>
-                    <line>mark player1 1</line>
-                    <line>enable secondo_aggancio</line>
+                    <line>select_player(false, player1, visible context_player)</line>
+                    <line>hit(player1, 2)</line>
+                    <line>mark(player1, 1)</line>
+                    <line>enable(secondo_aggancio)</line>
                 </cardscript>
             </basic_mode>
             <optional_effects>
@@ -28,8 +28,8 @@
                     </cost>
                     <enabled>false</enabled>
                     <cardscript>
-                        <line>select_player(visible context_player, !equal player1) -> player2</line>
-                        <line>mark player2 1</line>
+                        <line>select_player(false, player2, visible context_player &amp; !equal player1)</line>
+                        <line>mark(player2, 1)</line>
                     </cardscript>
                 </optional_effect>
             </optional_effects>
@@ -48,7 +48,7 @@
             </reload_cost>
             <basic_mode>
                 <cardscript>
-                    <line>hit context_block 1</line>
+                    <line>hit(context_block, 1)</line>
                 </cardscript>
             </basic_mode>
             <alternate_mode>
@@ -57,7 +57,7 @@
                     <red>1</red>
                 </cost>
                 <cardscript>
-                    <line>hit context_block 2</line>
+                    <line>hit(context_block, 2)</line>
                 </cardscript>
             </alternate_mode>
         </weapon_card>
@@ -81,11 +81,11 @@
             </reload_cost>
             <basic_mode>
                 <cardscript>
-                    <line>select_player(context_player)->player1</line>
-                    <line>select_player(context_player)->player2</line>
-                    <line>hit player1 1</line>
-                    <line>hit player2 1</line>
-                    <line>enable colpo_focalizzato</line>
+                    <line>select_player(false, player1, visible context_player)</line>
+                    <line>ask_and_select(Vuoi colpire un secondo giocatore?, player2, player, visible context_player &amp; !equal player1)</line>
+                    <line>hit(player1, 1)</line>
+                    <line>hit(player2, 1)</line>
+                    <line>enable(colpo_focalizzato)</line>
                 </cardscript>
             </basic_mode>
             <optional_effects>
@@ -95,8 +95,8 @@
                     </cost>
                     <enabled>false</enabled>
                     <cardscript>
-                        <line>select_player(equal player1 or equal player2) ->player3</line>
-                        <line>hit player3 1</line>
+                        <line>select_player(false, player3, equal player1 | equal player2)</line>
+                        <line>hit(player3, 1)</line>
                     </cardscript>
                 </optional_effect>
                 <optional_effect name="tripode_di_supporto">
@@ -105,8 +105,8 @@
                     </cost>
                     <enabled>false</enabled>
                     <cardscript>
-                        <line>select_player(visible context_player or !equal player3) -> player4</line>
-                        <line>hit player4 1</line>
+                        <line>select_player(false, player4, visible context_player &amp; !equal player3)</line>
+                        <line>hit(player4, 1)</line>
                     </cardscript>
                 </optional_effect>
             </optional_effects>
@@ -128,9 +128,9 @@
             </reload_cost>
             <basic_mode>
                 <cardscript>
-                    <line>select_player(visible context_player)-> player1</line>
-                    <line>hit player1 2</line>
-                    <line>enable reazione_a_catena</line>
+                    <line>select_player(false, player1, visible context_player)</line>
+                    <line>hit(player1, 2)</line>
+                    <line>enable(reazione_a_catena)</line>
                 </cardscript>
             </basic_mode>
             <optional_effects>
@@ -140,9 +140,9 @@
                     </cost>
                     <enabled>false</enabled>
                     <cardscript>
-                        <line>select(visible context_player1)->player2</line>
-                        <line>hit player2 1</line>
-                        <line>enable alta_tensione</line>
+                        <line>select_player(false, player2, visible player1)</line>
+                        <line>hit(player2, 1)</line>
+                        <line>enable(alta_tensione)</line>
                     </cardscript>
                 </optional_effect>
                 <optional_effect name="alta_tensione">
@@ -151,8 +151,8 @@
                     </cost>
                     <enabled>false</enabled>
                     <cardscript>
-                        <line>select(visible context_player2)->player3</line>
-                        <line>hit player3 2</line>
+                        <line>select_player(false, player3, visible player2)</line>
+                        <line>hit(player3, 2)</line>
                     </cardscript>
                 </optional_effect>
             </optional_effects>
@@ -177,17 +177,17 @@
             </reload_cost>
             <basic_mode>
                 <cardscript>
-                    <line>select_player(visible context_player)->player1</line>
-                    <line>hit player1 2</line>
-                    <line>enable colpo_sovraccarico</line>
+                    <line>select_player(false, player1, visible context_player)</line>
+                    <line>hit(player1, 2)</line>
+                    <line>enable(colpo_sovraccarico)</line>
                 </cardscript>
             </basic_mode>
             <optional_effects>
                 <optional_effect name="slittamento_di_fase">
                     <enabled>true</enabled>
                     <cardscript>
-                        <line>select_block(maxd context_player 2)->block1</line>
-                        <line>move context_player block1</line>
+                        <line>select_block(block1, maxd context_player 2)</line>
+                        <line>move(context_player, block1)</line>
                     </cardscript>
                 </optional_effect>
                 <optional_effect name="colpo_sovraccarico">
@@ -196,7 +196,7 @@
                     </cost>
                     <enabled>false</enabled>
                     <cardscript>
-                        <line>hit player1 1</line>
+                        <line>hit(player1, 1)</line>
                     </cardscript>
                 </optional_effect>
             </optional_effects>
@@ -223,9 +223,9 @@
             </reload_cost>
             <basic_mode>
                 <cardscript>
-                    <line>select_player(visible context_player, mind context_player 2)->context_player1</line>
-                    <line>hit player1 3</line>
-                    <line>mark player1</line>
+                    <line>select_player(false, player1, visible context_player &amp; mind context_player 2)</line>
+                    <line>hit(player1, 3)</line>
+                    <line>mark(player1, 1)</line>
                 </cardscript>
             </basic_mode>
         </weapon_card>

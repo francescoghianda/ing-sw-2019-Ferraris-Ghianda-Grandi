@@ -5,6 +5,9 @@ import it.polimi.se2019.card.cardscript.Executor;
 import it.polimi.se2019.card.cardscript.Script;
 import it.polimi.se2019.card.cost.Cost;
 import it.polimi.se2019.controller.CanceledActionException;
+import it.polimi.se2019.controller.GameController;
+import it.polimi.se2019.player.ImpossibleActionException;
+import it.polimi.se2019.player.NotEnoughAmmoException;
 import it.polimi.se2019.player.Player;
 
 import java.util.HashMap;
@@ -30,6 +33,7 @@ public class WeaponCard extends Card
 	private transient HashMap<String, OptionalEffect> optionalEffects;
 
 	private boolean load;
+	private boolean used;
 
 	private transient Executor executor;
 
@@ -63,28 +67,56 @@ public class WeaponCard extends Card
 	public void reload()
 	{
 		setLoad(true);
+		used = false;
 		optionalEffects.values().forEach(OptionalEffect::resetEnable);
 	}
 
 	public void reset()
 	{
 		executor.reset();
+		used = false;
+		optionalEffects.forEach((s, effect) -> effect.resetEnable());
 	}
 
-	public void fire(Player player)throws CanceledActionException
+	public void fire(Player player, GameController gameController)throws ImpossibleActionException, CanceledActionException
 	{
-		if(!load)throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION, "WEAPON NOT LOAD");
+		if(!load)throw new ImpossibleActionException(ImpossibleActionException.Cause.WEAPON_NOT_LOADED);
 		if(executor == null || !executor.getContextPlayer().equals(player))createScriptExecutor(player);
-		executor.executeScript(new Script(fireMode.equals(Mode.BASIC) ? basicModeScript : alternateModeScript));
+
+		try
+		{
+			executor.executeScript(new Script(fireMode.equals(Mode.BASIC) ? basicModeScript : alternateModeScript), gameController);
+		}
+		finally
+		{
+			used = executor.isCardUsed();
+		}
 	}
 
-	public boolean useOptionalEffect(Player player, OptionalEffect effect)throws CanceledActionException
+	public void useOptionalEffect(Player player, OptionalEffect effect, GameController gameController)throws ImpossibleActionException, CanceledActionException
 	{
-		if(!load)throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION);
-		if(!effect.isEnabled())throw new CanceledActionException(CanceledActionException.Cause.IMPOSSIBLE_ACTION);
+		if(!load)throw new ImpossibleActionException(ImpossibleActionException.Cause.WEAPON_NOT_LOADED);
+		if(!effect.isEnabled())throw new ImpossibleActionException(ImpossibleActionException.Cause.EFFECT_NOT_ENABLED);
+		if(!player.getGameBoard().canPay(effect.getCost()))throw new ImpossibleActionException(ImpossibleActionException.Cause.INSUFFICIENT_AMMO);
 		if(executor == null || !executor.getContextPlayer().equals(player))createScriptExecutor(player);
-		executor.executeScript(new Script(effect.getScript()));
-		return true;
+
+		try
+		{
+			executor.executeScript(new Script(effect.getScript()), gameController);
+		}
+		finally
+		{
+			used = executor.isCardUsed();
+		}
+
+		try
+		{
+			player.getGameBoard().pay(effect.getCost());
+		}
+		catch (NotEnoughAmmoException e)
+		{
+			throw new ImpossibleActionException(ImpossibleActionException.Cause.INSUFFICIENT_AMMO);
+		}
 	}
 
 	public void setFireMode(Mode fireMode)
@@ -93,9 +125,14 @@ public class WeaponCard extends Card
 		this.fireMode = fireMode;
 	}
 
+	public boolean isUsed()
+	{
+		return used;
+	}
+
 	private void createScriptExecutor(Player player)
 	{
-		executor = new Executor(player);
+		executor = new Executor(player, this);
 	}
 
 	public void setLoad(boolean load)
@@ -132,6 +169,11 @@ public class WeaponCard extends Card
 	public boolean hasOptionalEffect()
 	{
 		return hasOptionalEffect;
+	}
+
+	public boolean hasEnabledOptionalEffect()
+	{
+		return !getEnabledOptionalEffects().isEmpty();
 	}
 
 	public boolean hasAlternateFireMode()

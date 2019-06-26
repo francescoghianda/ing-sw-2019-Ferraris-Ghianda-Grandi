@@ -36,12 +36,6 @@ public class CommandPattern
                 Logger.exception(e);
                 return false;
             }
-
-            /*if(parameterType == ParameterType.PLAYER && !executor.containsPlayer(parameter))return false;
-            if(parameterType == ParameterType.BLOCK && !executor.containsBlock(parameter))return false;
-            if(parameterType == ParameterType.PLAYER_OR_BLOCK && !(executor.containsPlayer(parameter) || executor.containsBlock(parameter)))return false;
-            if(parameterType == ParameterType.DIGIT && !isDigit(parameter))return false;
-            if(parameterType == ParameterType.BOOLEAN && !isBoolean(parameter))return false;*/
         }
 
         return true;

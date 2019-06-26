@@ -62,7 +62,7 @@ public class SelectBlockCommand extends Command
         }
         Block chosenBlock = executor.getContextPlayerBlock().getRoom().getMap().getBlock(chosen.getX(), chosen.getY());
 
-        if(chosenBlock == null)throw new CardScriptErrorException("Invalid block <"+chosen+">");
+        if(chosenBlock == null)throw new CommandExecutionException(new CommandError(this, CommandErrorHandler.STOP_ERROR));
 
         return executor.addBlock(varName, chosenBlock);
     }

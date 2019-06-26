@@ -3,7 +3,9 @@ package it.polimi.se2019.card.cardscript;
 import it.polimi.se2019.card.cardscript.command.*;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.controller.CanceledActionException;
+import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.map.Block;
+import it.polimi.se2019.player.ImpossibleActionException;
 import it.polimi.se2019.player.Player;
 
 import java.util.*;
@@ -19,6 +21,8 @@ public class Executor implements OnCommandExecutedListener
     private WeaponCard weaponCard;
 
     private boolean jumpToEndIf;
+
+    private boolean cardUsed;
 
     public Executor(Player contextPlayer)
     {
@@ -42,6 +46,12 @@ public class Executor implements OnCommandExecutedListener
         varBlocks.clear();
         varBoolean.clear();
         varPlayers.put("context_player", contextPlayer);
+        cardUsed = false;
+    }
+
+    public boolean isCardUsed()
+    {
+        return cardUsed;
     }
 
     public Optional<WeaponCard> getWeaponCard()
@@ -62,7 +72,7 @@ public class Executor implements OnCommandExecutedListener
     public Optional<Player> getPlayer(String varName)
     {
         if(varName.equals("context_player"))return Optional.of(contextPlayer);
-        if(varPlayers.containsKey(varName))return Optional.of(varPlayers.get(varName));
+        if(varPlayers.get(varName) != null)return Optional.of(varPlayers.get(varName));
         return Optional.empty();
     }
 
@@ -88,7 +98,7 @@ public class Executor implements OnCommandExecutedListener
     public Optional<Block> getBlock(String varName)
     {
         if(varName.equals("context_block"))return Optional.of(contextPlayer.getBlock());
-        if(varBlocks.containsKey(varName))return Optional.of(varBlocks.get(varName));
+        if(varBlocks.get(varName) != null)return Optional.of(varBlocks.get(varName));
         return Optional.empty();
     }
 
@@ -116,6 +126,7 @@ public class Executor implements OnCommandExecutedListener
 
     public boolean containsBlock(String varName)
     {
+        if(varName.equalsIgnoreCase("context_block"))return true;
         return varBlocks.containsKey(varName);
     }
 
@@ -124,7 +135,7 @@ public class Executor implements OnCommandExecutedListener
         return varPlayers.containsKey(varName) || varBlocks.containsKey(varName);
     }
 
-    public void executeScript(Script script) throws CanceledActionException
+    public void executeScript(Script script, GameController gameController) throws ImpossibleActionException, CanceledActionException
     {
         Iterator<ScriptCommand> commands = script.iterator();
 
@@ -133,7 +144,11 @@ public class Executor implements OnCommandExecutedListener
             ScriptCommand scriptCommand = commands.next();
             try
             {
-                if(!jumpToEndIf && !scriptCommand.getCommand().equals("endif"))getCommand(scriptCommand.getCommand(), scriptCommand.getParameters()).setLineNumber(scriptCommand.getScriptLineNumber()).execute();
+                if(!jumpToEndIf && !scriptCommand.getCommand().equals("endif"))
+                {
+                    getCommand(scriptCommand.getCommand(), scriptCommand.getParameters()).setLineNumber(scriptCommand.getScriptLineNumber()).execute();
+                    gameController.sendBroadcastUpdate();
+                }
             }
             catch (CommandExecutionException e)
             {
@@ -180,7 +195,7 @@ public class Executor implements OnCommandExecutedListener
 
         if(type.equalsAny(Commands.HIT, Commands.MARK, Commands.MOVE) && result)
         {
-            //TODO settare l'arma/potenziamento come usato per la futura disattivazione/rimozione
+            cardUsed = true;
         }
         else if(type == Commands.IF && !result)
         {

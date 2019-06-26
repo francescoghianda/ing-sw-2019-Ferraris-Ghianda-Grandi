@@ -21,8 +21,11 @@ public class MoveCommand extends Command
 
         players = new ArrayList<>();
 
-        if(isPlayer(parameters[0])) players.add((Player)getParam(0));
-        else players.addAll(((Block)getParam(0)).getPlayers());
+        if(getParam(0) != null)
+        {
+            if(isPlayer(parameters[0])) players.add((Player)getParam(0));
+            else players.addAll(((Block)getParam(0)).getPlayers());
+        }
 
         destinationBlock = (Block) getParam(1);
     }

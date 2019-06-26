@@ -1,6 +1,7 @@
 package it.polimi.se2019.card.cardscript;
 
 import it.polimi.se2019.map.Block;
+import it.polimi.se2019.map.Direction;
 import it.polimi.se2019.player.Player;
 
 import java.util.HashMap;
@@ -105,11 +106,53 @@ public class LogicExpression
             case "damaged":
                 result = contextPlayer.getDamagedPlayers().contains(player);
                 break;
+            case "straight-line":
+                result = isPlayer ? isInStraightLine(player.getBlock()) : isInStraightLine(block);
+                break;
+            case "same-direction-of":
+                result = isInSameDirectionOf(split[1], isPlayer ? player.getBlock() : block);
+                break;
+            case "direction":
+                result = isInDirection(isPlayer ? player.getBlock() : block, split[1]);
+                break;
             default:
                 throw new LogicExpressionEvaluationException("Invalid keyword \""+split[0]+"\"");
         }
         if(invert)return !result;
         return result;
+    }
+
+    private boolean isInDirection(Block block, String direction) throws LogicExpressionEvaluationException
+    {
+        try
+        {
+            if(direction.equalsIgnoreCase("cardinal")) return block.getDirectionFrom(executor.getContextPlayerBlock()).isCardinalDirection();
+
+            return block.getDirectionFrom(executor.getContextPlayerBlock()) == Direction.valueOf(direction.toUpperCase());
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new LogicExpressionEvaluationException("Invalid direction \""+direction+"\"");
+        }
+    }
+
+    private boolean isInSameDirectionOf(String varName, Block block1) throws LogicExpressionEvaluationException
+    {
+        Block block2;
+        if(isPlayer(varName))block2 = getPlayer(varName).getBlock();
+        else if(isBlock(varName))block2 = getBlock(varName);
+        else throw new LogicExpressionEvaluationException();
+
+        Direction direction1 = block1.getDirectionFrom(executor.getContextPlayerBlock());
+        Direction direction2 = block2.getDirectionFrom(executor.getContextPlayerBlock());
+
+        return direction1 != Direction.NaD && direction1 == direction2;
+    }
+
+    private boolean isInStraightLine(Block block)
+    {
+        Player contextPlayer = executor.getContextPlayer();
+        return block.getX() == contextPlayer.getBlock().getX() || block.getY() == contextPlayer.getBlock().getY();
     }
 
     private Player getPlayer(String varName) throws LogicExpressionEvaluationException
