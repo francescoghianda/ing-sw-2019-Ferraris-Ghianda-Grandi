@@ -273,15 +273,12 @@ public class GameController implements TimerListener
         WeaponCard chosenWeapon = WeaponCard.findCardById(player.getView().chooseWeaponFromPlayer().getId());
 
         if(chosenWeapon == null || !chosenWeapon.isLoad())throw new ImpossibleActionException(ImpossibleActionException.Cause.WEAPON_NOT_LOADED);
-
-        while (chosenWeapon.hasEnabledOptionalEffect())useOptionalEffect(player, chosenWeapon);
-
+        if(chosenWeapon.hasEnabledOptionalEffect())useOptionalEffect(player, chosenWeapon);
         if(chosenWeapon.hasAlternateFireMode())chooseFireMode(player, chosenWeapon);
 
         chosenWeapon.fire(player, this);
 
-        while (chosenWeapon.hasEnabledOptionalEffect())useOptionalEffect(player, chosenWeapon);
-
+        if(chosenWeapon.hasEnabledOptionalEffect())useOptionalEffect(player, chosenWeapon);
         if(chosenWeapon.isUsed())chosenWeapon.setLoad(false);
         chosenWeapon.reset();
     }
@@ -298,21 +295,37 @@ public class GameController implements TimerListener
         List<OptionalEffect> enabledEffects = weapon.getEnabledOptionalEffects();
         if(enabledEffects.isEmpty())return;
 
-        if(player.getView().choose("Vuoi usare un effetto opzionale?", "Si", "No").equals("Si"))
+        String message = "Vuoi usare un effetto opzionale?";
+        while(!enabledEffects.isEmpty())
         {
-            ArrayList<String> optionalEffectNames = enabledEffects.stream().map(OptionalEffect::getName).collect(Collectors.toCollection(ArrayList::new));
-            String chosenEffect;
-            try
+            if(player.getView().choose(message, "Si", "No").equals("Si"))
             {
-                chosenEffect = player.getView().chooseOrCancel(new Bundle<>("Che effetto vuoi usare?", optionalEffectNames));
-                weapon.useOptionalEffect(player, weapon.getOptionalEffect(chosenEffect), this);
+                ArrayList<String> optionalEffectNames = enabledEffects.stream().map(OptionalEffect::getName).collect(Collectors.toCollection(ArrayList::new));
+                String chosenEffect = "";
+                try
+                {
+                    chosenEffect = player.getView().chooseOrCancel(new Bundle<>("Che effetto vuoi usare?", optionalEffectNames));
+                    weapon.useOptionalEffect(player, weapon.getOptionalEffect(chosenEffect), this);
+                }
+                catch (CanceledActionException e)
+                {
+                    Logger.warning("Effect "+chosenEffect+" was not executed cause"+e.getCanceledCause()+" - "+player);
+                    continue;
+                }
+                catch (ImpossibleActionException e)
+                {
+                    Logger.warning("Effect "+chosenEffect+" was not executed cause"+e.cause()+" - "+player);
+                    continue;
+                }
+                finally
+                {
+                    enabledEffects.remove(weapon.getOptionalEffect(chosenEffect));
+                    message = "Vuoi usare un altro effetto opzionale?";
+                }
+                weapon.getOptionalEffect(chosenEffect).setEnabled(false);
             }
-            catch (CanceledActionException | ImpossibleActionException e)
-            {
-                return;
-            }
-            weapon.getOptionalEffect(chosenEffect).setEnabled(false);
         }
+
 
     }
 
