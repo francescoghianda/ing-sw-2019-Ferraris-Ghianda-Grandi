@@ -35,6 +35,7 @@ public class HitCommand extends Command
     public boolean exec()
     {
         if(players.isEmpty())return false;
+        players.remove(executor.getContextPlayer());
         players.forEach(player -> player.getGameBoard().addDamage(executor.getContextPlayer(), damage));
         return true;
     }

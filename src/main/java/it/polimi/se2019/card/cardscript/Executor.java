@@ -166,6 +166,8 @@ public class Executor implements OnCommandExecutedListener
                 return new MoveCommand(this, parameters);
             case "hit":
                 return new HitCommand(this, parameters);
+            case "hit_room":
+                return new HitRoomCommand(this, parameters);
             case "mark":
                 return new MarkCommand(this, parameters);
             case "select_player":
@@ -178,6 +180,8 @@ public class Executor implements OnCommandExecutedListener
                 return new EnableCommand(this, parameters);
             case "askif":
                 return new AskIfCommand(this, parameters);
+            case "get_block_of":
+                return new GetBlockOfCommand(this, parameters);
             case "if":
                 return new IfCommand(this, parameters);
             case "endif":

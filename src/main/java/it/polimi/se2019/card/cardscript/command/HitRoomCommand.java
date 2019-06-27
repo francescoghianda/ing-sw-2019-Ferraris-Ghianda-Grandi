@@ -8,14 +8,14 @@ import it.polimi.se2019.player.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MarkCommand extends Command
+public class HitRoomCommand extends Command
 {
     private static CommandPattern pattern = new CommandPattern(ParameterTypes.PLAYER_OR_BLOCK, ParameterTypes.DIGIT);
 
     private List<Player> players;
-    private int markValue;
+    private int damage;
 
-    public MarkCommand(Executor executor, String[] parameters)
+    public HitRoomCommand(Executor executor, String[] parameters)
     {
         super(executor, parameters, pattern);
 
@@ -23,26 +23,31 @@ public class MarkCommand extends Command
 
         if(getParam(0) != null)
         {
-            if(isPlayer(parameters[0])) players.add((Player)getParam(0));
-            else players.addAll(((Block)getParam(0)).getPlayers());
+            if(isPlayer(parameters[0]))
+            {
+                ((Player)getParam(0)).getBlock().getRoom().getBlocks().forEach(block -> players.addAll(block.getPlayers()));
+            }
+            else
+            {
+                ((Block)getParam(0)).getRoom().getBlocks().forEach(block -> players.addAll(block.getPlayers()));
+            }
         }
 
-
-        markValue = (Integer)getParam(1);
+        damage = Integer.parseInt(parameters[1]);
     }
 
     @Override
-    public boolean exec()
+    protected boolean exec()
     {
         if(players.isEmpty())return false;
         players.remove(executor.getContextPlayer());
-        players.forEach(player -> player.getGameBoard().addMarker(executor.getContextPlayer(), markValue));
+        players.forEach(player -> player.getGameBoard().addDamage(executor.getContextPlayer(), damage));
         return true;
     }
 
     @Override
     public Commands getType()
     {
-        return Commands.MARK;
+        return Commands.HIT_ROOM;
     }
 }

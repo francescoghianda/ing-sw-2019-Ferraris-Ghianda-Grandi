@@ -110,16 +110,33 @@ public class LogicExpression
                 result = isPlayer ? isInStraightLine(player.getBlock()) : isInStraightLine(block);
                 break;
             case "same-direction-of":
-                result = isInSameDirectionOf(split[1], isPlayer ? player.getBlock() : block);
+                result = isInSameDirectionOf(isPlayer ? player.getBlock() : block, getBlockFromVariable(split[1]));
                 break;
             case "direction":
                 result = isInDirection(isPlayer ? player.getBlock() : block, split[1]);
+                break;
+            case "same-room-of":
+                result = isInSameRoomOf(isPlayer ? player.getBlock() : block, getBlockFromVariable(split[1]));
                 break;
             default:
                 throw new LogicExpressionEvaluationException("Invalid keyword \""+split[0]+"\"");
         }
         if(invert)return !result;
         return result;
+    }
+
+    private boolean isInSameRoomOf(Block block1, Block block2)
+    {
+        return block1.getRoom().equals(block2.getRoom());
+    }
+
+    private Block getBlockFromVariable(String varName) throws LogicExpressionEvaluationException
+    {
+        Block block;
+        if(isPlayer(varName))block = getPlayer(varName).getBlock();
+        else if(isBlock(varName))block = getBlock(varName);
+        else throw new LogicExpressionEvaluationException();
+        return block;
     }
 
     private boolean isInDirection(Block block, String direction) throws LogicExpressionEvaluationException
@@ -136,13 +153,8 @@ public class LogicExpression
         }
     }
 
-    private boolean isInSameDirectionOf(String varName, Block block1) throws LogicExpressionEvaluationException
+    private boolean isInSameDirectionOf(Block block1, Block block2)
     {
-        Block block2;
-        if(isPlayer(varName))block2 = getPlayer(varName).getBlock();
-        else if(isBlock(varName))block2 = getBlock(varName);
-        else throw new LogicExpressionEvaluationException();
-
         Direction direction1 = block1.getDirectionFrom(executor.getContextPlayerBlock());
         Direction direction2 = block2.getDirectionFrom(executor.getContextPlayerBlock());
 
