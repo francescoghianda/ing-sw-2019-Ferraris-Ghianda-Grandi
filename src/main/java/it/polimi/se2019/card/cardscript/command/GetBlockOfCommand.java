@@ -22,7 +22,11 @@ public class GetBlockOfCommand extends Command
     @Override
     protected boolean exec()
     {
-        if(player == null)return false;
+        if(player == null)
+        {
+            executor.addBlock(varName, null);
+            return false;
+        }
         return executor.addBlock(varName, player.getBlock());
     }
 

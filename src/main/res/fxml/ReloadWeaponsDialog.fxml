@@ -4,11 +4,14 @@
 
 <?import it.polimi.se2019.ui.gui.components.CardPane?>
 <?import it.polimi.se2019.ui.gui.components.ColoredButton?>
-<BorderPane fx:controller="it.polimi.se2019.ui.gui.dialogs.ReloadWeaponsDialogController" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+<BorderPane fx:id="rootPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
     <center>
         <CardPane fx:id="cardPane" type="weapon" title="Seleziona le armi che vuoi ricaricare"/>
     </center>
     <bottom>
-        <ColoredButton fx:id="okButton" text="Ricarica"/>
+        <HBox alignment="CENTER">
+            <ColoredButton fx:id="okButton" text="Annulla" onAction="#closeDialog"/>
+        </HBox>
     </bottom>
 </BorderPane>

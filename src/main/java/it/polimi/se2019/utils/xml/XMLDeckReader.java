@@ -115,6 +115,7 @@ public class XMLDeckReader
                 "move(player1,block1)";
         //weaponCards.forEach(card -> card.setBasicModeScript(script));
 
+
         //
 
         return weaponCards;
@@ -290,6 +291,7 @@ public class XMLDeckReader
             if(i != 0)stringBuilder.append("\n");
             stringBuilder.append(lines.item(i).getTextContent());
         }
+
         return stringBuilder.toString();
     }
 }

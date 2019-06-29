@@ -37,18 +37,7 @@ public class SelectPlayerCommand extends Command
         List<Player> validPlayers = executor.getContextPlayer().getGameController().getPlayers();
         validPlayers.remove(executor.getContextPlayer());
 
-        ArrayList<String> validUsername = validPlayers.stream().filter(player -> {
-                try
-                {
-                    return logicExpression.evaluate(executor, player);
-                }
-                catch (LogicExpressionEvaluationException e)
-                {
-                    Logger.exception(e);
-                    return false;
-                }
-            }).map(Player::getUsername).collect(Collectors.toCollection(ArrayList::new));
-
+        ArrayList<String> validUsername = LogicExpression.filter(validPlayers, logicExpression, executor).stream().map(Player::getUsername).collect(Collectors.toCollection(ArrayList::new));
 
         if(optional && !askIf("Vuoi selezionare un altro giocatore?"))
         {
@@ -69,7 +58,7 @@ public class SelectPlayerCommand extends Command
         String chosen;
         try
         {
-            chosen = executor.getContextPlayer().getView().chooseOrCancel(new Bundle<>("Scegli un giocatore tra", validUsername));
+            chosen = executor.getContextPlayer().getView().chooseOrCancel(Bundle.of("Scegli un giocatore tra", validUsername));
         }
         catch (CanceledActionException e)
         {

@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * creates a player
@@ -51,6 +52,11 @@ public class Player implements Serializable
 		this.gameController = gameController;
 	}
 
+	public void resetDamagedPlayers()
+	{
+		damagedPlayers.clear();
+	}
+
 	public boolean isFirstRoundPlayed()
 	{
 		return firstRoundPlayed;
@@ -74,7 +80,21 @@ public class Player implements Serializable
 	public void reset()
 	{
 		executedAction.clear();
-		damagedPlayers.clear();
+		resetDamagedPlayers();
+	}
+
+	public boolean hasUnloadedWeapons()
+	{
+		for(WeaponCard card : weapons)
+		{
+			if(!card.isLoad())return true;
+		}
+		return false;
+	}
+
+	public ArrayList<WeaponCard> getUnloadedWeapons()
+	{
+		return weapons.stream().filter(card -> !card.isLoad()).collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	public String getUsername()
@@ -231,6 +251,12 @@ public class Player implements Serializable
 		int x = block == null ? -1 : block.getX();
 		int y = block == null ? -1 : block.getY();
 		return new PlayerData(clientConnection.getUser().getUsername(), color, weaponsCards, powerUpsCards, gameBoard.getData(), x, y);
+	}
+
+	@Override
+	public String toString()
+	{
+		return "[color: "+color+", username: "+clientConnection.getUser().getUsername()+"]";
 	}
 
 }

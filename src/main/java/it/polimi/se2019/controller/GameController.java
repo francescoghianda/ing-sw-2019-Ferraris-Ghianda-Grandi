@@ -2,6 +2,7 @@ package it.polimi.se2019.controller;
 
 import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.ammo.AmmoCard;
+import it.polimi.se2019.card.cost.Cost;
 import it.polimi.se2019.card.deck.Deck;
 import it.polimi.se2019.card.deck.DeckFactory;
 import it.polimi.se2019.card.powerup.PowerUpCard;
@@ -18,11 +19,15 @@ import it.polimi.se2019.network.message.ConnectionErrorException;
 import it.polimi.se2019.player.*;
 import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.constants.GameMode;
+import it.polimi.se2019.utils.list.ListChangeAdapter;
+import it.polimi.se2019.utils.list.ListChangeEvent;
+import it.polimi.se2019.utils.list.ObservableList;
 import it.polimi.se2019.utils.logging.Logger;
 import it.polimi.se2019.utils.timer.Timer;
 import it.polimi.se2019.utils.timer.TimerListener;
 import it.polimi.se2019.utils.xml.NotValidXMLException;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -32,7 +37,7 @@ public class GameController implements TimerListener
 {
     private Random random;
     private List<GameColor> availablePlayerColors;
-    private List<Player> players;
+    private ObservableList<Player> players;
     private Map map;
     private GameMode gameMode;
     private ClientsManager clientsManager;
@@ -65,13 +70,25 @@ public class GameController implements TimerListener
         MatchSettings settings = MatchSettings.getInstance();
 
         remainingSkulls = settings.getSkullNumber();
-        playersForStart = settings.getPlayersNumber();
+        playersForStart = settings.getMaxPlayers();
         startTimerSeconds = settings.getStartTimerSeconds();
         deaths = 0;
         map = Map.createMap(settings.getMapNumber());
 
         random = new Random();
-        players = new ArrayList<>();
+        players = new ObservableList<>();
+
+        players.addChangeListener(new ListChangeAdapter<Player>() {
+            @Override
+            public void onChanged(Player element, ListChangeEvent eventType)
+            {
+                if(eventType == ListChangeEvent.ELEMENT_ADDED && players.size() >= playersForStart)
+                {
+                    match.startGame();
+                }
+            }
+        });
+
         createDecks();
     }
 
@@ -108,7 +125,7 @@ public class GameController implements TimerListener
 
     public List<Player> getPlayers()
     {
-        return new ArrayList<>(players);
+        return players.toArrayList();
     }
 
     public Optional<Player> findPlayerByUsername(String username)
@@ -136,6 +153,8 @@ public class GameController implements TimerListener
                 currentPlayer.resetExecutedAction();
                 executeAction(currentPlayer);
             }
+
+            reloadAllWeapons(currentPlayer);
         }
         catch (ConnectionErrorException e)
         {
@@ -157,6 +176,59 @@ public class GameController implements TimerListener
             respawnKilledPlayers();
 
             nextRound();
+        }
+    }
+
+    private List<WeaponCard> getUnloadedWeapons(Player player)
+    {
+        List<WeaponCard> unloadedWeapons = player.getUnloadedWeapons();
+        return unloadedWeapons.stream().filter(weapon -> player.getGameBoard().canPay(weapon.getReloadCost())).collect(Collectors.toList());
+    }
+
+    private void reloadAllWeapons(Player player)
+    {
+        if(!player.hasUnloadedWeapons())return;
+        List<WeaponCard> unloadedWeapons = getUnloadedWeapons(player);
+        if(unloadedWeapons.isEmpty())return;
+
+        ArrayList<Card> toReload = player.getView().chooseWeaponsToReload(new ArrayList<>(unloadedWeapons));
+        if(!unloadedWeapons.containsAll(toReload))return;
+        List<WeaponCard> toReloadWeapons = toReload.stream().map(card -> WeaponCard.findCardById(card.getId())).collect(Collectors.toList());
+
+        /*int totalRedCost = toReloadWeapons.stream().map(WeaponCard::getReloadCost).map(Cost::getRedAmmo).reduce(0, Integer::sum);
+        int totalBlueCost = toReloadWeapons.stream().map(WeaponCard::getReloadCost).map(Cost::getBlueAmmo).reduce(0, Integer::sum);
+        int totalYellowCost = toReloadWeapons.stream().map(WeaponCard::getReloadCost).map(Cost::getYellowAmmo).reduce(0, Integer::sum);*/
+
+        toReloadWeapons.forEach(weaponCard ->
+        {
+            try
+            {
+                player.getGameBoard().pay(weaponCard.getReloadCost());
+                weaponCard.reload();
+            }
+            catch (NotEnoughAmmoException e)
+            {
+                Logger.warning("Weapon "+weaponCard+" cannot be reloaded by player "+player);
+            }
+        });
+    }
+
+    private void reloadWeapon(Player player)
+    {
+        if(!player.hasUnloadedWeapons())return;
+        List<WeaponCard> unloadedWeapons = getUnloadedWeapons(player);
+        if(unloadedWeapons.isEmpty())return;
+
+        WeaponCard chosen = WeaponCard.findCardById(player.getView().chooseWeaponToReload(new ArrayList<>(unloadedWeapons)).getId());
+        try
+        {
+            player.getGameBoard().pay(chosen.getReloadCost());
+            chosen.reload();
+            player.addExecutedAction(Action.RELOAD);
+        }
+        catch (NotEnoughAmmoException e)
+        {
+            Logger.warning("Weapon "+chosen+" cannot be reloaded by player "+player);
         }
     }
 
@@ -224,14 +296,17 @@ public class GameController implements TimerListener
 
         while ((possibleActions = ActionsGroup.getPossibleActions(currentPlayer)).length > 0)
         {
-            Action chosen = currentPlayer.getView().chooseActionFrom(possibleActions);
+            Bundle<Action, Serializable> chosenBundle = currentPlayer.getView().chooseActionFrom(possibleActions);
+
+            Action chosen = chosenBundle.getFirst();
+            Object optionalObject = chosenBundle.getSecond();
 
             if(chosen == Action.END_ROUND)return false;
             if(chosen == Action.END_ACTION)break;
 
             try
             {
-                executeAction(chosen, currentPlayer);
+                executeAction(chosen, currentPlayer, optionalObject);
             }
             catch (CanceledActionException e)
             {
@@ -248,7 +323,7 @@ public class GameController implements TimerListener
         return true;
     }
 
-    private void executeAction(Action action, Player player) throws CanceledActionException, ImpossibleActionException
+    private void executeAction(Action action, Player player, Object optionalObject) throws CanceledActionException, ImpossibleActionException
     {
         switch (action)
         {
@@ -263,7 +338,7 @@ public class GameController implements TimerListener
                 fire(player);
                 break;
             case USE_POWER_UP:
-                
+                usePowerUp(player, PowerUpCard.findById(((Card)optionalObject).getId()));
                 break;
         }
     }
@@ -273,14 +348,25 @@ public class GameController implements TimerListener
         WeaponCard chosenWeapon = WeaponCard.findCardById(player.getView().chooseWeaponFromPlayer().getId());
 
         if(chosenWeapon == null || !chosenWeapon.isLoad())throw new ImpossibleActionException(ImpossibleActionException.Cause.WEAPON_NOT_LOADED);
-        if(chosenWeapon.hasEnabledOptionalEffect())useOptionalEffect(player, chosenWeapon);
-        if(chosenWeapon.hasAlternateFireMode())chooseFireMode(player, chosenWeapon);
 
-        chosenWeapon.fire(player, this);
+        try
+        {
+            if(chosenWeapon.hasEnabledOptionalEffect())useOptionalEffect(player, chosenWeapon);
+            if(chosenWeapon.hasAlternateFireMode())chooseFireMode(player, chosenWeapon);
 
-        if(chosenWeapon.hasEnabledOptionalEffect())useOptionalEffect(player, chosenWeapon);
-        if(chosenWeapon.isUsed())chosenWeapon.setLoad(false);
-        chosenWeapon.reset();
+            chosenWeapon.fire(player, this);
+
+            if(chosenWeapon.hasEnabledOptionalEffect())useOptionalEffect(player, chosenWeapon);
+        }
+        finally
+        {
+            if(chosenWeapon.isUsed())
+            {
+                chosenWeapon.setLoad(false);
+                player.addExecutedAction(Action.FIRE);
+            }
+            chosenWeapon.reset();
+        }
     }
 
     private void chooseFireMode(Player player, WeaponCard weapon)
@@ -292,19 +378,18 @@ public class GameController implements TimerListener
 
     private void useOptionalEffect(Player player, WeaponCard weapon)
     {
-        List<OptionalEffect> enabledEffects = weapon.getEnabledOptionalEffects();
-        if(enabledEffects.isEmpty())return;
+        if(weapon.getEnabledOptionalEffects().isEmpty())return;
 
         String message = "Vuoi usare un effetto opzionale?";
-        while(!enabledEffects.isEmpty())
+        while(!weapon.getEnabledOptionalEffects().isEmpty())
         {
             if(player.getView().choose(message, "Si", "No").equals("Si"))
             {
-                ArrayList<String> optionalEffectNames = enabledEffects.stream().map(OptionalEffect::getName).collect(Collectors.toCollection(ArrayList::new));
+                ArrayList<String> optionalEffectNames = weapon.getEnabledOptionalEffects().stream().map(OptionalEffect::getName).collect(Collectors.toCollection(ArrayList::new));
                 String chosenEffect = "";
                 try
                 {
-                    chosenEffect = player.getView().chooseOrCancel(new Bundle<>("Che effetto vuoi usare?", optionalEffectNames));
+                    chosenEffect = player.getView().chooseOrCancel(Bundle.of("Che effetto vuoi usare?", optionalEffectNames));
                     weapon.useOptionalEffect(player, weapon.getOptionalEffect(chosenEffect), this);
                 }
                 catch (CanceledActionException e)
@@ -319,13 +404,15 @@ public class GameController implements TimerListener
                 }
                 finally
                 {
-                    enabledEffects.remove(weapon.getOptionalEffect(chosenEffect));
                     message = "Vuoi usare un altro effetto opzionale?";
                 }
                 weapon.getOptionalEffect(chosenEffect).setEnabled(false);
             }
+            else
+            {
+                break;
+            }
         }
-
 
     }
 
@@ -406,7 +493,7 @@ public class GameController implements TimerListener
 
     private void selectStartingPlayer()
     {
-        Collections.shuffle(players);
+        players.shuffle();
 
         Player firstPlayer = players.get(0);
 
@@ -432,19 +519,16 @@ public class GameController implements TimerListener
         if(availablePlayerColors.isEmpty())throw new TooManyPlayerException();
         GameColor color = availablePlayerColors.get(random.nextInt(availablePlayerColors.size()));
         Player player = new Player(color, this, server);
-        players.add(player);
+
         availablePlayerColors.remove(color);
 
         player.getGameBoard().setRedAmmo(3);
         player.getGameBoard().setBlueAmmo(3);
         player.getGameBoard().setYellowAmmo(3);
 
-        sendUpdate(player);
+        players.add(player);
 
-        if(players.size() >= playersForStart)
-        {
-            match.startGame();
-        }
+        sendUpdate(player);
 
         return player;
     }
@@ -507,9 +591,12 @@ public class GameController implements TimerListener
     }
 
 
-    public void usePowerUp(Player player, PowerUpCard powerUp)
+    private void usePowerUp(Player player, PowerUpCard powerUp) throws ImpossibleActionException, CanceledActionException
     {
-
+        if(powerUp.getUse() != PowerUpCard.Use.ALWAYS)throw new ImpossibleActionException(ImpossibleActionException.Cause.INVALID_POWER_UP);
+        powerUp.apply(player, this);
+        player.removePowerUp(powerUp);
+        powerUpCardDeck.addCard(powerUp);
     }
 
     private WeaponCard selectWeaponFromPlayer(Player player) throws CanceledActionException

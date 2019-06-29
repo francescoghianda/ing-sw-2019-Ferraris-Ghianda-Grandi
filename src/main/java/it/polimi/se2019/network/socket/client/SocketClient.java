@@ -59,7 +59,7 @@ public class SocketClient implements Runnable, NetworkClient
         {
             while(running)
             {
-                Message incomeMessage = (Message) ois.readObject();
+                Message incomeMessage = (Message) ois.readUnshared();
 
                 if(incomeMessage.getType() == Message.Type.REQUEST)
                 {
@@ -71,6 +71,7 @@ public class SocketClient implements Runnable, NetworkClient
                             {
                                 try
                                 {
+                                    getUI().requestFocus();
                                     Serializable obj = ((CancellableActionRequest)incomeMessage).apply(getUI());
                                     sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), incomeMessage.getMessageId(), obj, Response.Status.OK));
                                 }
@@ -81,6 +82,7 @@ public class SocketClient implements Runnable, NetworkClient
                             }
                             else
                             {
+                                getUI().requestFocus();
                                 Serializable obj = ((ActionRequest)incomeMessage).apply(getUI());
                                 sendMessageToServer(new Response("Response to "+incomeMessage.getMessage(), incomeMessage.getMessageId(), obj, Response.Status.OK));
                             }

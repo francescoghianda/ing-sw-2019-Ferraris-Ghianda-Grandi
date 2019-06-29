@@ -4,6 +4,7 @@ import it.polimi.se2019.map.BlockData;
 import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.gui.GUI;
 import it.polimi.se2019.ui.gui.MatchScene;
+import it.polimi.se2019.ui.gui.value.CancelableValue;
 import it.polimi.se2019.utils.constants.GameColor;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
@@ -36,6 +37,8 @@ public class ChoosePane extends AnchorPane implements Initializable
     private GameColor color;
     private OnOptionChosenListener listener;
     private FadeTransition transition;
+
+    private CancelableValue cancelableValue;
 
     public ChoosePane()
     {
@@ -97,6 +100,18 @@ public class ChoosePane extends AnchorPane implements Initializable
         tilePane.getChildren().add(optionButton);
     }
 
+    public void addCancelButton(CancelableValue value)
+    {
+        ColoredButton cancelButton = new ColoredButton("Annulla", color);
+
+        cancelButton.setOnAction(this::onCancelButtonClicked);
+        cancelButton.setMinHeight(GUI.getScreenHeight()/20);
+        cancelButton.setMinWidth(GUI.getScreenWidth()/24);
+
+        tilePane.getChildren().add(cancelButton);
+        this.cancelableValue = value;
+    }
+
     public void setColor(GameColor color)
     {
         this.color = color;
@@ -130,6 +145,11 @@ public class ChoosePane extends AnchorPane implements Initializable
 
         label.maxHeightProperty().bind(heightProperty().multiply(0.25));
         tilePane.maxHeightProperty().bind(heightProperty().multiply(0.75));
+    }
+
+    public void onCancelButtonClicked(ActionEvent event)
+    {
+        cancelableValue.cancel();
     }
 
     public void onOptionClicked(ActionEvent event)

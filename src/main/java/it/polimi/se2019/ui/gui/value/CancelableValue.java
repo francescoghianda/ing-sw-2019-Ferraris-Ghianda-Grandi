@@ -20,6 +20,7 @@ public class CancelableValue<T> extends ObservableValue<T>
     public void cancel()
     {
         canceled = true;
+        value.set(null);
     }
 
     boolean isCanceled()
@@ -41,6 +42,7 @@ public class CancelableValue<T> extends ObservableValue<T>
     @Override
     public T get()
     {
+
         return value.get();
     }
 }

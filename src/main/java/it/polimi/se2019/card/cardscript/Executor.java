@@ -72,7 +72,7 @@ public class Executor implements OnCommandExecutedListener
     public Optional<Player> getPlayer(String varName)
     {
         if(varName.equals("context_player"))return Optional.of(contextPlayer);
-        if(varPlayers.get(varName) != null)return Optional.of(varPlayers.get(varName));
+        if(varPlayers.get(varName) != null)return Optional.ofNullable(varPlayers.get(varName));
         return Optional.empty();
     }
 
@@ -98,7 +98,7 @@ public class Executor implements OnCommandExecutedListener
     public Optional<Block> getBlock(String varName)
     {
         if(varName.equals("context_block"))return Optional.of(contextPlayer.getBlock());
-        if(varBlocks.get(varName) != null)return Optional.of(varBlocks.get(varName));
+        if(varBlocks.get(varName) != null)return Optional.ofNullable(varBlocks.get(varName));
         return Optional.empty();
     }
 
@@ -180,8 +180,14 @@ public class Executor implements OnCommandExecutedListener
                 return new EnableCommand(this, parameters);
             case "askif":
                 return new AskIfCommand(this, parameters);
+            case "get_block":
+                return new GetBlockCommand(this, parameters);
+            case "get_player":
+                return new GetPlayerCommand(this, parameters);
             case "get_block_of":
                 return new GetBlockOfCommand(this, parameters);
+            case "reset_damaged_players":
+                return new ResetDamagedCommand(this, parameters);
             case "if":
                 return new IfCommand(this, parameters);
             case "endif":
@@ -197,7 +203,7 @@ public class Executor implements OnCommandExecutedListener
         Commands type = executed.getType();
         boolean result = executed.getResult();
 
-        if(type.equalsAny(Commands.HIT, Commands.MARK, Commands.MOVE) && result)
+        if(type.equalsAny(Commands.HIT, Commands.MARK, Commands.MOVE, Commands.HIT_ROOM) && result)
         {
             cardUsed = true;
         }

@@ -2,7 +2,17 @@ package it.polimi.se2019.card.cardscript.command;
 
 import it.polimi.se2019.card.cardscript.CardScriptErrorException;
 import it.polimi.se2019.card.cardscript.Executor;
+import it.polimi.se2019.card.cardscript.LogicExpression;
+import it.polimi.se2019.card.cardscript.LogicExpressionEvaluationException;
 import it.polimi.se2019.card.cardscript.command.parameter.ParameterTypes;
+import it.polimi.se2019.map.Block;
+import it.polimi.se2019.map.Coordinates;
+import it.polimi.se2019.player.Player;
+import it.polimi.se2019.utils.logging.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AskAndSelectCommand extends Command
 {
@@ -32,6 +42,13 @@ public class AskAndSelectCommand extends Command
     @Override
     protected boolean exec() throws CommandExecutionException
     {
+        if(!isSelectionPossible())
+        {
+            if(mode.equals(PLAYER_MODE)) executor.addPlayer(varName, null);
+            else executor.addBlock(varName, null);
+            return false;
+        }
+
         boolean answer = askIf(question);
 
         if(!answer)
@@ -60,6 +77,25 @@ public class AskAndSelectCommand extends Command
         }
 
         return command.execute();
+    }
+
+    private boolean isSelectionPossible()
+    {
+        LogicExpression expression = new LogicExpression(logicExpression);
+        if(mode.equals(PLAYER_MODE))
+        {
+            List<Player> validPlayers = executor.getContextPlayer().getGameController().getPlayers();
+            validPlayers.remove(executor.getContextPlayer());
+
+            List<Player> filtered = LogicExpression.filter(validPlayers, expression, executor);
+            return !filtered.isEmpty();
+        }
+        else
+        {
+            List<Block> allBlocks = executor.getContextPlayerBlock().getRoom().getMap().getAllBlocks();
+            List<Block> filtered = LogicExpression.filter(allBlocks, expression, executor);
+            return !filtered.isEmpty();
+        }
     }
 
     @Override

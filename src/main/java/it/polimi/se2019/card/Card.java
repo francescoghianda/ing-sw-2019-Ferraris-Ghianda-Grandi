@@ -76,6 +76,9 @@ public abstract class Card implements Serializable
 		return ((Card)obj).getId().equals(id);
 	}
 
-	public abstract String toString();
+	public String toString()
+	{
+		return "CARD [id = "+getId()+", name = "+getName()+", enabled = "+enabled+"]";
+	}
 
 }

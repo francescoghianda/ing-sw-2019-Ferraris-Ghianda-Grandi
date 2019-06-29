@@ -3,8 +3,10 @@ package it.polimi.se2019.card.cardscript;
 import it.polimi.se2019.map.Block;
 import it.polimi.se2019.map.Direction;
 import it.polimi.se2019.player.Player;
+import it.polimi.se2019.utils.logging.Logger;
 
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class LogicExpression
 {
@@ -18,7 +20,7 @@ public class LogicExpression
 
     public LogicExpression(String expression)
     {
-        this.expression = expression;
+        this.expression = expression.trim();
         this.subExpressions = new HashMap<>();
         checkBrackets();
         removeExternalBrackets();
@@ -36,7 +38,7 @@ public class LogicExpression
     {
         for(String orElement : orElements)
         {
-            String[] andElements = orElement.split("&");
+            String[] andElements = orElement.trim().split("&");
             if(evaluateAndElements(andElements, object))return true;
         }
         return false;
@@ -46,32 +48,32 @@ public class LogicExpression
     {
         for(String andElement : andElements)
         {
-            if(!evaluateElement(andElement, object))return false;
+            if(!evaluateElement(andElement.trim(), object))return false;
         }
         return true;
     }
 
     private boolean evaluateElement(String element, Object obj) throws LogicExpressionEvaluationException
     {
-        boolean not = false;
+        boolean invert = false;
         boolean result;
+
         if(element.startsWith("!"))
         {
-            not = true;
+            invert = true;
             element = element.substring(1);
         }
 
         if(element.startsWith("sub-"))
         {
             result = subExpressions.get(element).evaluate(executor, obj);
-            if(not)return !result;
+            if(invert)return !result;
             else return result;
         }
 
         Player contextPlayer = executor.getContextPlayer();
         Block block = null;
         Player player = null;
-        boolean invert = false;
         boolean isPlayer = false;
         if(obj instanceof Block)block = (Block)obj;
         else if(obj instanceof Player)
@@ -81,15 +83,15 @@ public class LogicExpression
         }
         else throw new LogicExpressionEvaluationException();
 
-        String[] split = expression.split(" ");
-        if(expression.startsWith("!"))
-        {
-            invert = true;
-            split[0] = split[0].substring(1);
-        }
+        String[] split = element.split(" ");
+
+        for(int i = 0; i < split.length; i++)split[i] = split[i].trim();
 
         switch (split[0])
         {
+            case "any":
+                result = true;
+                break;
             case "visible":
                 result = isPlayer ? getPlayer(split[1]).getVisiblePlayers().contains(player) : getPlayer(split[1]).getVisibleBlocks().contains(block);
                 break;
@@ -98,10 +100,10 @@ public class LogicExpression
                         block.equals(getBlock(split[1]));
                 break;
             case "maxd":
-                result = isAtDistance(obj, split[1], split[2], MAX_DISTANCE);
+                result = isAtDistance(isPlayer ? player.getBlock() : block, getBlockFromVariable(split[1]), split[2], MAX_DISTANCE);
                 break;
             case "mind":
-                result = isAtDistance(obj, split[1], split[2], MIN_DISTANCE);
+                result = isAtDistance(isPlayer ? player.getBlock() : block, getBlockFromVariable(split[1]), split[2], MIN_DISTANCE);
                 break;
             case "damaged":
                 result = contextPlayer.getDamagedPlayers().contains(player);
@@ -122,11 +124,13 @@ public class LogicExpression
                 throw new LogicExpressionEvaluationException("Invalid keyword \""+split[0]+"\"");
         }
         if(invert)return !result;
+
         return result;
     }
 
     private boolean isInSameRoomOf(Block block1, Block block2)
     {
+        if(block2 == null)return false;
         return block1.getRoom().equals(block2.getRoom());
     }
 
@@ -155,6 +159,8 @@ public class LogicExpression
 
     private boolean isInSameDirectionOf(Block block1, Block block2)
     {
+        if(block2 == null)return false;
+
         Direction direction1 = block1.getDirectionFrom(executor.getContextPlayerBlock());
         Direction direction2 = block2.getDirectionFrom(executor.getContextPlayerBlock());
 
@@ -167,14 +173,14 @@ public class LogicExpression
         return block.getX() == contextPlayer.getBlock().getX() || block.getY() == contextPlayer.getBlock().getY();
     }
 
-    private Player getPlayer(String varName) throws LogicExpressionEvaluationException
+    private Player getPlayer(String varName)
     {
-        return executor.getPlayer(varName).orElseThrow(this::newException);
+        return executor.getPlayer(varName).orElse(null);
     }
 
-    private Block getBlock(String varName) throws LogicExpressionEvaluationException
+    private Block getBlock(String varName)
     {
-        return executor.getBlock(varName).orElseThrow(this::newException);
+        return executor.getBlock(varName).orElse(null);
     }
 
     private LogicExpressionEvaluationException newException()
@@ -189,20 +195,11 @@ public class LogicExpression
         return true;
     }
 
-    private boolean isAtDistance(Object obj, String param2, String distance, int maxOrMin) throws LogicExpressionEvaluationException
+    private boolean isAtDistance(Block block1, Block block2, String distance, int maxOrMin) throws LogicExpressionEvaluationException
     {
+        if(block2 == null)return false;
         if(!isDigit(distance))throw new LogicExpressionEvaluationException();
         int dist = Integer.parseInt(distance);
-        Block block1;
-        Block block2;
-
-        if(obj instanceof Block)block1 = (Block)obj;
-        else if(obj instanceof Player)block1 = ((Player)obj).getBlock();
-        else throw new LogicExpressionEvaluationException();
-
-        if(isPlayer(param2))block2 = getPlayer(param2).getBlock();
-        else if(isBlock(param2))block2 = getBlock(param2);
-        else throw new LogicExpressionEvaluationException();
 
         return maxOrMin == MAX_DISTANCE ? block1.getManhattanDistanceFrom(block2) <= dist : block1.getManhattanDistanceFrom(block2) >= dist;
     }
@@ -282,5 +279,20 @@ public class LogicExpression
             if(count < 0)throw new CardScriptErrorException(error);
         }
         if(count != 0)throw new CardScriptErrorException(error);
+    }
+
+    public static <T> List<T> filter(List<T> list, LogicExpression logicExpression, Executor executor)
+    {
+        return list.stream().filter(player -> {
+            try
+            {
+                return logicExpression.evaluate(executor, player);
+            }
+            catch (LogicExpressionEvaluationException e)
+            {
+                Logger.exception(e);
+                return false;
+            }
+        }).collect(Collectors.toList());
     }
 }

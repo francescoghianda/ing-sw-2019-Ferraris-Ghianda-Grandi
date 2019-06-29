@@ -18,9 +18,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import sun.awt.geom.AreaOp;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
@@ -49,28 +51,80 @@ public class CardPane extends StackPane implements Initializable
     private ImageView emptySlot3;
 
     @FXML
-    private VBox cardSlot1;
+    private CardSlot cardSlot1;
 
     @FXML
-    private VBox cardSlot2;
+    private CardSlot cardSlot2;
 
     @FXML
-    private VBox cardSlot3;
+    private CardSlot cardSlot3;
+
+    private CardSlot[] slots;
 
     private String title;
     private DoubleProperty fontSize;
     private String type;
     private int cardNumber;
 
+    private boolean cardSelectable;
+    private int cardViewTransition;
+
     public CardPane(@NamedArg("title") String title, @NamedArg("type") String type)
     {
         this.type = type;
         this.title = title;
         fontSize = new SimpleDoubleProperty();
+        cardViewTransition = CardView.SCALE_TRANSITION;
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/cardPane.fxml"));
         fxmlLoader.setController(this);
         fxmlLoader.setRoot(this);
         load(fxmlLoader);
+    }
+
+    public void setCardViewTransition(int cardViewTransition)
+    {
+        this.cardViewTransition = cardViewTransition;
+        for(CardSlot slot : slots)
+        {
+            slot.setCardViewTransition(cardViewTransition);
+        }
+    }
+
+    public List<Card> getSelectedCards()
+    {
+        List<Card> selectedCards = new ArrayList<>();
+
+        for(CardSlot slot : slots)
+        {
+            if(slot.isCardSelected())selectedCards.add(slot.getCard());
+        }
+
+        return selectedCards;
+    }
+
+    public void deselectAllCards()
+    {
+        for(CardSlot slot : slots)
+        {
+            slot.setCardSelected(false);
+        }
+    }
+
+    public void enableAllCards()
+    {
+        for(CardSlot slot : slots)
+        {
+            slot.setCardEnabled(true);
+        }
+    }
+
+    public void setCardSelectable(boolean cardSelectable)
+    {
+        for(CardSlot slot : slots)
+        {
+            slot.setCardSelectable(cardSelectable);
+        }
+        this.cardSelectable = cardSelectable;
     }
 
     private void load(FXMLLoader loader)
@@ -90,64 +144,61 @@ public class CardPane extends StackPane implements Initializable
         cardNumber++;
         if(cardNumber > 3)throw new CardPaneOutOfBoundsException();
 
-        CardView cardView = new CardView(card, CardView.SCALE_TRANSITION);
-        if(type.equals("weapon"))cardView.setMaxWidth(getWidth()/4.5);
-        else cardView.setMaxWidth(getWidth()/4.7);
+        CardSlot freeSlot = getFreeCardSlot();
+        if(freeSlot != null)
+        {
+            freeSlot.setCard(card, cardViewTransition, getWidth(), listener);
+            freeSlot.setCardSelectable(cardSelectable);
+        }
 
-        cardView.setOnCardViewClickListener(listener);
-
-        getFreeCardSlot().getChildren().add(cardView);
     }
 
     public void updateCards(List<Card> cards, CardView.OnCardViewClickListener listener)
     {
-        removeIfNotInList(cardSlot1, cards);
-        removeIfNotInList(cardSlot2, cards);
-        removeIfNotInList(cardSlot3, cards);
+        for(CardSlot slot : slots)
+        {
+            removeIfNotInList(slot, cards);
+        }
 
         cards.forEach(card ->
         {
+            System.out.println(card.getName()+" - "+card.isEnabled());
+
             if(!isCardPresent(card))addCard(card, listener);
-            else getCardView(card).setEnabled(card.isEnabled());
+            else findCardSlotByCard(card).setCardEnabled(card.isEnabled());
         });
     }
 
-    private CardView getCardView(Card card)
+    private CardSlot findCardSlotByCard(Card card)
     {
-        if(isCardInSlot(card, cardSlot1))return (CardView) cardSlot1.getChildren().get(0);
-        if(isCardInSlot(card, cardSlot2))return (CardView) cardSlot2.getChildren().get(0);
-        if(isCardInSlot(card, cardSlot3))return (CardView) cardSlot3.getChildren().get(0);
-
+        for(CardSlot slot : slots)
+        {
+            if(slot.containsCard(card))return slot;
+        }
         return null;
     }
 
-    private void removeIfNotInList(VBox cardSlot, List<Card> cards)
+    private void removeIfNotInList(CardSlot cardSlot, List<Card> cards)
     {
-        if(cardSlot.getChildren().isEmpty())return;
-        Card currentCard = ((CardView)cardSlot.getChildren().get(0)).getCard();
-        for(Card card : cards)
-        {
-            if(card.equals(currentCard))return;
-        }
+        if(cardSlot.isEmpty())return;
+        if(cards.contains(cardSlot.getCard()))return;
+
         cardNumber--;
-        cardSlot.getChildren().clear();
+        cardSlot.removeCard();
     }
 
     private boolean isCardPresent(Card card)
     {
-        return isCardInSlot(card, cardSlot1) || isCardInSlot(card, cardSlot2) || isCardInSlot(card, cardSlot3);
+        return cardSlot1.containsCard(card) || cardSlot2.containsCard(card) || cardSlot3.containsCard(card);
     }
 
-    private boolean isCardInSlot(Card card, VBox cardSlot)
+    private CardSlot getFreeCardSlot()
     {
-        return !cardSlot.getChildren().isEmpty() && ((CardView)cardSlot.getChildren().get(0)).getCard().equals(card);
-    }
-
-    private VBox getFreeCardSlot()
-    {
-        if(cardSlot1.getChildren().isEmpty())return cardSlot1;
-        if(cardSlot2.getChildren().isEmpty())return cardSlot2;
-        return cardSlot3;
+        for(CardSlot slot : slots)
+        {
+            if(slot.isEmpty())return slot;
+        }
+        return null;
     }
 
     private void initSlots(Image image)
@@ -161,28 +212,22 @@ public class CardPane extends StackPane implements Initializable
         emptySlot2.setFitWidth(maxWidth);
         emptySlot3.setFitWidth(maxWidth);
 
-        Insets insets;
-
-        if(type.equals("weapon"))
+        for(CardSlot slot : slots)
         {
-            insets = new Insets(maxWidth/16, 0, 0, 0);
+            slot.init(getWidth(), type);
         }
-        else
-        {
-            insets = new Insets(maxWidth/15, maxWidth/17, 0, 0);
-        }
-
-        cardSlot1.setPadding(insets);
-        cardSlot2.setPadding(insets);
-        cardSlot3.setPadding(insets);
     }
 
-    private void resize(CardView cardView)
+    public void setTitleSize(double size)
     {
-        if(type.equals("weapon"))cardView.setMaxWidth(getWidth()/4.5);
-        else cardView.setMaxWidth(getWidth()/4.7);
+        fontSize.unbind();
+        fontSize.setValue(size);
     }
 
+    public void setTitle(String title)
+    {
+        titleLabel.setText(title);
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -195,16 +240,18 @@ public class CardPane extends StackPane implements Initializable
         if ("weapon".equals(type)) emptySlotImage = new Image(getClass().getResourceAsStream("/img/weapon_slot.png"));
         else emptySlotImage = new Image(getClass().getResourceAsStream("/img/powerup_slot.png"));
 
+        slots = new CardSlot[]{cardSlot1, cardSlot2, cardSlot3};
+
         initSlots(emptySlotImage);
 
         widthProperty().addListener((observable, oldValue, newValue) ->
         {
             initSlots(emptySlotImage);
 
-            if(cardSlot1.getChildren().size() > 0)resize((CardView) cardSlot1.getChildren().get(0));
-            if(cardSlot2.getChildren().size() > 0)resize((CardView) cardSlot2.getChildren().get(0));
-            if(cardSlot3.getChildren().size() > 0)resize((CardView) cardSlot3.getChildren().get(0));
-
+            for(CardSlot slot : slots)
+            {
+                if(!slot.isEmpty())slot.resize(getWidth());
+            }
         });
 
         titleLabel.setText(title);

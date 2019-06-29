@@ -2,7 +2,10 @@ package it.polimi.se2019.ui.gui.value;
 
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.TimeOutException;
+import it.polimi.se2019.ui.gui.MatchScene;
+import it.polimi.se2019.ui.gui.SceneManager;
 import it.polimi.se2019.utils.logging.Logger;
+import javafx.application.Platform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,10 +58,12 @@ public final class ValueObserver<R>
 
     public R get(CancelableValue<R> value) throws CanceledActionException
     {
+        Platform.runLater(() -> MatchScene.getInstance().addCancelableOption(value));
         wait(value);
         if(value.isCanceled())
         {
             value.reset();
+            MatchScene.getInstance().onActionCanceled();
             throw new CanceledActionException(CanceledActionException.Cause.CANCELED_BY_USER);
         }
         return value.get();

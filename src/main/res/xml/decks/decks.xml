@@ -97,6 +97,7 @@
                     <cardscript>
                         <line>select_player(false, player3, equal player1 | equal player2)</line>
                         <line>hit(player3, 1)</line>
+                        <line>enable(tripode_di_supporto)</line>
                     </cardscript>
                 </optional_effect>
                 <optional_effect name="tripode_di_supporto">
@@ -140,7 +141,7 @@
                     </cost>
                     <enabled>false</enabled>
                     <cardscript>
-                        <line>select_player(false, player2, visible player1)</line>
+                        <line>select_player(false, player2, visible player1 &amp; !equal player1)</line>
                         <line>hit(player2, 1)</line>
                         <line>enable(alta_tensione)</line>
                     </cardscript>
@@ -151,7 +152,7 @@
                     </cost>
                     <enabled>false</enabled>
                     <cardscript>
-                        <line>select_player(false, player3, visible player2)</line>
+                        <line>select_player(false, player3, visible player2 &amp; !equal player1 &amp; !equal player2)</line>
                         <line>hit(player3, 2)</line>
                     </cardscript>
                 </optional_effect>
@@ -259,6 +260,7 @@
                     <line>select_player(false, player1, maxd block1 1)</line>
                     <line>move(player1, block1)</line>
                     <line>hit(player1, 2)</line>
+                    <line>enable(buco_nero)</line>
                 </cardscript>
             </basic_mode>
             <optional_effects>
@@ -299,7 +301,8 @@
             </reload_cost>
             <basic_mode>
                 <cardscript>
-                    <line></line>
+                    <line>select_block(block1, visible context_player &amp; !same-room-of context_player)</line>
+                    <line>hit_room(block1, 1)</line>
                 </cardscript>
             </basic_mode>
             <alternate_mode>
@@ -354,7 +357,10 @@
             </reload_cost>
             <basic_mode>
                 <cardscript>
-                    <line></line>
+                    <line>select_player(false, player1, visible context_player &amp; mind context_player 1)</line>
+                    <line>get_block_of(block1, player1)</line>
+                    <line>hit(player1, 1)</line>
+                    <line>mark(block1, 1)</line>
                 </cardscript>
             </basic_mode>
             <alternate_mode>
@@ -362,9 +368,11 @@
                     <red>1</red>
                 </cost>
                 <cardscript>
-                <line>
-                </line>
-            </cardscript>
+                    <line>select_player(false, player1, visible context_player &amp; mind context_player 1)</line>
+                    <line>get_block_of(block1, player1)</line>
+                    <line>hit(player1, 1)</line>
+                    <line>mark(block1, 2)</line>
+                </cardscript>
         </alternate_mode>
         </weapon_card>
 
@@ -390,7 +398,7 @@
                 <cardscript>
                     <line>select_block(block1, mind context_player 1 &amp; maxd context_player 1)</line>
                     <line>ask_and_select(Vuoi selezionare un altro blocco?, block2, block, maxd block1 1 &amp; mind block1 1 &amp; same-direction-of block1)</line>
-                    <line>select_player(false, player1, maxd block1 0)</line>
+                    <line>select_player(true, player1, maxd block1 0)</line>
                     <line>select_player(true, player2, maxd block2 0)</line>
                     <line>hit(player1, 1)</line>
                     <line>hit(player2, 1)</line>
@@ -475,8 +483,10 @@
                 <cardscript>
                     <line>select_player(false, player1, visible context_player &amp; mind context_player 1)</line>
                     <line>hit(player1, 2)</line>
-                    <line>ask_and_select(Vuoi spostare il giocatore?, block1, block, maxd player1 1 &amp; mind player1 1)</line>
-                    <line>move(player1, block1)</line>
+                    <line>get_block_of(block1, player1)</line>
+                    <line>ask_and_select(Vuoi spostare il giocatore?, block2, block, maxd player1 1 &amp; mind player1 1)</line>
+                    <line>move(player1, block2)</line>
+                    <line>enable(testata_a_frammentazione)</line>
                 </cardscript>
             </basic_mode>
             <optional_effects>
@@ -496,7 +506,10 @@
                         <yellow>1</yellow>
                     </cost>
                     <cardscript>
-                        <line></line>
+                        <line>reset_damaged_players()</line>
+                        <line>hit(block1, 1)</line>
+                        <line>get_player(player2, equal player1 &amp; !damaged)</line>
+                        <line>hit(player2, 1)</line>
                     </cardscript>
                 </optional_effect>
             </optional_effects>
@@ -665,7 +678,11 @@
         </reload_cost>
         <basic_mode>
             <cardscript>
-                <line></line>
+                <line>select_player(false, player1, visible context_player &amp; maxd context_player 1 &amp; mind context_player 1)</line>
+                <line>get_block_of(block1, player1)</line>
+                <line>move(context_player, block1)</line>
+                <line>hit(player1, 1)</line>
+                <line>mark(player1, 2)</line>
             </cardscript>
         </basic_mode>
         <alternate_mode>
@@ -673,7 +690,17 @@
                 <blue>1</blue>
             </cost>
             <cardscript>
-                <line></line>
+                <line>select_block(block1, visible context_player &amp; maxd context_player 1 &amp; mind context_player 1)</line>
+                <line>move(context_player, block1)</line>
+                <line>ask_and_select(Vuoi colpire un giocatore?, player1, player, maxd block1 0 &amp; mind block1 0)</line>
+                <line>hit(player1, 2)</line>
+                <line>askif(Vuoi spostarti ancora?, bool1)</line>
+                <line>if(bool1)</line>
+                    <line>select_block(block2, visible context_player &amp; maxd context_player 1 &amp; mind context_player 1)</line>
+                    <line>move(context_player, block2)</line>
+                    <line>ask_and_select(Vuoi colpire un giocatore?, player2, player, maxd block2 0 &amp; mind block2 0)</line>
+                    <line>hit(player2, 2)</line>
+                <line>endif()</line>
             </cardscript>
         </alternate_mode>
     </weapon_card>
@@ -693,7 +720,14 @@
         </reload_cost>
         <basic_mode>
             <cardscript>
-                <line></line>
+                <line>select_player(false, player1, visible context_player &amp; maxd context_player 1 &amp; mind context_player 1)</line>
+                <line>get_block_of(block1, player1)</line>
+                <line>ask_and_select(Vuoi colpire un altro giocatore?, player2, player, visible context_player &amp; maxd context_player 1 &amp; mind context_player 1 &amp; mind block1 1)</line>
+                <line>get_block_of(block2, player2)</line>
+                <line>ask_and_select(Vuoi colpire un altro giocatore?, player3, player, visible context_player &amp; maxd context_player 1 &amp; mind context_player 1 &amp; mind block1 1 &amp; mind block2 1)</line>
+                <line>hit(player1, 1)</line>
+                <line>hit(player2, 1)</line>
+                <line>hit(player3, 1)</line>
             </cardscript>
         </basic_mode>
         <alternate_mode>
@@ -701,7 +735,12 @@
                 <yellow>1</yellow>
             </cost>
             <cardscript>
-                <line></line>
+                <line>get_block(block1, visible context_player &amp; maxd context_player 1 &amp; mind context_player 1)</line>
+                <line>get_block(block2, visible context_player &amp; maxd context_player 1 &amp; mind context_player 1 &amp; !equal block1)</line>
+                <line>get_block(block3, visible context_player &amp; maxd context_player 1 &amp; mind context_player 1 &amp; !equal block1 &amp; !equal block2)</line>
+                <line>hit(block1, 1)</line>
+                <line>hit(block2, 1)</line>
+                <line>hit(block3, 1)</line>
             </cardscript>
         </alternate_mode>
     </weapon_card>
@@ -750,9 +789,9 @@
                 <line>Scegli la miniatura di un altro giocatore e muovila di 1 o 2 quadrati in una direzione.</line>
             </description>
             <cardscript>
-                <line>select_player()->player1</line>
-                <line>select_block(maxd player1 2)->block1</line>
-                <line>move player1 block1</line>
+                <line>select_player(false, player1, any)</line>
+                <line>select_block(block1, maxd player1 2)</line>
+                <line>move(player1, block1)</line>
             </cardscript>
         </power_up_card>
 
@@ -787,12 +826,13 @@
             <name>Teletrasporto</name>
             <use>always</use>
             <description>
-                <line></line>
-            </description>
-            <cardscript>
                 <line>Puoi giocare questa carta nel tuo turno in ogni momento. Prendi la tua</line>
                 <line>pedina e piazzala in un qualsiasi quadrato. Non puoi usare questo potenziamento</line>
                 <line>dopo che hai visto dove un altro giocatore si rigenera alla fine del tuo turno.</line>
+            </description>
+            <cardscript>
+                <line>select_block(block1, any)</line>
+                <line>move(context_player, block1)</line>
             </cardscript>
         </power_up_card>
     </deck>

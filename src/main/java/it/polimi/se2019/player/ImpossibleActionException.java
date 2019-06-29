@@ -5,7 +5,7 @@ public class ImpossibleActionException extends Exception
 
     public enum Cause
     {
-        WEAPON_NOT_LOADED, EFFECT_NOT_ENABLED, INSUFFICIENT_AMMO, INVALID_PLAYER, INVALID_BLOCK, OTHER
+        WEAPON_NOT_LOADED, EFFECT_NOT_ENABLED, INSUFFICIENT_AMMO, INVALID_POWER_UP, INVALID_PLAYER, INVALID_BLOCK, OTHER
     }
 
     private Cause cause;

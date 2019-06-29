@@ -32,6 +32,7 @@ import javafx.stage.Stage;
 
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 
 import java.util.ArrayList;
@@ -98,6 +99,7 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     final CancelableValue<Card> selectedWeapon;
     final CancelableValue<Card> selectedPowerUp;
 
+    private Serializable optionalActionObject;
     //private List<Resizable> resizableComponents;
 
     private MatchScene()
@@ -134,6 +136,16 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     {
         if(instance == null)instance = new MatchScene();
         return instance;
+    }
+
+    public Serializable getOptionalActionObject()
+    {
+        return optionalActionObject;
+    }
+
+    public void deleteOptionalActionObject()
+    {
+        optionalActionObject = null;
     }
 
     public ObjectProperty<GameData> getGameDataProperty()
@@ -230,7 +242,7 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         {
             try
             {
-                Thread.sleep(250);
+                Thread.sleep(500);
             }
             catch (InterruptedException e)
             {
@@ -249,6 +261,11 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         choosePane.clear();
         choosePane.setText(question);
         Arrays.asList(options).forEach(choosePane::addOption);
+    }
+
+    public void addCancelableOption(CancelableValue value)
+    {
+        choosePane.addCancelButton(value);
     }
 
     public void setOptions(String question, List<String> options)
@@ -300,6 +317,7 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         else if(cardView.getCardType() == CardView.POWER_UP_CARD)
         {
             selectedSpawnPoint.set(cardView.getCardId());
+            optionalActionObject = cardView.getCard();
             selectedAction.set(Action.USE_POWER_UP);
 
             if(choosePowerUp)
@@ -309,6 +327,11 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
                 selectedPowerUp.set(cardView.getCard());
             }
         }
+    }
+
+    public void onActionCanceled()
+    {
+        mapView.setColored(false);
     }
 
     public void chooseBlock(int maxDistance)

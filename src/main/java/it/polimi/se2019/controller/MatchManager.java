@@ -1,7 +1,5 @@
 package it.polimi.se2019.controller;
 
-import it.polimi.se2019.network.User;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -12,6 +12,7 @@ import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.network.NetworkUtils;
 import it.polimi.se2019.utils.string.Strings;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -72,6 +73,12 @@ public class CLI implements UI
     {
         //TODO
         return null;
+    }
+
+    @Override
+    public void requestFocus()
+    {
+        //Do nothing
     }
 
     @Override
@@ -155,7 +162,7 @@ public class CLI implements UI
     }
 
     @Override
-    public Action chooseActionFrom(Action[] possibleActions)
+    public Bundle<Action, Serializable> chooseActionFrom(Action[] possibleActions)
     {
         return null;
     }
@@ -186,6 +193,18 @@ public class CLI implements UI
 
     @Override
     public Card choosePowerUp()
+    {
+        return null;
+    }
+
+    @Override
+    public ArrayList<Card> chooseWeaponsToReload(ArrayList<Card> weapons)
+    {
+        return null;
+    }
+
+    @Override
+    public Card chooseWeaponToReload(ArrayList<Card> weapons)
     {
         return null;
     }

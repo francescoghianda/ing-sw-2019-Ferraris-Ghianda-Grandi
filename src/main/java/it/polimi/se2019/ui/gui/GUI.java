@@ -8,7 +8,9 @@ import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
+import it.polimi.se2019.ui.cli.Option;
 import it.polimi.se2019.ui.gui.dialogs.CloseDialog;
+import it.polimi.se2019.ui.gui.dialogs.ReloadWeaponsDialog;
 import it.polimi.se2019.ui.gui.value.ValueObserver;
 import it.polimi.se2019.utils.logging.Logger;
 import javafx.animation.KeyFrame;
@@ -16,6 +18,7 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tooltip;
@@ -26,10 +29,12 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 public class GUI extends Application implements UI, EventHandler<WindowEvent>
 {
@@ -233,6 +238,12 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     }
 
     @Override
+    public void requestFocus()
+    {
+        Platform.runLater(()-> window.requestFocus());
+    }
+
+    @Override
     public String chooseOrCancel(Bundle<String, ArrayList<String>> options)
     {
         //TODO aggiungere possibilità di annullare l'azione
@@ -263,7 +274,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     }
 
     @Override
-    public Action chooseActionFrom(Action[] possibleActions)
+    public Bundle<Action, Serializable> chooseActionFrom(Action[] possibleActions)
     {
         MatchScene matchScene = MatchScene.getInstance();
         SceneManager.runOnFxThread(() ->
@@ -271,7 +282,10 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
             matchScene.setOptions("È il tuo turno");
             matchScene.enableActions(possibleActions);
         });
-        return new ValueObserver<Action>().get(matchScene.selectedAction);
+        Action selectedAction = new ValueObserver<Action>().get(matchScene.selectedAction);
+        Serializable optionalActionObject = matchScene.getOptionalActionObject();
+        matchScene.deleteOptionalActionObject();
+        return Bundle.ofSecondNullable(selectedAction, optionalActionObject);
     }
 
     @Override
@@ -325,6 +339,44 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
         return new ValueObserver<Card>().get(matchScene.selectedPowerUp);
     }
 
+    @Override
+    public ArrayList<Card> chooseWeaponsToReload(ArrayList<Card> weapons)
+    {
+        return chooseWeaponsToReload(weapons, ReloadWeaponsDialog.MULTIPLE_SELECTION_MODE);
+    }
+
+    @Override
+    public Card chooseWeaponToReload(ArrayList<Card> weapons)
+    {
+        ArrayList<Card> chosen = chooseWeaponsToReload(weapons, ReloadWeaponsDialog.SINGLE_SELECTION_MODE);
+        if(chosen != null)return chosen.get(0);
+        return null;
+    }
+
+    private ArrayList<Card> chooseWeaponsToReload(ArrayList<Card> weapons, int selectionMode)
+    {
+        Task<Optional<ArrayList<Card>>> task = new Task<Optional<ArrayList<Card>>>()
+        {
+            @Override
+            protected Optional<ArrayList<Card>> call()
+            {
+                ReloadWeaponsDialog dialog = new ReloadWeaponsDialog(weapons, selectionMode);
+                return dialog.showAndWait();
+            }
+        };
+        SceneManager.runOnFxThread(task);
+
+        try
+        {
+            Optional<ArrayList<Card>> optional = task.get();
+            return optional.orElseGet(ArrayList::new);
+        }
+        catch (InterruptedException | ExecutionException e)
+        {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 
     public static double getStageWidth()
     {

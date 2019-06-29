@@ -33,22 +33,12 @@ public class SelectBlockCommand extends Command
     public boolean exec() throws CommandExecutionException
     {
         List<Block> allBlocks = executor.getContextPlayerBlock().getRoom().getMap().getAllBlocks();
-        ArrayList<Coordinates> validBlocks = allBlocks.stream().filter(block -> {
-            try
-            {
-                return logicExpression.evaluate(executor, block);
-            }
-            catch (LogicExpressionEvaluationException e)
-            {
-                Logger.exception(e);
-                return false;
-            }
-        }).map(Block::getCoordinates).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<Coordinates> validBlocks = LogicExpression.filter(allBlocks, logicExpression, executor).stream().map(Block::getCoordinates).collect(Collectors.toCollection(ArrayList::new));
 
         if(validBlocks.isEmpty())
         {
             executor.addBlock(varName, null);
-            throw new CommandExecutionException(new CommandError(this, CommandErrorHandler.CONTINUE));
+            return false;
         }
 
         Coordinates chosen;

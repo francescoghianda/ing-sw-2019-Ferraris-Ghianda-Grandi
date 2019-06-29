@@ -1,17 +1,18 @@
 package it.polimi.se2019.controller;
 
 import it.polimi.se2019.player.Player;
+import it.polimi.se2019.utils.list.ObservableList;
 
 import java.util.List;
 
 public class RoundManager
 {
-    private List<Player> players;
+    private ObservableList<Player> players;
     private int playerIndex;
     private int roundIndex;
     private int roundNumber;
 
-    public RoundManager(List<Player> players)
+    public RoundManager(ObservableList<Player> players)
     {
         this.players = players;
         roundNumber = 1;

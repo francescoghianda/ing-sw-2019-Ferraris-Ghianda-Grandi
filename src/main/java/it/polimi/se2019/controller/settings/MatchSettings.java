@@ -13,7 +13,8 @@ public class MatchSettings
     private Properties properties;
 
     private Setting<Integer> skullNumber;
-    private Setting<Integer> playersNumber;
+    private Setting<Integer> maxPlayers;
+    private Setting<Integer> minPlayers;
     private Setting<Integer> startTimerSeconds;
     private Setting<Integer> responseTimerSeconds;
     private Setting<Integer> mapNumber;
@@ -39,8 +40,10 @@ public class MatchSettings
 
             skullNumber = new Setting<>("skull_number", 8);
             loadInteger(skullNumber);
-            playersNumber = new Setting<>("players_number", 5);
-            loadInteger(playersNumber);
+            maxPlayers = new Setting<>("max_players", 5);
+            loadInteger(maxPlayers);
+            minPlayers = new Setting<>("min_players", 3);
+            loadInteger(minPlayers);
             startTimerSeconds = new Setting<>("start_timer_seconds", 10);
             loadInteger(startTimerSeconds);
             responseTimerSeconds = new Setting<>("round_timer_seconds", 120);
@@ -85,9 +88,14 @@ public class MatchSettings
         return skullNumber.get();
     }
 
-    public int getPlayersNumber()
+    public int getMaxPlayers()
     {
-        return playersNumber.get();
+        return maxPlayers.get();
+    }
+
+    public int getMinPlayers()
+    {
+        return minPlayers.get();
     }
 
     public int getStartTimerSeconds()

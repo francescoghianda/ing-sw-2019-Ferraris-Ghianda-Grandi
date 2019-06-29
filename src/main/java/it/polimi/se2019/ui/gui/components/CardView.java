@@ -14,17 +14,23 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.BlurType;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 
@@ -48,9 +54,14 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
 
     private final Tooltip tooltip;
 
-    private final int transition;
+    private int transition;
 
     private boolean enabled;
+
+    private boolean selected;
+    private boolean selectable;
+    private DropShadow selectedEffect;
+    private ColorAdjust grayScaleEffects;
 
     public CardView(Card card, int transition)
     {
@@ -107,7 +118,48 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
         tooltip.setGraphic(tooltipPane);
         //
 
+        selectedEffect = new DropShadow();
+        selectedEffect.setColor(Color.GREEN);
+        selectedEffect.setHeight(40);
+        selectedEffect.setBlurType(BlurType.GAUSSIAN);
+
+        grayScaleEffects = new ColorAdjust();
+        grayScaleEffects.setSaturation(-1);
+
         load(fxmlLoader);
+    }
+
+
+    private void applyEffects()
+    {
+        if(enabled && !selected)imageView.setEffect(null);
+        else if(enabled)imageView.setEffect(selectedEffect);
+        else if(!selected)
+        {
+            grayScaleEffects.setInput(null);
+            imageView.setEffect(grayScaleEffects);
+        }
+        if(!enabled && selected)
+        {
+            grayScaleEffects.setInput(selectedEffect);
+            imageView.setEffect(grayScaleEffects);
+        }
+    }
+
+    public void setSelectable(boolean selectable)
+    {
+        this.selectable = selectable;
+    }
+
+    public void setSelected(boolean selected)
+    {
+        if(selectable)this.selected = selected;
+        applyEffects();
+    }
+
+    public boolean isSelected()
+    {
+        return selected;
     }
 
     public String getCardId()
@@ -118,6 +170,11 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
     public int getCardType()
     {
         return this.cardType;
+    }
+
+    public void setTransition(int transition)
+    {
+        this.transition = transition;
     }
 
     public void setOnCardViewClickListener(OnCardViewClickListener listener)
@@ -141,10 +198,9 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
 
         imageView.setPreserveRatio(true);
         imageView.setImage(image);
-        if(!enabled)
-        {
-            applyGrayScaleEffect();
-        }
+
+        applyEffects();
+
         scaleTransition.setDuration(Duration.millis(100));
         scaleTransition.setInterpolator(Interpolator.EASE_BOTH);
         scaleTransition.setNode(this);
@@ -160,18 +216,10 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
         setOnMouseClicked(this);
     }
 
-    private void applyGrayScaleEffect()
-    {
-        ColorAdjust grayScaleEffects = new ColorAdjust();
-        grayScaleEffects.setSaturation(-1);
-        imageView.setEffect(grayScaleEffects);
-    }
-
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
-        if(!enabled)applyGrayScaleEffect();
-        else setEffect(null);
+        applyEffects();
     }
 
     public Card getCard()
@@ -187,6 +235,7 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
 
         if(event.getEventType().equals(MouseEvent.MOUSE_CLICKED))
         {
+            setSelected(!isSelected());
             if(clickListener != null && enabled)clickListener.onCardClick(this);
         }
     }
@@ -219,7 +268,7 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
             fadeTransition.setToValue(1);
             fadeTransition.playFromStart();
         }
-        else if(event.getEventType().equals(MouseEvent.MOUSE_EXITED))
+        else if(event.getEventType().equals(MouseEvent.MOUSE_EXITED) && !selected)
         {
             fadeTransition.setFromValue(getOpacity());
             fadeTransition.setToValue(0.7);

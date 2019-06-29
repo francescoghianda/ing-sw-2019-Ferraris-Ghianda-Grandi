@@ -12,7 +12,9 @@ import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
+import javafx.fxml.FXML;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -165,7 +167,7 @@ public class VirtualView implements UI
 
     public String chooseOrCancel(String question, String... options) throws CanceledActionException
     {
-        return chooseOrCancel(new Bundle<>(question, new ArrayList<>(Arrays.asList(options))));
+        return chooseOrCancel(Bundle.of(question, new ArrayList<>(Arrays.asList(options))));
     }
 
     public String choose(Bundle<String, ArrayList<String>> options)
@@ -175,7 +177,7 @@ public class VirtualView implements UI
 
     public String choose(String question, String... options)
     {
-        return choose(new Bundle<>(question, new ArrayList<>(Arrays.asList(options))));
+        return choose(Bundle.of(question, new ArrayList<>(Arrays.asList(options))));
     }
 
     @Override
@@ -185,9 +187,9 @@ public class VirtualView implements UI
     }
 
     @Override
-    public Action chooseActionFrom(Action[] possibleActions)
+    public Bundle<Action, Serializable> chooseActionFrom(Action[] possibleActions)
     {
-        return (Action) client.getResponseTo(RequestFactory.newActionRequest("choose_action", ui -> ui.chooseActionFrom(possibleActions)), timeoutTime).getContent();
+        return Bundle.cast(client.getResponseTo(RequestFactory.newActionRequest("choose_action", ui -> ui.chooseActionFrom(possibleActions)), timeoutTime).getContent(), Action.class, Serializable.class);
     }
 
     @Override
@@ -218,6 +220,25 @@ public class VirtualView implements UI
     public Card choosePowerUp() throws CanceledActionException
     {
         return (Card) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_power_up", UI::choosePowerUp), timeoutTime).getContent();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public ArrayList<Card> chooseWeaponsToReload(ArrayList<Card> weapons)
+    {
+        return (ArrayList<Card>) client.getResponseTo(RequestFactory.newActionRequest("choose_weapons_to_reload", ui -> ui.chooseWeaponsToReload(weapons)), timeoutTime).getContent();
+    }
+
+    @Override
+    public Card chooseWeaponToReload(ArrayList<Card> weapons)
+    {
+        return (Card) client.getResponseTo(RequestFactory.newActionRequest("choose_weapon_to_reload", ui -> ui.chooseWeaponToReload(weapons)), timeoutTime).getContent();
+    }
+
+    @Override
+    public void requestFocus()
+    {
+        client.sendMessageToClient(new AsyncMessage("request_focus", UI::requestFocus));
     }
 
     @Override

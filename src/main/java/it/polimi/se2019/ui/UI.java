@@ -8,6 +8,7 @@ import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
@@ -22,6 +23,7 @@ public interface UI extends GameEventHandler
     String login();
     String selectPlayer();
     String selectBlock();
+    void requestFocus();
     void logged();
     void gameIsStarting();
     void gameStarted();
@@ -37,10 +39,12 @@ public interface UI extends GameEventHandler
     String chooseOrCancel(Bundle<String, ArrayList<String>> options) throws CanceledActionException;
     String choose(Bundle<String, ArrayList<String>> options);
     String chooseSpawnPoint(Card option1, Card option2);
-    Action chooseActionFrom(Action[] possibleActions);
+    Bundle<Action, Serializable> chooseActionFrom(Action[] possibleActions);
     Coordinates chooseBlock(int maxDistance) throws CanceledActionException;
     Coordinates chooseBlockFrom(ArrayList<Coordinates> coordinates)throws CanceledActionException;
     Card chooseWeaponFromPlayer() throws CanceledActionException;
     Card chooseWeaponFromBlock() throws CanceledActionException;
     Card choosePowerUp() throws CanceledActionException;
+    ArrayList<Card> chooseWeaponsToReload(ArrayList<Card> weapons);
+    Card chooseWeaponToReload(ArrayList<Card> weapons);
 }

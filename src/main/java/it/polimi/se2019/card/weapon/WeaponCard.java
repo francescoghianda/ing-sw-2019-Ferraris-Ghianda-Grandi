@@ -39,6 +39,7 @@ public class WeaponCard extends Card
 
 	public WeaponCard()
 	{
+		super();
 		optionalEffects = new HashMap<>();
 		fireMode = Mode.BASIC;
 	}
@@ -138,7 +139,7 @@ public class WeaponCard extends Card
 	public void setLoad(boolean load)
 	{
 		this.load = load;
-		setEnabled(load);
+		super.setEnabled(load);
 	}
 
 	public List<OptionalEffect> getEnabledOptionalEffects()
@@ -230,7 +231,7 @@ public class WeaponCard extends Card
 
 	public String toString()
 	{
-		return "WeaponCard #"+getId()+" - "+getName();
+		return "WeaponCard #"+getId()+" - "+getName()+" - "+(isLoad() ? "load" : "unload");
 	}
 
 

@@ -37,6 +37,11 @@ public class PowerUpCard extends Card
 		return cards.get(id);
 	}
 
+	public Use getUse()
+	{
+		return use;
+	}
+
 	public void apply(Player player, GameController gameController) throws CanceledActionException, ImpossibleActionException
 	{
 		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))createScriptExecutor(player);
