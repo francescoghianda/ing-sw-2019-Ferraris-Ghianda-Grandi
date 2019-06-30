@@ -135,6 +135,12 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     }
 
     @Override
+    public void notifyImpossibleAction()
+    {
+
+    }
+
+    @Override
     public void update(GameData data)
     {
         sceneManager.getMatchScene().update(data);

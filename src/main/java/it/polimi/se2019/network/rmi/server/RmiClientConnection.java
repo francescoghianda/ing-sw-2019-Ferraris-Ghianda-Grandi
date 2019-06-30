@@ -187,7 +187,7 @@ public class RmiClientConnection implements ClientConnection
         if(!reconnected && logged)
         {
             user.setMatch(MatchManager.getInstance().getMatch());
-            user.setPlayer(user.getMatch().getGameController().createPlayer(this));
+            user.setPlayer(user.getMatch().createPlayer(this));
         }
     }
 

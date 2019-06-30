@@ -93,7 +93,7 @@ public class LogicExpression
                 result = true;
                 break;
             case "visible":
-                result = isPlayer ? getPlayer(split[1]).getVisiblePlayers().contains(player) : getPlayer(split[1]).getVisibleBlocks().contains(block);
+                result = isPlayer ? isVisibleBy(getPlayer(split[1]), player, null) : isVisibleBy(getPlayer(split[1]), null, block);
                 break;
             case "equal":
                 result = isPlayer ? player.equals(getPlayer(split[1])) :
@@ -128,6 +128,13 @@ public class LogicExpression
         return result;
     }
 
+    private boolean isVisibleBy(Player player, Player p1, Block b1)
+    {
+        if(player == null)return false;
+        if(p1 == null) return player.getVisibleBlocks().contains(b1);
+        return player.getVisiblePlayers().contains(p1);
+    }
+
     private boolean isInSameRoomOf(Block block1, Block block2)
     {
         if(block2 == null)return false;
@@ -137,7 +144,11 @@ public class LogicExpression
     private Block getBlockFromVariable(String varName) throws LogicExpressionEvaluationException
     {
         Block block;
-        if(isPlayer(varName))block = getPlayer(varName).getBlock();
+        if(isPlayer(varName))
+        {
+            Player player = getPlayer(varName);
+            block = player == null ? null : player.getBlock();
+        }
         else if(isBlock(varName))block = getBlock(varName);
         else throw new LogicExpressionEvaluationException();
         return block;

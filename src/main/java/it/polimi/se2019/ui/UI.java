@@ -34,6 +34,7 @@ public interface UI extends GameEventHandler
     void roundStart();
     void roundEnd();
     void timeout();
+    void notifyImpossibleAction();
 
     boolean notEnoughAmmo(boolean askToSellPowerUp);
     String chooseOrCancel(Bundle<String, ArrayList<String>> options) throws CanceledActionException;

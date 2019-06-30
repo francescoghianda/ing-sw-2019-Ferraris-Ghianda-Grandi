@@ -1,14 +1,11 @@
 package it.polimi.se2019.card.cardscript.command;
 
-import it.polimi.se2019.card.cardscript.CardScriptErrorException;
 import it.polimi.se2019.card.cardscript.LogicExpression;
 import it.polimi.se2019.card.cardscript.Executor;
-import it.polimi.se2019.card.cardscript.LogicExpressionEvaluationException;
 import it.polimi.se2019.card.cardscript.command.parameter.ParameterTypes;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.map.Block;
 import it.polimi.se2019.map.Coordinates;
-import it.polimi.se2019.utils.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.List;

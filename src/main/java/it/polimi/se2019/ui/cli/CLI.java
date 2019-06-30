@@ -127,6 +127,12 @@ public class CLI implements UI
     }
 
     @Override
+    public void notifyImpossibleAction()
+    {
+        //TODO
+    }
+
+    @Override
     public boolean notEnoughAmmo(boolean askToSellPowerUp)
     {
         //TODO

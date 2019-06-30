@@ -82,6 +82,12 @@ public class VirtualView implements UI
     }
 
     @Override
+    public void notifyImpossibleAction()
+    {
+        client.sendMessageToClient(new AsyncMessage("impossible_action", UI::notifyImpossibleAction));
+    }
+
+    @Override
     public String selectPlayer()
     {
         return null;

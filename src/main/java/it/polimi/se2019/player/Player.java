@@ -52,6 +52,22 @@ public class Player implements Serializable
 		this.gameController = gameController;
 	}
 
+	public boolean isDead()
+	{
+		return gameBoard.getTotalReceivedDamage() >= 11;
+	}
+
+	public boolean isOverkilled()
+	{
+		return gameBoard.getTotalReceivedDamage() > 11;
+	}
+
+	public Player getCauseOfDeath()
+	{
+		if(!isDead())return null;
+		return new ArrayList<>(gameBoard.getReceivedDamage().keySet()).get(11);
+	}
+
 	public void resetDamagedPlayers()
 	{
 		damagedPlayers.clear();

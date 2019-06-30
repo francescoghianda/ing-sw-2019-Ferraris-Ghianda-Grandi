@@ -32,6 +32,12 @@ public class GameBoard implements Serializable
         markers = new LinkedHashMap<>();
     }
 
+    public int getMaxPointsValue()
+    {
+        int max = 8 - (2*skulls);
+        return max > 1 ? max : 1;
+    }
+
     public int getTotalReceivedDamage()
     {
         int total = 0;
@@ -43,6 +49,11 @@ public class GameBoard implements Serializable
     {
         receivedDamage.clear();
         markers.clear();
+    }
+
+    public void addSkull()
+    {
+        skulls++;
     }
 
     public void addPoints(int points)
@@ -106,6 +117,11 @@ public class GameBoard implements Serializable
 
         damage += markers.getOrDefault(player, 0);
         markers.replace(player, 0);
+
+        if(getTotalReceivedDamage()+damage > 12)
+        {
+            damage -= getTotalReceivedDamage()+damage-12;
+        }
 
         if(receivedDamage.containsKey(player)) receivedDamage.replace(player, receivedDamage.get(player)+damage);
         else receivedDamage.put(player, damage);
