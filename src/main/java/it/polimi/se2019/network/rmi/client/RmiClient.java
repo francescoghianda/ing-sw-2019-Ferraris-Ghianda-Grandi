@@ -74,6 +74,7 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     {
         try
         {
+            getUI().requestFocus();
             Serializable obj = request.apply(getUI());
             return new Response("Response to "+request.getMessage(), request.getMessageId(), obj, Response.Status.OK).setSender(stub);
         }
@@ -89,10 +90,11 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     }
 
     @Override
-    public synchronized Response sendRequest(ActionRequest request)
+    public synchronized Response sendRequest(ActionRequest request) throws RemoteException
     {
         try
         {
+            getUI().requestFocus();
             Serializable obj = request.apply(getUI());
             return new Response("Response to "+request.getMessage(), request.getMessageId(), obj, Response.Status.OK).setSender(stub);
         }

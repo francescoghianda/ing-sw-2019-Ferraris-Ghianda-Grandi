@@ -1,7 +1,9 @@
 package it.polimi.se2019.ui.cli;
 
+import it.polimi.se2019.controller.TimeOutException;
 import it.polimi.se2019.utils.string.Strings;
 
+import java.sql.Time;
 import java.util.function.Predicate;
 
 /**
@@ -33,7 +35,7 @@ public class FormattedInput
         this.regex = regex;
         this.useRegex = true;
         this.usePredicate = false;
-        this.reader = new CancelableReader(System.in);
+        this.reader = CancelableReader.createNew(System.in);
     }
 
     /**
@@ -47,7 +49,7 @@ public class FormattedInput
         this.predicate = predicate;
         this.useRegex = false;
         this.usePredicate = true;
-        this.reader = new CancelableReader(System.in);
+        this.reader = CancelableReader.createNew(System.in);
     }
 
     /**
@@ -63,7 +65,7 @@ public class FormattedInput
         this.regex = regex;
         this.useRegex = true;
         this.usePredicate = true;
-        this.reader = new CancelableReader(System.in);
+        this.reader = CancelableReader.createNew(System.in);
     }
 
     public FormattedInput setDefaultResponse(String defaultResponse)
@@ -72,13 +74,21 @@ public class FormattedInput
         return this;
     }
 
-    public String show() throws CanceledInputException
+    public String show() throws TimeOutException
     {
         String response;
         while(true)
         {
-            GameConsole.out.print(question);
-            response = reader.nextLine();
+            try
+            {
+                GameConsole.out.print(question);
+                response = reader.nextLine();
+            }
+            catch (CanceledInputException e)
+            {
+                throw new TimeOutException();
+            }
+
             if(defaultResponse != null && response.isEmpty())response = defaultResponse;
             boolean matchRegex = useRegex && response.matches(regex);
             boolean matchPredicate = useRegex ? usePredicate && matchRegex && predicate.test(response) : usePredicate && predicate.test(response);

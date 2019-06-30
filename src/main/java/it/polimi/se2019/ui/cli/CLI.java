@@ -21,13 +21,10 @@ import java.util.Scanner;
  */
 public class CLI implements UI
 {
-    private final Scanner scanner;
     private NetworkInterface client;
-
 
     public CLI()
     {
-        scanner = new Scanner(System.in);
         client = new NetworkInterface(this);
     }
 
@@ -41,12 +38,6 @@ public class CLI implements UI
         int serverPort = Integer.parseInt(new FormattedInput(Strings.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, s -> NetworkUtils.isValidPort(Integer.parseInt(s))).show());
         GameConsole.out.println(Strings.CONNECTING);
         client.connect(serverIp, serverPort, serverModeOption.getValue());
-    }
-
-    private String input(String question)
-    {
-        GameConsole.nextLine(question);
-        return scanner.nextLine();
     }
 
     @Override
@@ -118,29 +109,32 @@ public class CLI implements UI
     }
 
     @Override
-    public void roundStart() {
-
+    public void roundStart()
+    {
+        //TODO
     }
 
     @Override
-    public void roundEnd() {
-
+    public void roundEnd()
+    {
+        //TODO
     }
 
     @Override
     public void timeout()
     {
-
+        CancelableReader.cancelAll();
     }
 
     @Override
     public boolean notEnoughAmmo(boolean askToSellPowerUp)
     {
+        //TODO
         return false;
     }
 
     @Override
-    public String chooseOrCancel(Bundle<String, ArrayList<String>> bundle)
+    public String chooseOrCancel(Bundle<String, ArrayList<String>> bundle) throws CanceledActionException
     {
         Options<Void> options = new Options<>(bundle.getFirst(), true);
         bundle.getSecond().forEach(option -> options.addOption(option, option.substring(0, 1)));
@@ -150,6 +144,7 @@ public class CLI implements UI
     @Override
     public String choose(Bundle<String, ArrayList<String>> options)
     {
+        //TODO
         return null;
     }
 
@@ -164,55 +159,62 @@ public class CLI implements UI
     @Override
     public Bundle<Action, Serializable> chooseActionFrom(Action[] possibleActions)
     {
+        //TODO
         return null;
     }
 
     @Override
-    public Coordinates chooseBlock(int maxDistance)
+    public Coordinates chooseBlock(int maxDistance) throws CanceledActionException
     {
+        //TODO
         return null;
     }
 
     @Override
-    public Coordinates chooseBlockFrom(ArrayList<Coordinates> coordinates) throws CanceledActionException {
-        return null;
-    }
-
-    @Override
-    public Card chooseWeaponFromPlayer()
+    public Coordinates chooseBlockFrom(ArrayList<Coordinates> coordinates) throws CanceledActionException
     {
-
+        //TODO
         return null;
     }
 
     @Override
-    public Card chooseWeaponFromBlock()
+    public Card chooseWeaponFromPlayer() throws CanceledActionException
     {
+        //TODO
         return null;
     }
 
     @Override
-    public Card choosePowerUp()
+    public Card chooseWeaponFromBlock() throws CanceledActionException
     {
+        //TODO
+        return null;
+    }
+
+    @Override
+    public Card choosePowerUp() throws CanceledActionException
+    {
+        //TODO
         return null;
     }
 
     @Override
     public ArrayList<Card> chooseWeaponsToReload(ArrayList<Card> weapons)
     {
+        //TODO
         return null;
     }
 
     @Override
     public Card chooseWeaponToReload(ArrayList<Card> weapons)
     {
+        //TODO
         return null;
     }
 
     @Override
     public void update(GameData data)
     {
-
         //TODO
     }
 

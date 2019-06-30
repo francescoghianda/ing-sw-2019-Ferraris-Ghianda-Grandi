@@ -1,6 +1,8 @@
 package it.polimi.se2019.ui.cli;
 
 
+import it.polimi.se2019.controller.CanceledActionException;
+import it.polimi.se2019.controller.TimeOutException;
 import it.polimi.se2019.utils.logging.Logger;
 
 import java.util.ArrayList;
@@ -10,20 +12,21 @@ import java.util.Scanner;
  * receives a question and some options of the group of options
  * @param <T>
  */
-public class Options<T>
+public final class Options<T>
 {
     private String question;
     private OnOptionSelectedListener listener;
     private ArrayList<Option<T>> options;
     private CancelableReader reader;
     private boolean firstDefault;
+    private Option<T> cancelOption;
 
     public Options(String question, boolean firstDefault)
     {
         this.options = new ArrayList<>();
         this.question = question;
         this.firstDefault = firstDefault;
-        reader= new CancelableReader(System.in);
+        reader= CancelableReader.createNew(System.in);
     }
 
     public Options setOptionListener(OnOptionSelectedListener listener)
@@ -35,6 +38,13 @@ public class Options<T>
     public Options<T> addOption(Option<T> option)
     {
         options.add(option);
+        return this;
+    }
+
+    public Options addCancelOption()
+    {
+        cancelOption = new Option<>("Annulla", "A");
+        options.add(cancelOption);
         return this;
     }
 
@@ -50,11 +60,8 @@ public class Options<T>
         return this;
     }
 
-    /**
-     *
-     * @return
-     */
-    public Option<T> show() throws CanceledInputException
+
+    private Option<T> showOptions()
     {
         if(options.isEmpty())return null;
         StringBuilder output = new StringBuilder();
@@ -66,8 +73,16 @@ public class Options<T>
 
         do
         {
-            GameConsole.out.print(output.toString());
-            response = reader.nextLine().trim();
+            try
+            {
+                GameConsole.out.print(output.toString());
+                response = reader.nextLine().trim();
+            }
+            catch (CanceledInputException e)
+            {
+                throw new TimeOutException();
+            }
+
             if(firstDefault && response.isEmpty())
             {
                 selected = options.get(0);
@@ -76,8 +91,25 @@ public class Options<T>
         }
         while ((selected = findOption(response)) == null);
 
-        if(listener != null)listener.onOptionSelected(selected);
+        return selected;
+    }
 
+    /**
+     *
+     * @return
+     */
+    public Option<T> show() throws TimeOutException
+    {
+        Option<T> selected = showOptions();
+        if(listener != null)listener.onOptionSelected(selected);
+        return selected;
+    }
+
+    public Option<T> showCancellable() throws TimeOutException, CanceledActionException
+    {
+        Option<T> selected = showOptions();
+        if(selected != null && selected.equals(cancelOption))throw new CanceledActionException(CanceledActionException.Cause.CANCELED_BY_USER);
+        if(selected != null && listener != null)listener.onOptionSelected(selected);
         return selected;
     }
 

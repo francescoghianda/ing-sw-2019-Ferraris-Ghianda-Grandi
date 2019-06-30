@@ -1,5 +1,7 @@
 package it.polimi.se2019.ui.cli;
 
+import it.polimi.se2019.controller.CanceledActionException;
+import it.polimi.se2019.controller.TimeOutException;
 import it.polimi.se2019.utils.constants.Ansi;
 import it.polimi.se2019.utils.logging.Logger;
 import org.fusesource.jansi.AnsiConsole;
@@ -11,7 +13,7 @@ import java.util.Scanner;
 class GameConsole
 {
     static final PrintStream out = getOut();
-    static final Scanner in = new Scanner(System.in);
+    static final CancelableReader in = CancelableReader.createNew(System.in);
 
     private static boolean isWindows = isWindows();
 
@@ -73,16 +75,17 @@ class GameConsole
         }*/
     }
 
-    static String nextLine(String question)
+    static String nextLine(String question) throws TimeOutException
     {
-        out.print(question);
-        return in.nextLine();
-    }
-
-    static int nextInt(String question)
-    {
-        out.print(question);
-        return in.nextInt();
+        try
+        {
+            out.print(question);
+            return in.nextLine();
+        }
+        catch (CanceledInputException e)
+        {
+            throw new TimeOutException();
+        }
     }
 
 }
