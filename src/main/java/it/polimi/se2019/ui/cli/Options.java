@@ -3,10 +3,12 @@ package it.polimi.se2019.ui.cli;
 
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.TimeOutException;
-import it.polimi.se2019.utils.logging.Logger;
+import it.polimi.se2019.utils.constants.GameMode;
 
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 /**
  * receives a question and some options of the group of options
@@ -17,19 +19,21 @@ public final class Options<T>
     private String question;
     private OnOptionSelectedListener listener;
     private ArrayList<Option<T>> options;
-    private CancelableReader reader;
     private boolean firstDefault;
     private Option<T> cancelOption;
+    private AtomicInteger abbreviationNumber;
+
 
     public Options(String question, boolean firstDefault)
     {
         this.options = new ArrayList<>();
         this.question = question;
         this.firstDefault = firstDefault;
-        reader= CancelableReader.createNew(System.in);
+        abbreviationNumber = new AtomicInteger(0);
     }
 
-    public Options setOptionListener(OnOptionSelectedListener listener)
+
+    public Options<T> setOptionListener(OnOptionSelectedListener listener)
     {
         this.listener = listener;
         return this;
@@ -41,47 +45,52 @@ public final class Options<T>
         return this;
     }
 
-    public Options addCancelOption()
+    private Options<T> addCancelOption()
     {
-        cancelOption = new Option<>("Annulla", "A");
+        cancelOption = new Option<>("Annulla", options.size());
         options.add(cancelOption);
         return this;
     }
 
-    public Options addOption(String option, String abbreviation)
+    public Options<T> addOption(String option)
     {
-        options.add(new Option<>(option, abbreviation));
+        options.add(new Option<>(option, options.size()));
         return this;
     }
 
-    public Options<T> addOption(String option, String abbreviation, T value)
+    public Options<T> addOption(String option, T value)
     {
-        options.add(new Option<>(option, abbreviation, value));
+        options.add(new Option<>(option, options.size(), value));
         return this;
     }
 
+    public Options<T> addOptions(List<T> values, Function<T, String> optionToStringFunction)
+    {
+        abbreviationNumber.set(0);
+        values.forEach(value -> addOption(optionToStringFunction.apply(value), value));
+        return this;
+    }
 
     private Option<T> showOptions()
     {
         if(options.isEmpty())return null;
-        StringBuilder output = new StringBuilder();
-        output.append(question).append(" ");
-        options.forEach(option -> output.append(option).append(" "));
+
+        writeOptions();
 
         Option<T> selected;
         String response;
 
+        GameConsole.print(question);
+
+        GameConsole.saveCaretPosition();
+
+
         do
         {
-            try
-            {
-                GameConsole.out.print(output.toString());
-                response = reader.nextLine().trim();
-            }
-            catch (CanceledInputException e)
-            {
-                throw new TimeOutException();
-            }
+            GameConsole.restoreCaretPosition();
+            GameConsole.eraseLine();
+
+            response = GameConsole.nextLine().trim();
 
             if(firstDefault && response.isEmpty())
             {
@@ -107,10 +116,95 @@ public final class Options<T>
 
     public Option<T> showCancellable() throws TimeOutException, CanceledActionException
     {
+        addCancelOption();
         Option<T> selected = showOptions();
         if(selected != null && selected.equals(cancelOption))throw new CanceledActionException(CanceledActionException.Cause.CANCELED_BY_USER);
         if(selected != null && listener != null)listener.onOptionSelected(selected);
         return selected;
+    }
+
+    private int getMaxOptionLength()
+    {
+        return options.stream().map(Option::getOption).mapToInt(String::length).max().orElse(0);
+    }
+
+    private void writeFistLine(StringBuilder builder, int maxOptionsLength)
+    {
+        builder.append("\t\t\t");
+        for(int i = 0; i < maxOptionsLength+8; i++)
+        {
+            if(i == 0)builder.append('╔');
+            else builder.append('═');
+        }
+        builder.append('╗').append('\n');
+    }
+
+    private void writeTitle(StringBuilder builder, String title, int maxOptionsLength)
+    {
+        builder.append("\t\t\t");
+        int pos = (maxOptionsLength+9)/2 - title.length()/2;
+
+        for(int i = 0; i < maxOptionsLength+8; i++)
+        {
+            if(i == 0)builder.append('║');
+            else if(i < pos || i-pos >= title.length()) builder.append(' ');
+            else builder.append(title.charAt(i-pos));
+        }
+        builder.append('║').append('\n');
+    }
+
+    private void writeMidLine(StringBuilder builder, int maxOptionsLength)
+    {
+        builder.append("\t\t\t");
+        for(int i = 0; i < maxOptionsLength+8; i++)
+        {
+            if(i == 0)builder.append('╠');
+            else if(i == 5)builder.append('╦');
+            else builder.append('═');
+        }
+        builder.append('╣').append('\n');
+    }
+
+    private void writeLastLine(StringBuilder builder, int maxOptionsLength)
+    {
+        builder.append("\t\t\t");
+        for(int i = 0; i < maxOptionsLength+8; i++)
+        {
+            if(i == 0)builder.append('╚');
+            else if(i == 5)builder.append('╩');
+            else builder.append('═');
+        }
+        builder.append('╝').append('\n');
+    }
+
+    private void writeOptionLine(StringBuilder builder, String option, int index, int maxOptionsLength)
+    {
+        builder.append("\t\t\t");
+        for(int i = 0; i < maxOptionsLength+8; i++)
+        {
+            if(i == 0)builder.append('║');
+            else if(i == 1 || i == 4 || i == 6)builder.append(' ');
+            else if(i == 2)builder.append(index);
+            else if(i == 3)builder.append('.');
+            else if(i == 5)builder.append('║');
+            else if(i-7 < option.length()) builder.append(option.charAt(i-7));
+            else builder.append(' ');
+        }
+        builder.append('║').append('\n');
+    }
+
+    private void writeOptions()
+    {
+        int maxOptionsLength = getMaxOptionLength();
+        StringBuilder builder = new StringBuilder();
+
+        writeFistLine(builder, maxOptionsLength);
+        writeTitle(builder, "Opzioni", maxOptionsLength);
+        writeMidLine(builder, maxOptionsLength);
+        options.forEach(option -> writeOptionLine(builder, option.getOption(), option.getIndex(), maxOptionsLength));
+        writeLastLine(builder, maxOptionsLength);
+
+        GameConsole.println(builder.toString());
     }
 
     /**
@@ -120,11 +214,26 @@ public final class Options<T>
      */
     private Option<T> findOption(String response)
     {
+        if(isInteger(response) && Integer.parseInt(response) < options.size())return options.get(Integer.parseInt(response));
+
         for(Option<T> option : options)
         {
-            if(option.compare(response))return option;
+            if(option.getOption().equalsIgnoreCase(response))return option;
         }
         return null;
+    }
+
+    private boolean isInteger(String str)
+    {
+        try
+        {
+            Integer.parseInt(str);
+            return true;
+        }
+        catch (NumberFormatException e)
+        {
+            return false;
+        }
     }
 
 

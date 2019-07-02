@@ -81,7 +81,7 @@ public class FormattedInput
         {
             try
             {
-                GameConsole.out.print(question);
+                GameConsole.print(question);
                 response = reader.nextLine();
             }
             catch (CanceledInputException e)
@@ -93,7 +93,7 @@ public class FormattedInput
             boolean matchRegex = useRegex && response.matches(regex);
             boolean matchPredicate = useRegex ? usePredicate && matchRegex && predicate.test(response) : usePredicate && predicate.test(response);
             if(useRegex && usePredicate && matchRegex && matchPredicate || useRegex && !usePredicate && matchRegex || usePredicate && !useRegex && matchPredicate)break;
-            GameConsole.out.println(Strings.INVALID_INPUT);
+            GameConsole.println(Strings.INVALID_INPUT);
         }
         return response;
     }

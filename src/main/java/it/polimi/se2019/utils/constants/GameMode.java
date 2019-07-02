@@ -1,8 +1,21 @@
 package it.polimi.se2019.utils.constants;
 
-public enum GameMode
-{
-    NORMAL, FINAL_FRENZY_BEFORE_FP, FINAL_FRENZY_AFTER_FP
+import java.io.Serializable;
 
+public enum GameMode implements Serializable
+{
+    NORMAL(2), FINAL_FRENZY_BEFORE_FP(2), FINAL_FRENZY_AFTER_FP(1);
+
+    private int playableAction;
+
+    GameMode(int playableAction)
+    {
+        this.playableAction = playableAction;
+    }
+
+    public int getPlayableAction()
+    {
+        return playableAction;
+    }
 
 }

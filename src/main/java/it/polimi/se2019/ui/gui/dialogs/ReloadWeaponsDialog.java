@@ -1,6 +1,7 @@
 package it.polimi.se2019.ui.gui.dialogs;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.ui.gui.components.CardPane;
 import it.polimi.se2019.ui.gui.components.CardView;
 import it.polimi.se2019.ui.gui.components.ColoredButton;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ReloadWeaponsDialog extends Dialog<ArrayList<Card>> implements Initializable, CardView.OnCardViewClickListener
+public class ReloadWeaponsDialog extends Dialog<ArrayList<CardData>> implements Initializable, CardView.OnCardViewClickListener
 {
     public static final int SINGLE_SELECTION_MODE = 0;
     public static final int MULTIPLE_SELECTION_MODE = 1;
@@ -42,7 +43,7 @@ public class ReloadWeaponsDialog extends Dialog<ArrayList<Card>> implements Init
 
     private int selectionMode;
 
-    public ReloadWeaponsDialog(List<Card> cards, int selectionMode)
+    public ReloadWeaponsDialog(List<CardData> cards, int selectionMode)
     {
         this.selectionMode = selectionMode;
 
@@ -100,7 +101,7 @@ public class ReloadWeaponsDialog extends Dialog<ArrayList<Card>> implements Init
             cardView.setSelected(true);
         }
 
-        if(cardPane.getSelectedCards().size() > 0)
+        if(!cardPane.getSelectedCards().isEmpty())
         {
             okButton.setText("Ricarica");
             okButton.setColor(GameColor.GREEN);

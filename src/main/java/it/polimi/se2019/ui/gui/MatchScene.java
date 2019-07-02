@@ -1,6 +1,7 @@
 package it.polimi.se2019.ui.gui;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.BlockData;
 import it.polimi.se2019.map.Coordinates;
@@ -15,19 +16,10 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 
@@ -96,8 +88,8 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
     final Value<Action> selectedAction;
     final CancelableValue<Coordinates> selectedBlock;
     final Value<String> selectedOption;
-    final CancelableValue<Card> selectedWeapon;
-    final CancelableValue<Card> selectedPowerUp;
+    final CancelableValue<CardData> selectedWeapon;
+    final CancelableValue<CardData> selectedPowerUp;
 
     private Serializable optionalActionObject;
     //private List<Resizable> resizableComponents;
@@ -158,7 +150,7 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
         Platform.runLater(() -> gameDataProperty.set(data));
     }
 
-    public void addCard(Card card)
+    public void addCard(CardData card)
     {
         if(card.getId().startsWith("PUC"))powerUpsCardPane.addCard(card, this);
         else weaponsCardPane.addCard(card, this);
@@ -228,7 +220,7 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
 
             board.update(gameData.getPlayer());
             mapView.update(gameData.getMap());
-            mapView.setRemainingSkulls(gameData.getRemainingSkulls(), gameData.getDeaths());
+            mapView.setRemainingSkulls(gameData.getRemainingSkulls(), gameData.getDeathsNumber());
             weaponsCardPane.updateCards(gameData.getPlayer().getWeapons(), this);
             powerUpsCardPane.updateCards(gameData.getPlayer().getPowerUps(), this);
             playersInfoTable.update();

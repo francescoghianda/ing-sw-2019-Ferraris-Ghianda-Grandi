@@ -5,6 +5,7 @@ import it.polimi.se2019.card.deck.Deck;
 import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.player.Player;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 public class AmmoCard extends Card implements Serializable

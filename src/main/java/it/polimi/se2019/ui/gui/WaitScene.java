@@ -43,7 +43,6 @@ public class WaitScene extends GridPane implements Initializable
         timerLabel.setStyle("-fx-text-fill: white;"+"-fx-font-size: 100;");
         Image image= new Image("/img/loading.gif");
         imageView.setImage(image);
-
     }
 
     boolean isTimerVisible()

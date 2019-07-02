@@ -14,7 +14,7 @@ public class Deck<T extends Card>
 
 	public Deck()
 	{
-		cards = new ArrayList<>();
+		cards = Collections.synchronizedList(new ArrayList<>());
 	}
 
 	public Deck(List<T> cards)

@@ -12,9 +12,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Match
 {
+    private static AtomicInteger idsGenerator = new AtomicInteger(0);
+
     public enum State
     {
         WAITING_FOR_PLAYERS, RUNNING, ENDED
@@ -27,12 +30,15 @@ public class Match
     private List<GameColor> availablePlayerColors;
     private Random random;
 
+    private int matchId;
+
     public Match()
     {
         players = new ObservableList<>();
         availablePlayerColors = new ArrayList<>(Arrays.asList(GameColor.values()));
         availablePlayerColors.remove(GameColor.RED);
         random = new Random();
+        matchId = idsGenerator.getAndIncrement();
 
         players.addChangeListener(new ListChangeAdapter<Player>() {
             @Override
@@ -97,5 +103,15 @@ public class Match
     public State getState()
     {
         return this.state;
+    }
+
+    public int getMatchId()
+    {
+        return matchId;
+    }
+
+    public MatchData getData()
+    {
+        return new MatchData(matchId, state, players.size());
     }
 }

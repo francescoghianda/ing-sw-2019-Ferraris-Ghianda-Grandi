@@ -1,6 +1,6 @@
 package it.polimi.se2019.player;
 
-import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.controller.Match;
@@ -12,7 +12,6 @@ import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
-import javafx.fxml.FXML;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -85,6 +84,12 @@ public class VirtualView implements UI
     public void notifyImpossibleAction()
     {
         client.sendMessageToClient(new AsyncMessage("impossible_action", UI::notifyImpossibleAction));
+    }
+
+    @Override
+    public void showNotification(String text)
+    {
+        client.sendMessageToClient(new AsyncMessage("notification", ui -> ui.showNotification(text)));
     }
 
     @Override
@@ -187,7 +192,7 @@ public class VirtualView implements UI
     }
 
     @Override
-    public String chooseSpawnPoint(Card option1, Card option2)
+    public String chooseSpawnPoint(CardData option1, CardData option2)
     {
         return (String) client.getResponseTo(RequestFactory.newActionRequest("choose_spawn_point", ui -> ui.chooseSpawnPoint(option1, option2)), timeoutTime).getContent();
     }
@@ -211,34 +216,34 @@ public class VirtualView implements UI
     }
 
     @Override
-    public Card chooseWeaponFromPlayer() throws CanceledActionException
+    public CardData chooseWeaponFromPlayer() throws CanceledActionException
     {
-        return (Card) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_weapon_from_player", UI::chooseWeaponFromPlayer), timeoutTime).getContent();
+        return (CardData) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_weapon_from_player", UI::chooseWeaponFromPlayer), timeoutTime).getContent();
     }
 
     @Override
-    public Card chooseWeaponFromBlock() throws CanceledActionException
+    public CardData chooseWeaponFromBlock() throws CanceledActionException
     {
-        return (Card) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_weapon_from_block", UI::chooseWeaponFromBlock), timeoutTime).getContent();
+        return (CardData) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_weapon_from_block", UI::chooseWeaponFromBlock), timeoutTime).getContent();
     }
 
     @Override
-    public Card choosePowerUp() throws CanceledActionException
+    public CardData choosePowerUp() throws CanceledActionException
     {
-        return (Card) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_power_up", UI::choosePowerUp), timeoutTime).getContent();
+        return (CardData) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_power_up", UI::choosePowerUp), timeoutTime).getContent();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public ArrayList<Card> chooseWeaponsToReload(ArrayList<Card> weapons)
+    public ArrayList<CardData> chooseWeaponsToReload(ArrayList<CardData> weapons)
     {
-        return (ArrayList<Card>) client.getResponseTo(RequestFactory.newActionRequest("choose_weapons_to_reload", ui -> ui.chooseWeaponsToReload(weapons)), timeoutTime).getContent();
+        return (ArrayList<CardData>) client.getResponseTo(RequestFactory.newActionRequest("choose_weapons_to_reload", ui -> ui.chooseWeaponsToReload(weapons)), timeoutTime).getContent();
     }
 
     @Override
-    public Card chooseWeaponToReload(ArrayList<Card> weapons)
+    public CardData chooseWeaponToReload(ArrayList<CardData> weapons)
     {
-        return (Card) client.getResponseTo(RequestFactory.newActionRequest("choose_weapon_to_reload", ui -> ui.chooseWeaponToReload(weapons)), timeoutTime).getContent();
+        return (CardData) client.getResponseTo(RequestFactory.newActionRequest("choose_weapon_to_reload", ui -> ui.chooseWeaponToReload(weapons)), timeoutTime).getContent();
     }
 
     @Override

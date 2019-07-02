@@ -10,6 +10,8 @@ import it.polimi.se2019.player.ImpossibleActionException;
 import it.polimi.se2019.player.NotEnoughAmmoException;
 import it.polimi.se2019.player.Player;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,8 +34,8 @@ public class WeaponCard extends Card
 
 	private transient HashMap<String, OptionalEffect> optionalEffects;
 
-	private boolean load;
-	private boolean used;
+	private volatile boolean load;
+	private volatile boolean used;
 
 	private transient Executor executor;
 
@@ -229,6 +231,7 @@ public class WeaponCard extends Card
 		return optionalEffects.get(name);
 	}
 
+	@Override
 	public String toString()
 	{
 		return "WeaponCard #"+getId()+" - "+getName()+" - "+(isLoad() ? "load" : "unload");
@@ -239,6 +242,5 @@ public class WeaponCard extends Card
 	{
 		BASIC, ALTERNATE_FIRE
 	}
-
 
 }

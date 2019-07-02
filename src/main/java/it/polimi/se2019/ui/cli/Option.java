@@ -3,19 +3,19 @@ package it.polimi.se2019.ui.cli;
 public class Option<T>
 {
     private String option;
-    private String abbreviation;
+    private int index;
     private T value;
 
-    public Option(String option, String abbreviation)
+    public Option(String option, int index)
     {
         this.option = option;
-        this.abbreviation = abbreviation;
+        this.index = index;
     }
 
-    public Option(String option, String abbreviation, T value)
+    public Option(String option, int index, T value)
     {
         this.option = option;
-        this.abbreviation = abbreviation;
+        this.index = index;
         this.value = value;
     }
 
@@ -24,9 +24,9 @@ public class Option<T>
         return option;
     }
 
-    public String getAbbreviation()
+    public int getIndex()
     {
-        return abbreviation;
+        return index;
     }
 
     public T getValue()
@@ -34,14 +34,9 @@ public class Option<T>
         return this.value;
     }
 
-    public boolean compare(String opt)
-    {
-        return opt.equalsIgnoreCase(option) || opt.equalsIgnoreCase(abbreviation);
-    }
-
     @Override
     public String toString()
     {
-        return "["+option+"]";
+        return "Option <"+option+">";
     }
 }

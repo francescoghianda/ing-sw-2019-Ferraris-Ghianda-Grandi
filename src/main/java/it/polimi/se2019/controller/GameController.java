@@ -23,7 +23,9 @@ import it.polimi.se2019.utils.xml.NotValidXMLException;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 public class GameController implements TimerListener
@@ -36,8 +38,8 @@ public class GameController implements TimerListener
     private Deck<WeaponCard> weaponCardDeck;
     private Deck<PowerUpCard> powerUpCardDeck;
 
-    private int deaths;
-    private int remainingSkulls;
+    private AtomicInteger remainingSkulls;
+    private List<Death> deaths;
 
     private RoundManager roundManager;
 
@@ -50,9 +52,9 @@ public class GameController implements TimerListener
 
         MatchSettings settings = MatchSettings.getInstance();
 
-        remainingSkulls = settings.getSkullNumber();
+        remainingSkulls = new AtomicInteger(settings.getSkullNumber());
         startTimerSeconds = settings.getStartTimerSeconds();
-        deaths = 0;
+        deaths = Collections.synchronizedList(new ArrayList<>());
         map = Map.createMap(settings.getMapNumber());
 
         createDecks();
@@ -62,38 +64,70 @@ public class GameController implements TimerListener
     {
         Player currentPlayer = roundManager.next();
 
+        if(gameMode == GameMode.FINAL_FRENZY_BEFORE_FP && roundManager.isFirstPlayer(currentPlayer))gameMode = GameMode.FINAL_FRENZY_AFTER_FP;
+
         try
         {
             currentPlayer.getView().roundStart();
+            notifyOtherClients(currentPlayer, virtualView -> virtualView.showNotification("È il turno di "+currentPlayer.getUsername()));
 
             if(roundManager.isFirstRound() || !currentPlayer.isFirstRoundPlayed()) firstRound(currentPlayer);
 
-            boolean continueRound = executeAction(currentPlayer);
-            if(continueRound)
+            for(int i = 0; i < gameMode.getPlayableAction(); i++)
             {
                 currentPlayer.resetExecutedAction();
-                executeAction(currentPlayer);
+                boolean continueRound = executeAction(currentPlayer);
+                if(!continueRound)break;
             }
 
-            new ReloadAction(this, currentPlayer, ReloadAction.RELOAD_ALL).execute();
+            if(gameMode == GameMode.NORMAL)new ReloadAction(this, currentPlayer, ReloadAction.RELOAD_ALL).execute();
         }
         catch (ConnectionErrorException e)
         {
             Logger.error("Connection error during "+currentPlayer.getUsername()+"'s round!");
+            notifyOtherClients(currentPlayer, virtualView -> virtualView.showNotification(currentPlayer.getUsername()+" si è disconnesso!"));
         }
         catch (TimeOutException e)
         {
             Logger.info("Player "+currentPlayer.getUsername()+" has finished his time");
         }
-        finally
+
+        currentPlayer.getView().roundEnd();
+        currentPlayer.resetExecutedAction();
+        refillMap();
+        sendBroadcastUpdate();
+        if(isFinalFrenzy())currentPlayer.setLastRoundPlayed(true);
+        handleDeadPlayers(currentPlayer);
+        if(isFinalFrenzy() && roundManager.isLastPlayer(currentPlayer))return;
+        checkForFinalFrenzy();
+        nextRound();
+
+    }
+
+    private boolean isFinalFrenzy()
+    {
+        return gameMode == GameMode.FINAL_FRENZY_AFTER_FP || gameMode == GameMode.FINAL_FRENZY_BEFORE_FP;
+    }
+
+    private void endMatch()
+    {
+
+    }
+
+    private void checkForFinalFrenzy()
+    {
+        if(remainingSkulls.get() > 0 || gameMode != GameMode.NORMAL)return;
+        gameMode = GameMode.FINAL_FRENZY_BEFORE_FP;
+
+        match.getPlayers().forEach(player ->
         {
-            currentPlayer.getView().roundEnd();
-            currentPlayer.resetExecutedAction();
-            refillMap();
-            sendBroadcastUpdate();
-            respawnKilledPlayers();
-            nextRound();
-        }
+            if(player.getGameBoard().getTotalReceivedDamage() <= 0)
+            {
+                player.setFinalFrenzyMode(true);
+            }
+        });
+
+        sendBroadcastUpdate();
     }
 
     private boolean executeAction(Player currentPlayer)
@@ -121,6 +155,7 @@ public class GameController implements TimerListener
             catch (ImpossibleActionException e)
             {
                 Logger.warning("Impossible action: "+chosen+"; "+e.cause()+" - Player: "+currentPlayer);
+                currentPlayer.getView().notifyImpossibleAction();
             }
             finally
             {
@@ -166,7 +201,7 @@ public class GameController implements TimerListener
         PowerUpCard option2 = powerUpCardDeck.getFirstCard();
         try
         {
-            String chosenId = player.getView().chooseSpawnPoint(option1, option2);
+            String chosenId = player.getView().chooseSpawnPoint(option1.getCardData(), option2.getCardData());
             PowerUpCard chosen = option1.getId().equals(chosenId) ? option1 : option2;
             Block spawnPoint = map.findRoomByColor(chosen.getColor()).getSpawnPoint();
             powerUpCardDeck.addCard(chosen);
@@ -203,14 +238,29 @@ public class GameController implements TimerListener
         });
     }
 
-    private void respawnKilledPlayers()
+    private void handleDeadPlayers(Player currentPlayer)
     {
-        match.getPlayers().forEach(player ->
+        List<Player> deadPlayers = match.getPlayers().stream().filter(Player::isDead).collect(Collectors.toList());
+
+        if(deadPlayers.size() > 1)currentPlayer.getGameBoard().addPoints(1);
+
+        deadPlayers.forEach(player ->
         {
-            if(player.isDead())
+            sendBroadCastMessage(virtualView -> virtualView.showNotification(player.getUsername()+" è stato ucciso da "+currentPlayer.getUsername()));
+            new CountPointsAction(this, player).execute();
+            player.getGameBoard().addSkull();
+            remainingSkulls.decrementAndGet();
+            deaths.add(new Death(currentPlayer.getColor(), player.getColor(), player.isOverkilled()));
+        });
+
+        sendBroadcastUpdate();
+
+        deadPlayers.forEach(player ->
+        {
+            if(!player.isLastRoundPlayed())
             {
-                new CountPointsAction(this, player).execute();
                 new RespawnAction(this, player).execute();
+                if(isFinalFrenzy())player.setFinalFrenzyMode(true);
             }
         });
     }
@@ -244,6 +294,7 @@ public class GameController implements TimerListener
     {
         sendUpdate(client.getUser().getPlayer());
         client.getVirtualView().gameStarted();
+        notifyOtherClients(client.getUser().getPlayer(), virtualView -> virtualView.showNotification(client.getUser().getUsername()+" si è riconnesso"));
     }
 
     void startGameTimer()
@@ -267,6 +318,8 @@ public class GameController implements TimerListener
 
         Player firstPlayer = match.getPlayers().get(0);
 
+        firstPlayer.getView().showNotification("Sei il primo giocatore!");
+
         firstPlayer.setAsStartingPlayer(true);
         firstPlayer.getView().youAreFirstPlayer();
         String username = firstPlayer.getClientConnection().getUser().getUsername();
@@ -289,6 +342,7 @@ public class GameController implements TimerListener
         sendBroadcastUpdate();
         selectStartingPlayer();
         nextRound();
+        endMatch();
     }
 
     public Map getMap()
@@ -298,12 +352,12 @@ public class GameController implements TimerListener
 
     public GameMode getGameMode()
     {
-        return this.gameMode;
+        return gameMode;
     }
 
     private GameData getData(Player player)
     {
-        return new GameData(map.getData(), player.getData(), remainingSkulls, deaths, powerUpCardDeck.size(), weaponCardDeck.size());
+        return new GameData(map.getData(), player.getData(), remainingSkulls.get(), new ArrayList<>(deaths), powerUpCardDeck.size(), weaponCardDeck.size(), gameMode, match.getData());
     }
 
     public Deck<PowerUpCard> getPowerUpCardDeck()

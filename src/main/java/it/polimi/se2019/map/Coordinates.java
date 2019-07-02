@@ -42,4 +42,10 @@ public final class Coordinates implements Serializable
     {
         return x+y;
     }
+
+    @Override
+    public String toString()
+    {
+        return "("+x+", "+y+")";
+    }
 }

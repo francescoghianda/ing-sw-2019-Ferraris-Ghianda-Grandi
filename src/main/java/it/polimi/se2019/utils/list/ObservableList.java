@@ -1,8 +1,9 @@
 package it.polimi.se2019.utils.list;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
-public class ObservableList<E> implements Iterable<E>
+public class ObservableList<E> implements Iterable<E>, Collection<E>
 {
     private List<ListChangeListener<E>> listeners;
     private List<E> list;
@@ -29,11 +30,13 @@ public class ObservableList<E> implements Iterable<E>
         listeners.remove(listener);
     }
 
-    public boolean remove(E element)
+    @SuppressWarnings({"unchecked"})
+    @Override
+    public boolean remove(Object element)
     {
         if(!list.contains(element))return false;
         list.remove(element);
-        listeners.forEach(listener -> listener.onChanged(element, ListChangeEvent.ELEMENT_REMOVED));
+        listeners.forEach(listener -> listener.onChanged((E)element, ListChangeEvent.ELEMENT_REMOVED));
         return true;
     }
 
@@ -44,35 +47,69 @@ public class ObservableList<E> implements Iterable<E>
         return element;
     }
 
+    @Override
     public boolean isEmpty()
     {
         return list.isEmpty();
     }
 
+    @Override
     public int size()
     {
         return list.size();
     }
 
+    @Override
     public Iterator<E> iterator()
     {
         return list.iterator();
     }
 
-    public boolean contains(E element)
+    @Override
+    public Object[] toArray()
+    {
+        Object[] array = new Object[list.size()];
+        for(int i = 0; i < array.length; i++)
+        {
+            array[i] = list.get(i);
+        }
+        return array;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T[] toArray(T[] a)
+    {
+        T[] array = a;
+        if(array.length < list.size())array = (T[]) Array.newInstance(a.getClass(), list.size());
+
+        for(int i = 0; i < array.length; i++)
+        {
+            if(i < list.size())array[i] = (T) list.get(i);
+            else array[i] = null;
+        }
+
+        return array;
+    }
+
+    @Override
+    public boolean contains(Object element)
     {
         return list.contains(element);
     }
 
-    public boolean containsAll(Collection<? extends E> elements)
+    @Override
+    public boolean containsAll(Collection<?> elements)
     {
         return list.containsAll(elements);
     }
 
-    public boolean removeAll(Collection<? extends E> elements)
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean removeAll(Collection<?> elements)
     {
         boolean ret = list.removeAll(elements);
-        if(ret)listeners.forEach(listener -> listener.onChanged(elements, ListChangeEvent.COLLECTION_REMOVED));
+        if(ret)listeners.forEach(listener -> listener.onChanged((Collection<? extends E>) elements, ListChangeEvent.COLLECTION_REMOVED));
         return ret;
     }
 
@@ -91,6 +128,7 @@ public class ObservableList<E> implements Iterable<E>
         return new ArrayList<>(list);
     }
 
+    @Override
     public boolean add(E element)
     {
         list.add(element);
@@ -98,6 +136,7 @@ public class ObservableList<E> implements Iterable<E>
         return true;
     }
 
+    @Override
     public boolean addAll(Collection<? extends E> elements)
     {
         list.addAll(elements);
@@ -105,6 +144,22 @@ public class ObservableList<E> implements Iterable<E>
         return true;
     }
 
+    @Override
+    public boolean retainAll(Collection<?> c)
+    {
+        boolean executed = false;
+        for(E elem : list)
+        {
+            if(!c.contains(elem))
+            {
+                list.remove(elem);
+                executed = true;
+            }
+        }
+        return executed;
+    }
+
+    @Override
     public void clear()
     {
         list.clear();

@@ -9,6 +9,7 @@ import it.polimi.se2019.player.ImpossibleActionException;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.GameColor;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 public class PowerUpCard extends Card

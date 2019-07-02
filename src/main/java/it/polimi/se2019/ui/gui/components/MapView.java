@@ -1,13 +1,15 @@
 package it.polimi.se2019.ui.gui.components;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
+import it.polimi.se2019.controller.Death;
 import it.polimi.se2019.controller.GameData;
-import it.polimi.se2019.controller.Match;
 import it.polimi.se2019.map.BlockData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.map.MapData;
 import it.polimi.se2019.ui.gui.GUI;
 import it.polimi.se2019.ui.gui.MatchScene;
+import it.polimi.se2019.utils.gui.BloodDropImageFactory;
 import it.polimi.se2019.utils.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -28,8 +30,6 @@ import javafx.scene.transform.Rotate;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
 
 public class MapView extends StackPane implements Initializable, EventHandler<MouseEvent>
 {
@@ -227,7 +227,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         {
             if(block.isSpawnPoint())
             {
-                List<Card> weapons = block.getWeaponCards();
+                List<CardData> weapons = block.getWeaponCards();
                 for(int i = 0; i < weapons.size(); i++)
                 {
                     CardView cardView = new CardView(weapons.get(i), CardView.FADE_TRANSITION);
@@ -357,7 +357,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
     }
 
 
-    private void paintSkulls(int skulls, int deaths)
+    private void paintSkulls(int skulls, int deathsNumber)
     {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -367,11 +367,28 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
         double sx = 180;
         double sy = 95;
 
-        for(int i = deaths; i < skulls+deaths; i++)
+        List<Death> deaths = MatchScene.getInstance().getGameDataProperty().get().getDeaths();
+
+        for(int i = 0; i < deaths.size(); i++)
         {
-            gc.clearRect((sx+skullWidth*i*1.07)*scale, sy*scale, skullWidth*scale, skullHeight*scale);
-            gc.drawImage(skullImage, (sx+skullWidth*i*1.07)*scale, sy*scale, skullWidth*scale, skullHeight*scale);
+            Image bloodDropImage = BloodDropImageFactory.getInstance().getBloodDropImage(deaths.get(i).getKillerColor());
+            clearAndDraw(bloodDropImage, gc, (sx+skullWidth*i*1.07)*scale, sy*scale, skullWidth*scale, skullHeight*scale);
+            if(deaths.get(i).isOverKill())
+            {
+                gc.drawImage(bloodDropImage, (sx+skullWidth*i*1.07)*scale, sy*scale-20*scale, skullWidth*scale, skullHeight*scale);
+            }
         }
+
+        for(int i = deaths.size(); i < skulls+deaths.size(); i++)
+        {
+            clearAndDraw(skullImage, gc, (sx+skullWidth*i*1.07)*scale, sy*scale, skullWidth*scale, skullHeight*scale);
+        }
+    }
+
+    private void clearAndDraw(Image image, GraphicsContext gc, double x, double y, double width, double height)
+    {
+        gc.clearRect(x, y, width, height);
+        gc.drawImage(image, x, y, width, height);
     }
 
     @Override

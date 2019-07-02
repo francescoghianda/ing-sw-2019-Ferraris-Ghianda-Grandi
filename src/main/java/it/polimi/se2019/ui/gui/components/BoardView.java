@@ -5,8 +5,8 @@ import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.gui.GUI;
 import it.polimi.se2019.ui.gui.MatchScene;
 import it.polimi.se2019.utils.constants.GameColor;
+import it.polimi.se2019.utils.constants.GameMode;
 import it.polimi.se2019.utils.gui.BloodDropImageFactory;
-import javafx.application.Platform;
 import javafx.beans.NamedArg;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,8 +14,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.*;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -24,7 +22,6 @@ import javafx.scene.text.Text;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
-import java.util.function.BinaryOperator;
 
 public class BoardView extends StackPane implements Initializable
 {
@@ -41,11 +38,13 @@ public class BoardView extends StackPane implements Initializable
 
     private double scale;
 
-    private static EnumMap<GameColor, Image> backgrounds;
+    private static EnumMap<GameColor, Image> normalModeBoardImages;
+    private static EnumMap<GameColor, Image> finalFrenzyModeBoardImages;
 
-    private Image background;
+    private Image normalModeBoardImage;
+    private Image finalFrenzyModeBoardImage;
 
-
+    private Image skullImage;
     private BloodDropImageFactory bloodFactory;
 
     public BoardView(@NamedArg("color")GameColor color)
@@ -56,6 +55,7 @@ public class BoardView extends StackPane implements Initializable
         fxmlLoader.setController(this);
         loadBackGrounds();
 
+        skullImage = new Image(getClass().getResourceAsStream("/img/skull.png"));
         bloodFactory = BloodDropImageFactory.getInstance();
 
         this.color = color;
@@ -77,9 +77,10 @@ public class BoardView extends StackPane implements Initializable
     public void setColor(GameColor color)
     {
         this.color = color;
-        this.background = backgrounds.get(color);
+        this.normalModeBoardImage = normalModeBoardImages.get(color);
+        this.finalFrenzyModeBoardImage = finalFrenzyModeBoardImages.get(color);
 
-        backgroundImage.setImage(background);
+        backgroundImage.setImage(normalModeBoardImage);
 
         backgroundImage.setPreserveRatio(true);
         //backgroundImage.setFitHeight(GUI.getMinStageHeight()/5);
@@ -96,7 +97,7 @@ public class BoardView extends StackPane implements Initializable
 
     private void computeScale()
     {
-        scale = canvas.getHeight()/background.getHeight();
+        scale = canvas.getHeight()/ normalModeBoardImage.getHeight();
     }
 
     private void paint()
@@ -107,6 +108,27 @@ public class BoardView extends StackPane implements Initializable
         paintAmmo(gc);
         paintDamages(gc);
         paintMarkers(gc);
+        paintSkulls(gc);
+    }
+
+    private void paintSkulls(GraphicsContext gc)
+    {
+        double x = 233*scale;
+        double y = 196*scale;
+        double width = 59*scale;
+        double height = 68*scale;
+        double space = 7*scale;
+
+        int skulls = MatchScene.getInstance().getGameDataProperty().get().getPlayer().getGameBoard().getSkulls();
+        if(skulls > 6)skulls = 6;
+
+        for(int i = 0; i < skulls; i++)
+        {
+            double xi = x+(width*i)+(space*i);
+            gc.clearRect(xi, y, width, height);
+            gc.drawImage(skullImage, xi, y, width, height);
+        }
+
     }
 
     private void paintDamages(GraphicsContext gc)
@@ -234,6 +256,8 @@ public class BoardView extends StackPane implements Initializable
         this.player = player;
         this.gameBoard = player.getGameBoard();
 
+        if(player.isFinalFrenzyMode()) backgroundImage.setImage(finalFrenzyModeBoardImage);
+
         paint();
     }
 
@@ -244,15 +268,22 @@ public class BoardView extends StackPane implements Initializable
 
     private static void loadBackGrounds()
     {
-        if(backgrounds == null || backgrounds.isEmpty())
+        if(normalModeBoardImages == null || normalModeBoardImages.isEmpty())
         {
-            backgrounds = new EnumMap<>(GameColor.class);
+            normalModeBoardImages = new EnumMap<>(GameColor.class);
             String path = "/img/boards/";
-            backgrounds.put(GameColor.BLUE, new Image(BoardView.class.getResourceAsStream(path+"blue/board.png")));
-            backgrounds.put(GameColor.GREEN, new Image(BoardView.class.getResourceAsStream(path+"green/board.png")));
-            backgrounds.put(GameColor.PURPLE, new Image(BoardView.class.getResourceAsStream(path+"purple/board.png")));
-            backgrounds.put(GameColor.WHITE, new Image(BoardView.class.getResourceAsStream(path+"white/board.png")));
-            backgrounds.put(GameColor.YELLOW, new Image(BoardView.class.getResourceAsStream(path+"yellow/board.png")));
+            normalModeBoardImages.put(GameColor.BLUE, new Image(BoardView.class.getResourceAsStream(path+"blue/board.png")));
+            normalModeBoardImages.put(GameColor.GREEN, new Image(BoardView.class.getResourceAsStream(path+"green/board.png")));
+            normalModeBoardImages.put(GameColor.PURPLE, new Image(BoardView.class.getResourceAsStream(path+"purple/board.png")));
+            normalModeBoardImages.put(GameColor.WHITE, new Image(BoardView.class.getResourceAsStream(path+"white/board.png")));
+            normalModeBoardImages.put(GameColor.YELLOW, new Image(BoardView.class.getResourceAsStream(path+"yellow/board.png")));
+
+            finalFrenzyModeBoardImages = new EnumMap<>(GameColor.class);
+            finalFrenzyModeBoardImages.put(GameColor.BLUE, new Image(BoardView.class.getResourceAsStream(path+"blue/final_frenzy_board.png")));
+            finalFrenzyModeBoardImages.put(GameColor.GREEN, new Image(BoardView.class.getResourceAsStream(path+"green/final_frenzy_board.png")));
+            finalFrenzyModeBoardImages.put(GameColor.PURPLE, new Image(BoardView.class.getResourceAsStream(path+"purple/final_frenzy_board.png")));
+            finalFrenzyModeBoardImages.put(GameColor.WHITE, new Image(BoardView.class.getResourceAsStream(path+"white/final_frenzy_board.png")));
+            finalFrenzyModeBoardImages.put(GameColor.YELLOW, new Image(BoardView.class.getResourceAsStream(path+"yellow/final_frenzy_board.png")));
         }
     }
 

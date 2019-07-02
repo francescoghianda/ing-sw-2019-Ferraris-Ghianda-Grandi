@@ -1,5 +1,7 @@
 package it.polimi.se2019.map;
 
+import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.card.ammo.AmmoCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.player.Player;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class Block implements Serializable
 {
@@ -361,7 +364,9 @@ public class Block implements Serializable
 
 		String ammoCardId = ammoCard == null ? null : ammoCard.getId();
 
-		return new BlockData(getX(), getY(), spawnPoint, ammoCardId, new ArrayList<>(weaponCards), distances, playersData);
+		ArrayList<CardData> weaponCardsData = weaponCards.stream().map(Card::getCardData).collect(Collectors.toCollection(ArrayList::new));
+
+		return new BlockData(getX(), getY(), spawnPoint, ammoCardId, weaponCardsData, distances, playersData);
 	}
 
 }

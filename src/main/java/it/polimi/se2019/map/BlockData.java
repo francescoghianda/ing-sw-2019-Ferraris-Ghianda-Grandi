@@ -1,6 +1,6 @@
 package it.polimi.se2019.map;
 
-import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.player.PlayerData;
 
 import java.io.Serializable;
@@ -16,11 +16,11 @@ public class BlockData implements Serializable
     private final boolean spawnPoint;
 
     private final String ammoCardId;
-    private final ArrayList<Card> weaponCards;
+    private final ArrayList<CardData> weaponCards;
     private final HashMap<Coordinates, Integer> distances;
     private final ArrayList<PlayerData> players;
 
-    public BlockData(int x, int y, boolean spawnPoint, String ammoCardId, ArrayList<Card> weaponCards, HashMap<Coordinates, Integer> distances, ArrayList<PlayerData> players)
+    public BlockData(int x, int y, boolean spawnPoint, String ammoCardId, ArrayList<CardData> weaponCards, HashMap<Coordinates, Integer> distances, ArrayList<PlayerData> players)
     {
         this.x = x;
         this.y = y;
@@ -51,7 +51,7 @@ public class BlockData implements Serializable
         return ammoCardId;
     }
 
-    public ArrayList<Card> getWeaponCards()
+    public ArrayList<CardData> getWeaponCards()
     {
         return weaponCards;
     }

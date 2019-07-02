@@ -1,23 +1,21 @@
 package it.polimi.se2019.card;
 
-import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class Card implements Serializable
+public abstract class Card
 {
-	public static final long serialVersionUID = 5L;
-
 	private String name;
 	private String description;
 	private String id;
 
-	private boolean enabled;
+	private AtomicBoolean enabled;
 
 	protected Card()
 	{
 		name = "";
 		description = "";
 		id = "";
-		enabled = true;
+		enabled = new AtomicBoolean(true);
 	}
 
 	public void setId(String id)
@@ -52,12 +50,12 @@ public abstract class Card implements Serializable
 
 	public final void setEnabled(boolean enabled)
 	{
-		this.enabled = enabled;
+		this.enabled.set(enabled);
 	}
 
 	public final boolean isEnabled()
 	{
-		return enabled;
+		return enabled.get();
 	}
 
 	public final String getIdIgnoreClone()
@@ -69,6 +67,11 @@ public abstract class Card implements Serializable
 		return this.id;
 	}
 
+	public final CardData getCardData()
+	{
+		return new CardData(id, getIdIgnoreClone(), name, description, enabled.get());
+	}
+
 	@Override
 	public final boolean equals(Object obj)
 	{
@@ -76,6 +79,7 @@ public abstract class Card implements Serializable
 		return ((Card)obj).getId().equals(id);
 	}
 
+	@Override
 	public String toString()
 	{
 		return "CARD [id = "+getId()+", name = "+getName()+", enabled = "+enabled+"]";

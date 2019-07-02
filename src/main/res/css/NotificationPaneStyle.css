@@ -1,0 +1,12 @@
+.root
+{
+    -fx-background-color: #303030;
+    -fx-border-color: white;
+    -fx-border-radius: 20 20 20 20;
+    -fx-background-radius: 20 20 20 20;
+}
+.label
+{
+    -fx-text-fill: white;
+    -fx-font-size: 20;
+}

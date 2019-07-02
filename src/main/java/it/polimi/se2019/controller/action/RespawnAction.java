@@ -28,7 +28,7 @@ public class RespawnAction extends ControllerAction
 
         try
         {
-            String chosenId = player.getView().chooseSpawnPoint(powerUp, null);
+            String chosenId = player.getView().chooseSpawnPoint(powerUp == null ? null : powerUp.getCardData(), null);
             PowerUpCard chosenPowerUp = PowerUpCard.findById(chosenId);
             Block spawnPoint = gameController.getMap().findRoomByColor(chosenPowerUp.getColor()).getSpawnPoint();
 

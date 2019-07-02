@@ -138,9 +138,9 @@ public class ServerApp
         if(mode == -1)
         {
             input = true;
-            serverMode = new Options<Integer>("Scegli la modalità di connessione:", true).addOption("Socket", "S", SOCKET_MODE).addOption("RMI", "R", RMI_MODE).addOption("Entrambi", "E", BOTH_SERVER_MODE).show();
+            serverMode = new Options<Integer>("Scegli la modalità di connessione:", true).addOption("Socket", SOCKET_MODE).addOption("RMI", RMI_MODE).addOption("Entrambi", BOTH_SERVER_MODE).show();
         }
-        else serverMode = new Option<>("","", mode);
+        else serverMode = new Option<>("",0, mode);
 
         int port1;
         int socketPort = 0;
@@ -169,7 +169,7 @@ public class ServerApp
         if(input)
         {
             Options<Character> saveSettingsOptions = new Options<>("Vuoi salvare le impostazioni attuali?", true);
-            saveSettingsOptions.addOption("Si", "s", 's').addOption("No", "n", 'n');
+            saveSettingsOptions.addOption("Si", 's').addOption("No", 'n');
             Character selected = saveSettingsOptions.show().getValue();
             if(selected == 's')
             {

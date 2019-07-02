@@ -1,6 +1,7 @@
 package it.polimi.se2019.ui.gui.components;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.ui.gui.GUI;
 
 import it.polimi.se2019.ui.gui.MatchScene;
@@ -90,9 +91,9 @@ public class CardPane extends StackPane implements Initializable
         }
     }
 
-    public List<Card> getSelectedCards()
+    public List<CardData> getSelectedCards()
     {
-        List<Card> selectedCards = new ArrayList<>();
+        List<CardData> selectedCards = new ArrayList<>();
 
         for(CardSlot slot : slots)
         {
@@ -139,7 +140,7 @@ public class CardPane extends StackPane implements Initializable
         }
     }
 
-    public void addCard(Card card, CardView.OnCardViewClickListener listener)
+    public void addCard(CardData card, CardView.OnCardViewClickListener listener)
     {
         cardNumber++;
         if(cardNumber > 3)throw new CardPaneOutOfBoundsException();
@@ -153,7 +154,7 @@ public class CardPane extends StackPane implements Initializable
 
     }
 
-    public void updateCards(List<Card> cards, CardView.OnCardViewClickListener listener)
+    public void updateCards(List<CardData> cards, CardView.OnCardViewClickListener listener)
     {
         for(CardSlot slot : slots)
         {
@@ -162,14 +163,14 @@ public class CardPane extends StackPane implements Initializable
 
         cards.forEach(card ->
         {
-            System.out.println(card.getName()+" - "+card.isEnabled());
+            //System.out.println(card.getName()+" - "+card.isEnabled());
 
             if(!isCardPresent(card))addCard(card, listener);
             else findCardSlotByCard(card).setCardEnabled(card.isEnabled());
         });
     }
 
-    private CardSlot findCardSlotByCard(Card card)
+    private CardSlot findCardSlotByCard(CardData card)
     {
         for(CardSlot slot : slots)
         {
@@ -178,7 +179,7 @@ public class CardPane extends StackPane implements Initializable
         return null;
     }
 
-    private void removeIfNotInList(CardSlot cardSlot, List<Card> cards)
+    private void removeIfNotInList(CardSlot cardSlot, List<CardData> cards)
     {
         if(cardSlot.isEmpty())return;
         if(cards.contains(cardSlot.getCard()))return;
@@ -187,7 +188,7 @@ public class CardPane extends StackPane implements Initializable
         cardSlot.removeCard();
     }
 
-    private boolean isCardPresent(Card card)
+    private boolean isCardPresent(CardData card)
     {
         return cardSlot1.containsCard(card) || cardSlot2.containsCard(card) || cardSlot3.containsCard(card);
     }

@@ -3,6 +3,7 @@ package it.polimi.se2019.player;
 import it.polimi.se2019.card.cost.Cost;
 import it.polimi.se2019.ui.cli.Option;
 import it.polimi.se2019.utils.constants.GameColor;
+import it.polimi.se2019.utils.constants.GameMode;
 
 import java.io.Serializable;
 import java.util.*;
@@ -18,7 +19,6 @@ public class GameBoard implements Serializable
     private int blueAmmo;
     private int yellowAmmo;
     private int skulls;
-    private int aviableActions;
     private int points;
 
     private Cost lastPay;
@@ -32,8 +32,10 @@ public class GameBoard implements Serializable
         markers = new LinkedHashMap<>();
     }
 
-    public int getMaxPointsValue()
+    public int getMaxPointsValue(boolean finalFrenzyMode)
     {
+        if(finalFrenzyMode)return skulls == 0 ? 2 : 1;
+
         int max = 8 - (2*skulls);
         return max > 1 ? max : 1;
     }

@@ -49,4 +49,14 @@ public class RoundManager
     {
         return roundNumber == 1;
     }
+
+    public boolean isFirstPlayer(Player player)
+    {
+        return players.get(0).equals(player);
+    }
+
+    public boolean isLastPlayer(Player player)
+    {
+        return players.get(players.size()-1).equals(player);
+    }
 }

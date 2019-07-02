@@ -1,21 +1,27 @@
 package it.polimi.se2019.ui.cli;
 
-import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.TimeOutException;
 import it.polimi.se2019.utils.constants.Ansi;
 import it.polimi.se2019.utils.logging.Logger;
 import org.fusesource.jansi.AnsiConsole;
 
+
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Scanner;
+
 
 class GameConsole
 {
-    static final PrintStream out = getOut();
-    static final CancelableReader in = CancelableReader.createNew(System.in);
+    private static final PrintStream out = getOut();
+    private static final CancelableReader in = CancelableReader.createNew(System.in);
 
     private static boolean isWindows = isWindows();
+
+    private static int caretX;
+    private static int caretY;
+
+    private static int savedX;
+    private static int savedY;
 
     private GameConsole(){}
 
@@ -48,6 +54,7 @@ class GameConsole
         {
             out = AnsiConsole.out();
         }
+
         return out;
     }
 
@@ -56,10 +63,71 @@ class GameConsole
         return System.getProperty("os.name").toLowerCase().contains("win");
     }
 
+    static int getCaretX()
+    {
+        return caretX;
+    }
+
+    static int getCaretY()
+    {
+        return caretY;
+    }
+
+    static void setCaretPosition(int x, int y)
+    {
+        out.printf("%c[%d;%df", Ansi.ESC, y, x);
+        caretX = x;
+        caretY = y;
+    }
+
+    static void saveCaretPosition()
+    {
+        //GameConsole.out.printf("%c[s", Ansi.ESC);
+        savedX = caretX;
+        savedY = caretY;
+    }
+
+    static void restoreCaretPosition()
+    {
+        //GameConsole.out.printf("%c[u", Ansi.ESC);
+        setCaretPosition(savedX, savedY);
+    }
+
+    static void eraseLine()
+    {
+        out.printf("%c[K", Ansi.ESC);
+    }
+
+    static void printf(String format, Object... objects)
+    {
+        String s = String.format(format, objects);
+        print(s);
+    }
+
+    static void print(Object o)
+    {
+        String s = o.toString();
+        String[] lines = s.split("\n");
+        caretY += lines.length;
+        caretX += lines[lines.length-1].length();
+        out.print(s);
+    }
+
+    static void println(Object o)
+    {
+        print(o);
+        out.print('\n');
+        caretX = 0;
+        caretY++;
+    }
+
     static void clear()
     {
-        out.println(Ansi.CLEAR_SCREEN);
+        out.print(Ansi.CLEAR_SCREEN);
         out.flush();
+
+        caretX = 0;
+        caretY = 0;
 
         /*if(isWindows)
         {
@@ -75,11 +143,10 @@ class GameConsole
         }*/
     }
 
-    static String nextLine(String question) throws TimeOutException
+    static String nextLine() throws TimeOutException
     {
         try
         {
-            out.print(question);
             return in.nextLine();
         }
         catch (CanceledInputException e)

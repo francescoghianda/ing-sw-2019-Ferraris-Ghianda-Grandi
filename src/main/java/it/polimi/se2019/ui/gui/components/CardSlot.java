@@ -1,6 +1,7 @@
 package it.polimi.se2019.ui.gui.components;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
 import javafx.geometry.Insets;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -32,12 +33,12 @@ public class CardSlot extends VBox
         return cardView == null;
     }
 
-    public Card getCard()
+    public CardData getCard()
     {
         return cardView == null ? null : cardView.getCard();
     }
 
-    public void setCard(Card card, int transition, double cardPaneWidth, CardView.OnCardViewClickListener listener)
+    public void setCard(CardData card, int transition, double cardPaneWidth, CardView.OnCardViewClickListener listener)
     {
         getChildren().clear();
         cardView = new CardView(card, transition);
@@ -75,7 +76,7 @@ public class CardSlot extends VBox
         if(cardView != null)cardView.setEnabled(enabled);
     }
 
-    public boolean containsCard(Card card)
+    public boolean containsCard(CardData card)
     {
         if(isEmpty())return false;
         return cardView.getCard().equals(card);

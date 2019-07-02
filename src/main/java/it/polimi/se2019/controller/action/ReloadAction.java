@@ -1,6 +1,7 @@
 package it.polimi.se2019.controller.action;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.controller.GameController;
 import it.polimi.se2019.player.Action;
@@ -40,8 +41,9 @@ public class ReloadAction extends ControllerAction
 
     private void reloadAll(List<WeaponCard> unloadedWeapons)
     {
-        ArrayList<Card> toReload = player.getView().chooseWeaponsToReload(new ArrayList<>(unloadedWeapons));
-        if(!unloadedWeapons.containsAll(toReload))return;
+        ArrayList<CardData> unloadedWeaponsData = unloadedWeapons.stream().map(Card::getCardData).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<CardData> toReload = player.getView().chooseWeaponsToReload(unloadedWeaponsData);
+        if(!unloadedWeaponsData.containsAll(toReload))return;
         List<WeaponCard> toReloadWeapons = toReload.stream().map(card -> WeaponCard.findCardById(card.getId())).collect(Collectors.toList());
 
         /*int totalRedCost = toReloadWeapons.stream().map(WeaponCard::getReloadCost).map(Cost::getRedAmmo).reduce(0, Integer::sum);
@@ -64,7 +66,7 @@ public class ReloadAction extends ControllerAction
 
     private void reloadOne(List<WeaponCard> unloadedWeapons)
     {
-        WeaponCard chosen = WeaponCard.findCardById(player.getView().chooseWeaponToReload(new ArrayList<>(unloadedWeapons)).getId());
+        WeaponCard chosen = WeaponCard.findCardById(player.getView().chooseWeaponToReload(unloadedWeapons.stream().map(Card::getCardData).collect(Collectors.toCollection(ArrayList::new))).getId());
         try
         {
             player.getGameBoard().pay(chosen.getReloadCost());

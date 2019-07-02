@@ -1,6 +1,7 @@
 package it.polimi.se2019.ui.gui;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.Coordinates;
@@ -11,6 +12,7 @@ import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.ui.cli.Option;
 import it.polimi.se2019.ui.gui.dialogs.CloseDialog;
 import it.polimi.se2019.ui.gui.dialogs.ReloadWeaponsDialog;
+import it.polimi.se2019.ui.gui.notification.NotificationPane;
 import it.polimi.se2019.ui.gui.value.ValueObserver;
 import it.polimi.se2019.utils.logging.Logger;
 import javafx.animation.KeyFrame;
@@ -28,6 +30,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import sun.plugin2.message.ScrollEventMessage;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -137,7 +140,13 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     @Override
     public void notifyImpossibleAction()
     {
+        SceneManager.runOnFxThread(() -> NotificationPane.showNotification("Azione impossibile"));
+    }
 
+    @Override
+    public void showNotification(String text)
+    {
+        SceneManager.runOnFxThread(() -> NotificationPane.showNotification(text));
     }
 
     @Override
@@ -268,7 +277,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     }
 
     @Override
-    public String chooseSpawnPoint(Card option1, Card option2)
+    public String chooseSpawnPoint(CardData option1, CardData option2)
     {
         SceneManager.runOnFxThread(() ->
         {
@@ -322,49 +331,49 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     }
 
     @Override
-    public Card chooseWeaponFromPlayer() throws CanceledActionException
+    public CardData chooseWeaponFromPlayer() throws CanceledActionException
     {
         MatchScene matchScene = MatchScene.getInstance();
         SceneManager.runOnFxThread(matchScene::chooseWeaponFromPlayer);
-        return new ValueObserver<Card>().get(matchScene.selectedWeapon);
+        return new ValueObserver<CardData>().get(matchScene.selectedWeapon);
     }
 
     @Override
-    public Card chooseWeaponFromBlock() throws CanceledActionException
+    public CardData chooseWeaponFromBlock() throws CanceledActionException
     {
         MatchScene matchScene = MatchScene.getInstance();
         SceneManager.runOnFxThread(matchScene::chooseWeaponFromBlock);
-        return new ValueObserver<Card>().get(matchScene.selectedWeapon);
+        return new ValueObserver<CardData>().get(matchScene.selectedWeapon);
     }
 
     @Override
-    public Card choosePowerUp() throws CanceledActionException
+    public CardData choosePowerUp() throws CanceledActionException
     {
         MatchScene matchScene = MatchScene.getInstance();
         SceneManager.runOnFxThread(matchScene::choosePowerUp);
-        return new ValueObserver<Card>().get(matchScene.selectedPowerUp);
+        return new ValueObserver<CardData>().get(matchScene.selectedPowerUp);
     }
 
     @Override
-    public ArrayList<Card> chooseWeaponsToReload(ArrayList<Card> weapons)
+    public ArrayList<CardData> chooseWeaponsToReload(ArrayList<CardData> weapons)
     {
         return chooseWeaponsToReload(weapons, ReloadWeaponsDialog.MULTIPLE_SELECTION_MODE);
     }
 
     @Override
-    public Card chooseWeaponToReload(ArrayList<Card> weapons)
+    public CardData chooseWeaponToReload(ArrayList<CardData> weapons)
     {
-        ArrayList<Card> chosen = chooseWeaponsToReload(weapons, ReloadWeaponsDialog.SINGLE_SELECTION_MODE);
+        ArrayList<CardData> chosen = chooseWeaponsToReload(weapons, ReloadWeaponsDialog.SINGLE_SELECTION_MODE);
         if(chosen != null)return chosen.get(0);
         return null;
     }
 
-    private ArrayList<Card> chooseWeaponsToReload(ArrayList<Card> weapons, int selectionMode)
+    private ArrayList<CardData> chooseWeaponsToReload(ArrayList<CardData> weapons, int selectionMode)
     {
-        Task<Optional<ArrayList<Card>>> task = new Task<Optional<ArrayList<Card>>>()
+        Task<Optional<ArrayList<CardData>>> task = new Task<Optional<ArrayList<CardData>>>()
         {
             @Override
-            protected Optional<ArrayList<Card>> call()
+            protected Optional<ArrayList<CardData>> call()
             {
                 ReloadWeaponsDialog dialog = new ReloadWeaponsDialog(weapons, selectionMode);
                 return dialog.showAndWait();
@@ -374,7 +383,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
 
         try
         {
-            Optional<ArrayList<Card>> optional = task.get();
+            Optional<ArrayList<CardData>> optional = task.get();
             return optional.orElseGet(ArrayList::new);
         }
         catch (InterruptedException | ExecutionException e)

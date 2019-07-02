@@ -1,6 +1,7 @@
 package it.polimi.se2019.controller.action;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.controller.CanceledActionException;
@@ -73,13 +74,13 @@ public class GrabAction extends ControllerAction
 
     private WeaponCard selectWeaponFromPlayer() throws CanceledActionException
     {
-        Card chosen = player.getView().chooseWeaponFromPlayer();
+        CardData chosen = player.getView().chooseWeaponFromPlayer();
         return WeaponCard.findCardById(chosen.getId());
     }
 
     private WeaponCard selectWeaponFromBlock() throws CanceledActionException
     {
-        Card chosen = player.getView().chooseWeaponFromBlock();
+        CardData chosen = player.getView().chooseWeaponFromBlock();
         return WeaponCard.findCardById(chosen.getId());
     }
 
@@ -89,7 +90,7 @@ public class GrabAction extends ControllerAction
         {
             boolean sellPowerUp = player.getView().notEnoughAmmo(true);
             if(!sellPowerUp)return;
-            Card chosen = player.getView().choosePowerUp();
+            CardData chosen = player.getView().choosePowerUp();
             PowerUpCard powerUpCard = PowerUpCard.findById(chosen.getId());
 
             switch (powerUpCard.getColor())

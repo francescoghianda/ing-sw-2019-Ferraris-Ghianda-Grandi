@@ -1,8 +1,10 @@
 package it.polimi.se2019.ui.cli;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
+import it.polimi.se2019.map.BlockData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
@@ -14,7 +16,9 @@ import it.polimi.se2019.utils.string.Strings;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -22,6 +26,7 @@ import java.util.Scanner;
 public class CLI implements UI
 {
     private NetworkInterface client;
+    private GameData gameData;
 
     public CLI()
     {
@@ -32,11 +37,11 @@ public class CLI implements UI
     public synchronized void startUI()
     {
         GameConsole.startConsole();
-        GameConsole.out.println(Strings.TITLE);
-        Option<Integer> serverModeOption = new Options<Integer>(Strings.GET_CONNECTION_MODE, true).addOption("Socket", "S", NetworkInterface.SOCKET_MODE).addOption("RMI", "R", NetworkInterface.RMI_MODE).show();
+        GameConsole.println(Strings.TITLE);
+        Option<Integer> serverModeOption = new Options<Integer>(Strings.GET_CONNECTION_MODE, true).addOption("Socket", NetworkInterface.SOCKET_MODE).addOption("RMI", NetworkInterface.RMI_MODE).show();
         String serverIp = new FormattedInput(Strings.GET_SERVER_IP, NetworkUtils::isIp).show();
         int serverPort = Integer.parseInt(new FormattedInput(Strings.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, s -> NetworkUtils.isValidPort(Integer.parseInt(s))).show());
-        GameConsole.out.println(Strings.CONNECTING);
+        GameConsole.println(Strings.CONNECTING);
         client.connect(serverIp, serverPort, serverModeOption.getValue());
     }
 
@@ -49,7 +54,7 @@ public class CLI implements UI
     @Override
     public void logged()
     {
-        GameConsole.out.println(Strings.LOGGED);
+        GameConsole.println(Strings.LOGGED);
     }
 
     @Override
@@ -75,37 +80,37 @@ public class CLI implements UI
     @Override
     public void gameIsStarting()
     {
-        GameConsole.out.println(Strings.GAME_STARTING);
+        GameConsole.println(Strings.GAME_STARTING);
     }
 
     @Override
     public void gameStarted()
     {
-        GameConsole.out.println(Strings.GAME_STARTED);
+        GameConsole.println(Strings.GAME_STARTED);
     }
 
     @Override
     public void showTimerCountdown(int remainSeconds)
     {
-        GameConsole.out.println(remainSeconds);
+        GameConsole.println(remainSeconds);
     }
 
     @Override
     public void youAreFirstPlayer()
     {
-        GameConsole.out.println(Strings.YOU_ARE_FIRST_PLAYER);
+        GameConsole.println(Strings.YOU_ARE_FIRST_PLAYER);
     }
 
     @Override
     public void firstPlayerIs(String firstPlayerUsername)
     {
-        GameConsole.out.printf(Strings.FIRST_PLAYER_IS+"\n", firstPlayerUsername);
+        GameConsole.printf(Strings.FIRST_PLAYER_IS+"\n", firstPlayerUsername);
     }
 
     @Override
     public void connectionRefused()
     {
-        GameConsole.out.println(Strings.CONNECTION_REFUSED);
+        GameConsole.println(Strings.CONNECTION_REFUSED);
     }
 
     @Override
@@ -133,6 +138,12 @@ public class CLI implements UI
     }
 
     @Override
+    public void showNotification(String text)
+    {
+
+    }
+
+    @Override
     public boolean notEnoughAmmo(boolean askToSellPowerUp)
     {
         //TODO
@@ -143,7 +154,7 @@ public class CLI implements UI
     public String chooseOrCancel(Bundle<String, ArrayList<String>> bundle) throws CanceledActionException
     {
         Options<Void> options = new Options<>(bundle.getFirst(), true);
-        bundle.getSecond().forEach(option -> options.addOption(option, option.substring(0, 1)));
+        bundle.getSecond().forEach(options::addOption);
         return options.show().getOption();
     }
 
@@ -155,10 +166,10 @@ public class CLI implements UI
     }
 
     @Override
-    public String chooseSpawnPoint(Card option1, Card option2)
+    public String chooseSpawnPoint(CardData option1, CardData option2)
     {
-        Options<Card> powerUpCardOptions = new Options<>(Strings.CHOOSE_SPAWN_POINT, false);
-        powerUpCardOptions.addOption(option1.toString(), "1", option1).addOption(option2.toString(), "2", option2);
+        Options<CardData> powerUpCardOptions = new Options<>(Strings.CHOOSE_SPAWN_POINT, false);
+        powerUpCardOptions.addOption(option1.toString(), option1).addOption(option2.toString(), option2);
         return powerUpCardOptions.show().getValue().getId();
     }
 
@@ -166,14 +177,34 @@ public class CLI implements UI
     public Bundle<Action, Serializable> chooseActionFrom(Action[] possibleActions)
     {
         //TODO
+
+
+
+
         return null;
     }
 
     @Override
     public Coordinates chooseBlock(int maxDistance) throws CanceledActionException
     {
-        //TODO
-        return null;
+
+        List<BlockData> blocks = gameData.getMap().getBlocksAsList();
+        int playerX = gameData.getPlayer().getX();
+        int playerY = gameData.getPlayer().getY();
+        BlockData playerBlock = gameData.getMap().getBlock(playerX, playerY);
+
+        List<Coordinates> coordinates = blocks.stream().filter(blockData ->
+        {
+           int distance = gameData.getMap().getDistance(playerBlock, blockData);
+           return distance <= maxDistance;
+        }).map(BlockData::getCoordinates).collect(Collectors.toList());
+
+
+        Options<Coordinates> coordinatesOptions = new Options<>("aa", false);
+
+        coordinatesOptions.addOptions(coordinates, Coordinates::toString);
+
+        return coordinatesOptions.showCancellable().getValue();
     }
 
     @Override
@@ -184,35 +215,35 @@ public class CLI implements UI
     }
 
     @Override
-    public Card chooseWeaponFromPlayer() throws CanceledActionException
+    public CardData chooseWeaponFromPlayer() throws CanceledActionException
     {
         //TODO
         return null;
     }
 
     @Override
-    public Card chooseWeaponFromBlock() throws CanceledActionException
+    public CardData chooseWeaponFromBlock() throws CanceledActionException
     {
         //TODO
         return null;
     }
 
     @Override
-    public Card choosePowerUp() throws CanceledActionException
+    public CardData choosePowerUp() throws CanceledActionException
     {
         //TODO
         return null;
     }
 
     @Override
-    public ArrayList<Card> chooseWeaponsToReload(ArrayList<Card> weapons)
+    public ArrayList<CardData> chooseWeaponsToReload(ArrayList<CardData> weapons)
     {
         //TODO
         return null;
     }
 
     @Override
-    public Card chooseWeaponToReload(ArrayList<Card> weapons)
+    public CardData chooseWeaponToReload(ArrayList<CardData> weapons)
     {
         //TODO
         return null;
@@ -222,6 +253,8 @@ public class CLI implements UI
     public void update(GameData data)
     {
         //TODO
+
+
     }
 
     @Override
@@ -229,7 +262,7 @@ public class CLI implements UI
     {
         if(event.getEventCode() == GameEvent.IS_YOUR_ROUND)
         {
-            GameConsole.out.println(Strings.IS_YOUR_ROUND);
+            GameConsole.println(Strings.IS_YOUR_ROUND);
         }
     }
 }

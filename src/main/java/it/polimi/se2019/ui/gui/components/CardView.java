@@ -1,6 +1,7 @@
 package it.polimi.se2019.ui.gui.components;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.ui.gui.GUI;
 import it.polimi.se2019.ui.gui.MatchScene;
 import javafx.animation.FadeTransition;
@@ -45,7 +46,7 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
     @FXML
     private ImageView imageView;
 
-    private final Card card;
+    private final CardData card;
     private ScaleTransition scaleTransition;
     private FadeTransition fadeTransition;
     private final int cardType;
@@ -63,7 +64,7 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
     private DropShadow selectedEffect;
     private ColorAdjust grayScaleEffects;
 
-    public CardView(Card card, int transition)
+    public CardView(CardData card, int transition)
     {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/card.fxml"));
         fxmlLoader.setRoot(this);
@@ -222,7 +223,7 @@ public class CardView extends AnchorPane implements Initializable, EventHandler<
         applyEffects();
     }
 
-    public Card getCard()
+    public CardData getCard()
     {
         return this.card;
     }

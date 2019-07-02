@@ -2,6 +2,7 @@ package it.polimi.se2019.controller;
 
 import it.polimi.se2019.map.MapData;
 import it.polimi.se2019.player.PlayerData;
+import it.polimi.se2019.utils.constants.GameMode;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,19 +10,22 @@ import java.util.List;
 
 public class GameData implements Serializable
 {
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -2016341428516036292L;
 
     private final MapData map;
     private final PlayerData player;
     private final int remainingSkulls;
-    private final int deaths;
+    private final ArrayList<Death> deaths;
 
     private final int powerUpDeckSize;
     private final int weaponDeckSize;
 
+    private final GameMode gameMode;
+    private final MatchData matchData;
+
     private List<PlayerData> usernameList;
 
-    public GameData(MapData map, PlayerData player, int remainingSkulls, int deaths, int powerUpDeckSize, int weaponDeckSize)
+    public GameData(MapData map, PlayerData player, int remainingSkulls, ArrayList<Death> deaths, int powerUpDeckSize, int weaponDeckSize, GameMode gameMode, MatchData matchData)
     {
         this.map = map;
         this.player = player;
@@ -29,6 +33,13 @@ public class GameData implements Serializable
         this.deaths = deaths;
         this.powerUpDeckSize = powerUpDeckSize;
         this.weaponDeckSize = weaponDeckSize;
+        this.gameMode = gameMode;
+        this.matchData = matchData;
+    }
+
+    public MatchData getMatchData()
+    {
+        return matchData;
     }
 
     public MapData getMap()
@@ -46,9 +57,14 @@ public class GameData implements Serializable
         return remainingSkulls;
     }
 
-    public int getDeaths()
+    public int getDeathsNumber()
     {
-        return this.deaths;
+        return this.deaths.size();
+    }
+
+    public List<Death> getDeaths()
+    {
+        return new ArrayList<>(deaths);
     }
 
     public int getPowerUpDeckSize()
@@ -59,6 +75,11 @@ public class GameData implements Serializable
     public int getWeaponDeckSize()
     {
         return weaponDeckSize;
+    }
+
+    public GameMode getGameMode()
+    {
+        return gameMode;
     }
 
     public List<PlayerData> getPlayers()

@@ -1,6 +1,7 @@
 package it.polimi.se2019.player;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.controller.GameController;
@@ -10,27 +11,31 @@ import it.polimi.se2019.utils.constants.GameColor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
  * creates a player
  */
-public class Player implements Serializable
+public class Player
 {
 	private final GameColor color;
 	private boolean startingPlayer;
-	private ArrayList<WeaponCard> weapons;
-	private ArrayList<PowerUpCard> powerUps;
+	private List<WeaponCard> weapons;
+	private List<PowerUpCard> powerUps;
 	private Block block;
 	private GameBoard gameBoard;
-	private transient ArrayList<Action> executedAction;
-	private transient GameController gameController;
-	private transient ArrayList<Player> damagedPlayers;
-	private transient ClientConnection clientConnection;
+	private List<Action> executedAction;
+	private GameController gameController;
+	private List<Player> damagedPlayers;
+	private ClientConnection clientConnection;
+	private AtomicBoolean finalFrenzyMode;
 
-	private boolean firstRoundPlayed;
+	private AtomicBoolean firstRoundPlayed;
+	private AtomicBoolean lastRoundPlayed;
 
 	/**
 	 * creates and initializes the features of the player
@@ -41,15 +46,28 @@ public class Player implements Serializable
 	public Player(GameColor color, GameController gameController, ClientConnection clientConnection)
 	{
 		if(color == null || gameController == null || clientConnection == null)throw new NullPointerException();
-		weapons = new ArrayList<>();
-		powerUps = new ArrayList<>();
-		executedAction = new ArrayList<>();
-		damagedPlayers = new ArrayList<>();
+
+		weapons = Collections.synchronizedList(new ArrayList<>());
+		powerUps = Collections.synchronizedList(new ArrayList<>());
+		executedAction = Collections.synchronizedList(new ArrayList<>());
+		damagedPlayers = Collections.synchronizedList(new ArrayList<>());
 		gameBoard = new GameBoard();
-		firstRoundPlayed = false;
+		finalFrenzyMode = new AtomicBoolean();
+		firstRoundPlayed = new AtomicBoolean(false);
+		lastRoundPlayed = new AtomicBoolean(false);
 		this.color = color;
 		this.clientConnection = clientConnection;
 		this.gameController = gameController;
+	}
+
+	public void setFinalFrenzyMode(boolean finalFrenzyMode)
+	{
+		this.finalFrenzyMode.set(finalFrenzyMode);
+	}
+
+	public boolean isFinalFrenzyMode()
+	{
+		return finalFrenzyMode.get();
 	}
 
 	public boolean isDead()
@@ -68,6 +86,12 @@ public class Player implements Serializable
 		return new ArrayList<>(gameBoard.getReceivedDamage().keySet()).get(11);
 	}
 
+	public Player getFirstBloodPlayer()
+	{
+		List<Player> keys = new ArrayList<>(gameBoard.getReceivedDamage().keySet());
+		return keys.isEmpty() ? null : keys.get(0);
+	}
+
 	public void resetDamagedPlayers()
 	{
 		damagedPlayers.clear();
@@ -75,12 +99,22 @@ public class Player implements Serializable
 
 	public boolean isFirstRoundPlayed()
 	{
-		return firstRoundPlayed;
+		return firstRoundPlayed.get();
 	}
 
 	public void setFirstRoundPlayed(boolean firstRoundPlayed)
 	{
-		this.firstRoundPlayed = firstRoundPlayed;
+		this.firstRoundPlayed.set(firstRoundPlayed);
+	}
+
+	public boolean isLastRoundPlayed()
+	{
+		return lastRoundPlayed.get();
+	}
+
+	public void setLastRoundPlayed(boolean lastRoundPlayed)
+	{
+		this.lastRoundPlayed.set(lastRoundPlayed);
 	}
 
 	public void setClientConnection(ClientConnection clientConnection)
@@ -262,17 +296,17 @@ public class Player implements Serializable
 
 	public PlayerData getData()
 	{
-		ArrayList<Card> powerUpsCards = new ArrayList<>(powerUps);
-		ArrayList<Card> weaponsCards = new ArrayList<>(weapons);
+		ArrayList<CardData> powerUpsCards = powerUps.stream().map(Card::getCardData).collect(Collectors.toCollection(ArrayList::new));
+		ArrayList<CardData> weaponsCards = weapons.stream().map(Card::getCardData).collect(Collectors.toCollection(ArrayList::new));
 		int x = block == null ? -1 : block.getX();
 		int y = block == null ? -1 : block.getY();
-		return new PlayerData(clientConnection.getUser().getUsername(), color, weaponsCards, powerUpsCards, gameBoard.getData(), x, y);
+		return new PlayerData(clientConnection.getUser().getUsername(), color, weaponsCards, powerUpsCards, gameBoard.getData(), x, y, finalFrenzyMode.get());
 	}
 
 	@Override
 	public String toString()
 	{
-		return "[color: "+color+", username: "+clientConnection.getUser().getUsername()+"]";
+		return clientConnection.getUser().getUsername()+" ("+color+")";
 	}
 
 }
