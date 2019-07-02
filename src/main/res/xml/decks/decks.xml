@@ -5,6 +5,7 @@
             <name>Distruttore</name>
             <description>
                 <line>effetto base: Dai 2 danni e 1 marchio a 1 bersaglio che puoi vedere.</line>
+                <line></line>
                 <line>secondo aggancio: Dai 1 marchio a un altro bersaglio che puoi vedere.</line>
             </description>
             <buy_cost>
@@ -65,13 +66,7 @@
         <weapon_card id="20">
             <name>Mitragliatrice</name>
             <description>
-                <line>effetto base: Scegli 1 o 2 bersagli che puoi vedere e dai 1 danno a entrambi</line>
-                <line>nota: Se hai dato entrambi i punti aggiuntivi di danno, devono</line>
-                <line>essere dati a 2 bersagli diversi. Se puoi vedere solo 2 bersagli,</line>
-                <line>dai 2 danni a entrambi se usi entrambi gli effetti opzionali. Se</line>
-                <line>usi l'effetto base solo su 1 bersaglio, puoi comunque usare il</line>
-                <line>tripode di supporto per dare 1 danno aggiuntivo.</line>
-            </description>
+                <line>effetto base: Scegli 1 o 2 bersagli che puoi vedere e dai 1 danno a entrambi. nota: Se hai dato entrambi i punti aggiuntivi di danno, devono</line>essere dati a 2 bersagli diversi. Se puoi vedere solo 2 bersagli, dai 2 danni a entrambi se usi entrambi gli effetti opzionali. Se usi l'effetto base solo su 1 bersaglio, puoi comunque usare il tripode di supporto per dare 1 danno aggiuntivo</line></description>
             <buy_cost>
                 <blue>1</blue>
             </buy_cost>

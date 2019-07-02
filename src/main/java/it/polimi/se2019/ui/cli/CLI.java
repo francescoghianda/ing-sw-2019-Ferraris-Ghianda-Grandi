@@ -1,6 +1,5 @@
 package it.polimi.se2019.ui.cli;
 
-import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
@@ -8,17 +7,24 @@ import it.polimi.se2019.map.BlockData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
+import it.polimi.se2019.player.Player;
+import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.network.NetworkUtils;
 import it.polimi.se2019.utils.string.Strings;
+import org.graalvm.compiler.nodes.calc.IntegerDivRemNode;
 
+import javax.smartcardio.Card;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+
+import static it.polimi.se2019.player.Action.FIRE;
+import static it.polimi.se2019.player.Action.MOVE;
 
 /**
  *
@@ -38,7 +44,7 @@ public class CLI implements UI
     {
         GameConsole.startConsole();
         GameConsole.println(Strings.TITLE);
-        Option<Integer> serverModeOption = new Options<Integer>(Strings.GET_CONNECTION_MODE, true).addOption("Socket", NetworkInterface.SOCKET_MODE).addOption("RMI", NetworkInterface.RMI_MODE).show();
+        Option<Integer> serverModeOption = new Options<Integer>(Strings.GET_CONNECTION_MODE, true).addOption("Socket", "S", NetworkInterface.SOCKET_MODE).addOption("RMI", "R", NetworkInterface.RMI_MODE).show();
         String serverIp = new FormattedInput(Strings.GET_SERVER_IP, NetworkUtils::isIp).show();
         int serverPort = Integer.parseInt(new FormattedInput(Strings.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, s -> NetworkUtils.isValidPort(Integer.parseInt(s))).show());
         GameConsole.println(Strings.CONNECTING);
@@ -60,14 +66,14 @@ public class CLI implements UI
     @Override
     public String selectPlayer()
     {
-        //TODO
+
         return null;
     }
 
     @Override
     public String selectBlock()
     {
-        //TODO
+
         return null;
     }
 
@@ -116,13 +122,13 @@ public class CLI implements UI
     @Override
     public void roundStart()
     {
-        //TODO
+            GameConsole.println(Strings.IS_YOUR_ROUND);
     }
 
     @Override
     public void roundEnd()
     {
-        //TODO
+            GameConsole.println(Strings.ROUND_FINISHED);
     }
 
     @Override
@@ -134,19 +140,18 @@ public class CLI implements UI
     @Override
     public void notifyImpossibleAction()
     {
-        //TODO
+            GameConsole.println(Strings.IMPOSSIBLE_ACTION);
     }
 
     @Override
-    public void showNotification(String text)
-    {
-
+    public void showNotification(String text) {
+        //TODO
     }
 
     @Override
     public boolean notEnoughAmmo(boolean askToSellPowerUp)
     {
-        //TODO
+
         return false;
     }
 
@@ -154,106 +159,130 @@ public class CLI implements UI
     public String chooseOrCancel(Bundle<String, ArrayList<String>> bundle) throws CanceledActionException
     {
         Options<Void> options = new Options<>(bundle.getFirst(), true);
-        bundle.getSecond().forEach(options::addOption);
-        return options.show().getOption();
+        bundle.getSecond().forEach(option -> options.addOption(option));
+        return options.showCancellable().getOption();
     }
 
     @Override
-    public String choose(Bundle<String, ArrayList<String>> options)
+    public String choose(Bundle<String, ArrayList<String>> bundle)
     {
-        //TODO
-        return null;
+        Options<Void> options = new Options<>(bundle.getFirst(),false);
+        bundle.getSecond().forEach(option -> options.addOption(option));
+        return options.show().getOption();
     }
+
 
     @Override
     public String chooseSpawnPoint(CardData option1, CardData option2)
     {
         Options<CardData> powerUpCardOptions = new Options<>(Strings.CHOOSE_SPAWN_POINT, false);
-        powerUpCardOptions.addOption(option1.toString(), option1).addOption(option2.toString(), option2);
+        powerUpCardOptions.addOption(option1.toString()).addOption(option2.toString());
         return powerUpCardOptions.show().getValue().getId();
     }
 
     @Override
     public Bundle<Action, Serializable> chooseActionFrom(Action[] possibleActions)
     {
-        //TODO
-
-
-
-
-        return null;
+        Options<Action> actionOptions = new Options<>(Strings.CHOOSE_ACTION, true);
+        for (Action action : possibleActions) {
+        actionOptions.addOption(action.toString().toLowerCase());
+        }
+        Action chosenAction = actionOptions.show().getValue();
+        CardData card = null;
+        if (chosenAction == Action.USE_POWER_UP)
+        {
+            Options<CardData> powerUpOptions = new Options<>(Strings.SELECT_A_POWERUP, false);
+            int i=0;
+            for (CardData card1 : gameData.getPlayer().getPowerUps()
+                 )
+            {
+                powerUpOptions.addOption(card1.toString(),card1);
+                i++;
+            }
+            card = powerUpOptions.show().getValue();
+        }
+        return Bundle.ofSecondNullable(chosenAction,card);
     }
 
     @Override
     public Coordinates chooseBlock(int maxDistance) throws CanceledActionException
     {
-
         List<BlockData> blocks = gameData.getMap().getBlocksAsList();
         int playerX = gameData.getPlayer().getX();
         int playerY = gameData.getPlayer().getY();
-        BlockData playerBlock = gameData.getMap().getBlock(playerX, playerY);
-
-        List<Coordinates> coordinates = blocks.stream().filter(blockData ->
+        BlockData playerBlock = gameData.getMap().getBlock(playerX,playerY);
+        List<Coordinates> coordinatesList = blocks.stream().filter(blockData->
         {
-           int distance = gameData.getMap().getDistance(playerBlock, blockData);
-           return distance <= maxDistance;
+            int distance = gameData.getMap().getDistance(playerBlock,blockData);
+            return distance <= maxDistance;
         }).map(BlockData::getCoordinates).collect(Collectors.toList());
-
-
-        Options<Coordinates> coordinatesOptions = new Options<>("aa", false);
-
-        coordinatesOptions.addOptions(coordinates, Coordinates::toString);
-
+        Options<Coordinates> coordinatesOptions = new Option<>(Strings.CHOOSE_THE_BLOCK, false);
+        coordinatesOptions.addOptions(coordinatesList,Coordinates::toString);
         return coordinatesOptions.showCancellable().getValue();
     }
 
     @Override
     public Coordinates chooseBlockFrom(ArrayList<Coordinates> coordinates) throws CanceledActionException
     {
-        //TODO
-        return null;
+
+        Options<Coordinates> coordinatesOptions = new Options<> (Strings.CHOOSE_BLOCK_FROM, false);
+        coordinatesOptions.addOptions(coordinates,Coordinates::toString);
+        return coordinatesOptions.showCancellable().getValue();
     }
 
     @Override
     public CardData chooseWeaponFromPlayer() throws CanceledActionException
     {
-        //TODO
-        return null;
+        List<CardData> playerWeapon = gameData.getPlayer().getWeapons();
+        Options<CardData> weaponOption = new Options<>(Strings.SELECT_A_WEAPON, false);
+        weaponOption.addOptions(playerWeapon, CardData::toString);
+        return weaponOption.showCancellable().getValue();
     }
 
     @Override
     public CardData chooseWeaponFromBlock() throws CanceledActionException
     {
-        //TODO
-        return null;
+        int playerX = gameData.getPlayer().getX();
+        int playerY = gameData.getPlayer().getY();
+        List<CardData> weaponFromBlock = gameData.getMap().getBlock(playerX,playerY).getWeaponCards();
+        Options<CardData> weaponFromB = new Options<>(Strings.SELECT_A_POWERUP,false);
+        weaponFromB.addOptions(weaponFromBlock, CardData::toString);
+        return weaponFromB.showCancellable().getValue();
     }
 
     @Override
     public CardData choosePowerUp() throws CanceledActionException
     {
-        //TODO
-        return null;
+        List<CardData> playerPowerUps = gameData.getPlayer().getPowerUps();
+        Options<CardData> powerupOption = new Options<>(Strings.SELECT_A_POWERUP, false);
+        powerupOption.addOptions(playerPowerUps,CardData::toString);
+        return powerupOption.showCancellable().getValue();
+
     }
 
     @Override
     public ArrayList<CardData> chooseWeaponsToReload(ArrayList<CardData> weapons)
     {
-        //TODO
-        return null;
+        Options<CardData> weaponsToReloadOptions = new Options<> (Strings.CHOOSE_WEAPON_TO_RELOAD, false);
+        weaponsToReloadOptions.addOptions(weapons,CardData::toString);
+        return weaponsToReloadOptions.showMultipleSelectable().values();
     }
 
     @Override
     public CardData chooseWeaponToReload(ArrayList<CardData> weapons)
     {
-        //TODO
-        return null;
+
+        Options<CardData> weaponToReloadOptions = new Options<> (Strings.CHOOSE_WEAPON_TO_RELOAD, false);
+        weaponToReloadOptions.addOptions(weapons,CardData::toString);
+        return weaponToReloadOptions.show().getValue();
     }
 
     @Override
     public void update(GameData data)
     {
-        //TODO
-
+        gameData = data;
+        GameConsole.clear();
+        GameConsole.println(gameData.getMap().getCliMap());
 
     }
 

@@ -28,4 +28,13 @@ public class Strings
     public static final String CHOOSE_SPAWN_POINT = StringLoader.getString("choose_spawn_point");
     public static final String GAME_STARTED = StringLoader.getString("game_started");
     public static final String CONNECTION_REFUSED = StringLoader.getString("connection_refused");
+    public static final String ROUND_FINISHED = StringLoader.getString("your_round_is_finished");
+    public static final String CHOOSE_ACTION = StringLoader.getString("choose_action");
+    public static final String IMPOSSIBLE_ACTION = StringLoader.getString("action_not_allowed");
+    public static final String CHOOSE_BLOCK = StringLoader.getString("choose_block");
+    public static final String SELECT_A_POWERUP = StringLoader.getString("select_a_powerup_card") ;
+    public static final String CHOOSE_THE_BLOCK = StringLoader.getString("Choose_a_block");
+    public static final String CHOOSE_BLOCK_FROM = StringLoader.getString("Choose_block_from");
+    public static final String SELECT_A_WEAPON =  StringLoader.getString("Choose_powerup");;
+    public static final String CHOOSE_WEAPON_TO_RELOAD = StringLoader.getString("Choose_weapon_to_reload");;;
 }

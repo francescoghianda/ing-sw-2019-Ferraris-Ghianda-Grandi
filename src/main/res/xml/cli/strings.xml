@@ -15,5 +15,13 @@
     <entry key="is_your_round">È il tuo turno!</entry>
     <entry key="game_started">La partita è iniziata!</entry>
     <entry key="connection_refused">Connessione fallita.</entry>
+    <entry key="your_round_is_finished">Turno terminato.</entry>
+    <entry key="action_not_allowed">Turno terminato.</entry>
+    <entry key="choose_action">Scegli una azione.</entry>
+    <entry key="choose_block">Scegli un blocco.</entry>
+    <entry key="select_a_powerup_card">Scegli un powerup.</entry>
+    <entry key="choose_block_from">Scegli un blocco.</entry>
+    <entry key="choose_weapon">Scegli un'arma</entry>
+    <entry key="choose_weapon_to_reload">Scegli un'arma da ricaricare</entry>
     <entry key="choose_spawn_point">Scegli la carta che vuoi scartare per generarti nella stanza del colore corrispondente: </entry>
 </properties>
