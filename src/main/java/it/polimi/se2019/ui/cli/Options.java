@@ -17,7 +17,6 @@ import java.util.function.Function;
 public final class Options<T>
 {
     private String question;
-    private OnOptionSelectedListener listener;
     private ArrayList<Option<T>> options;
     private boolean firstDefault;
     private Option<T> cancelOption;
@@ -30,13 +29,6 @@ public final class Options<T>
         this.question = question;
         this.firstDefault = firstDefault;
         abbreviationNumber = new AtomicInteger(0);
-    }
-
-
-    public Options<T> setOptionListener(OnOptionSelectedListener listener)
-    {
-        this.listener = listener;
-        return this;
     }
 
     public Options<T> addOption(Option<T> option)
@@ -84,7 +76,6 @@ public final class Options<T>
 
         GameConsole.saveCaretPosition();
 
-
         do
         {
             GameConsole.restoreCaretPosition();
@@ -103,15 +94,45 @@ public final class Options<T>
         return selected;
     }
 
+    private OptionList<T> showOptionsMultipleSelectable()
+    {
+        if(options.isEmpty())return OptionList.empty();
+
+        writeOptions();
+
+        GameConsole.print(question);
+        GameConsole.saveCaretPosition();
+
+        String response;
+        List<Option<T>> selected;
+
+        do
+        {
+            GameConsole.restoreCaretPosition();
+            GameConsole.eraseLine();
+
+            response = GameConsole.nextLine().trim();
+
+            if(firstDefault && response.isEmpty())
+            {
+                return OptionList.of(options.get(0));
+            }
+
+            String[]optionsSelected = response.split(",");
+            selected = findOptions(optionsSelected);
+        }
+        while (selected.isEmpty());
+
+        return OptionList.of(selected);
+    }
+
     /**
      *
      * @return
      */
     public Option<T> show() throws TimeOutException
     {
-        Option<T> selected = showOptions();
-        if(listener != null)listener.onOptionSelected(selected);
-        return selected;
+        return showOptions();
     }
 
     public Option<T> showCancellable() throws TimeOutException, CanceledActionException
@@ -119,8 +140,12 @@ public final class Options<T>
         addCancelOption();
         Option<T> selected = showOptions();
         if(selected != null && selected.equals(cancelOption))throw new CanceledActionException(CanceledActionException.Cause.CANCELED_BY_USER);
-        if(selected != null && listener != null)listener.onOptionSelected(selected);
         return selected;
+    }
+
+    public OptionList<T> showMultipleSelectable() throws TimeOutException
+    {
+        return showOptionsMultipleSelectable();
     }
 
     private int getMaxOptionLength()
@@ -193,7 +218,7 @@ public final class Options<T>
         builder.append('║').append('\n');
     }
 
-    private void writeOptions()
+    protected void writeOptions()
     {
         int maxOptionsLength = getMaxOptionLength();
         StringBuilder builder = new StringBuilder();
@@ -221,6 +246,20 @@ public final class Options<T>
             if(option.getOption().equalsIgnoreCase(response))return option;
         }
         return null;
+    }
+
+    private List<Option<T>> findOptions(String[] optionsSelected)
+    {
+        List<Option<T>> list = new ArrayList<>();
+
+        for(String optionStr : optionsSelected)
+        {
+            Option<T> option = findOption(optionStr);
+            if(option == null)return new ArrayList<>();
+            list.add(option);
+        }
+
+        return list;
     }
 
     private boolean isInteger(String str)

@@ -2,6 +2,7 @@ package it.polimi.se2019.ui.cli;
 
 import it.polimi.se2019.controller.TimeOutException;
 import it.polimi.se2019.utils.constants.Ansi;
+import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.logging.Logger;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -111,6 +112,20 @@ class GameConsole
         caretY += lines.length;
         caretX += lines[lines.length-1].length();
         out.print(s);
+    }
+
+    static void printColored(GameColor color, Object o)
+    {
+        out.print(Ansi.convertColor(color));
+        print(o);
+        out.print(Ansi.RESET);
+    }
+
+    static void printlnColored(GameColor color, Object o)
+    {
+        out.print(Ansi.convertColor(color));
+        println(o);
+        out.print(Ansi.RESET);
     }
 
     static void println(Object o)
