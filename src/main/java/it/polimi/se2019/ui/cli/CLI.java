@@ -7,24 +7,16 @@ import it.polimi.se2019.map.BlockData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
-import it.polimi.se2019.player.Player;
-import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.network.NetworkUtils;
 import it.polimi.se2019.utils.string.Strings;
-import org.graalvm.compiler.nodes.calc.IntegerDivRemNode;
 
-import javax.smartcardio.Card;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.stream.Collectors;
-
-import static it.polimi.se2019.player.Action.FIRE;
-import static it.polimi.se2019.player.Action.MOVE;
 
 /**
  *
@@ -33,6 +25,8 @@ public class CLI implements UI
 {
     private NetworkInterface client;
     private GameData gameData;
+
+    private volatile boolean firstUpdate;
 
     public CLI()
     {
@@ -44,7 +38,8 @@ public class CLI implements UI
     {
         GameConsole.startConsole();
         GameConsole.println(Strings.TITLE);
-        Option<Integer> serverModeOption = new Options<Integer>(Strings.GET_CONNECTION_MODE, true).addOption("Socket", "S", NetworkInterface.SOCKET_MODE).addOption("RMI", "R", NetworkInterface.RMI_MODE).show();
+        firstUpdate = true;
+        Option<Integer> serverModeOption = new Options<Integer>(Strings.GET_CONNECTION_MODE, true).addOption("Socket", NetworkInterface.SOCKET_MODE).addOption("RMI", NetworkInterface.RMI_MODE).show();
         String serverIp = new FormattedInput(Strings.GET_SERVER_IP, NetworkUtils::isIp).show();
         int serverPort = Integer.parseInt(new FormattedInput(Strings.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, s -> NetworkUtils.isValidPort(Integer.parseInt(s))).show());
         GameConsole.println(Strings.CONNECTING);
@@ -176,7 +171,7 @@ public class CLI implements UI
     public String chooseSpawnPoint(CardData option1, CardData option2)
     {
         Options<CardData> powerUpCardOptions = new Options<>(Strings.CHOOSE_SPAWN_POINT, false);
-        powerUpCardOptions.addOption(option1.toString()).addOption(option2.toString());
+        powerUpCardOptions.addOption(option1.toString(), option1).addOption(option2.toString(), option2);
         return powerUpCardOptions.show().getValue().getId();
     }
 
@@ -184,24 +179,33 @@ public class CLI implements UI
     public Bundle<Action, Serializable> chooseActionFrom(Action[] possibleActions)
     {
         Options<Action> actionOptions = new Options<>(Strings.CHOOSE_ACTION, true);
-        for (Action action : possibleActions) {
-        actionOptions.addOption(action.toString().toLowerCase());
+
+        for (Action action : possibleActions)
+        {
+            actionOptions.addOption(action.toString().toLowerCase(), action);
         }
+
+        actionOptions.addOption("Termina azione", Action.END_ACTION);
+        actionOptions.addOption("Termina turno", Action.END_ROUND);
+
         Action chosenAction = actionOptions.show().getValue();
         CardData card = null;
+
         if (chosenAction == Action.USE_POWER_UP)
         {
             Options<CardData> powerUpOptions = new Options<>(Strings.SELECT_A_POWERUP, false);
-            int i=0;
-            for (CardData card1 : gameData.getPlayer().getPowerUps()
-                 )
+            int i = 0;
+
+            for (CardData card1 : gameData.getPlayer().getPowerUps())
             {
-                powerUpOptions.addOption(card1.toString(),card1);
+                powerUpOptions.addOption(card1.toString(), card1);
                 i++;
             }
+
             card = powerUpOptions.show().getValue();
         }
-        return Bundle.ofSecondNullable(chosenAction,card);
+
+        return Bundle.ofSecondNullable(chosenAction, card);
     }
 
     @Override
@@ -216,7 +220,7 @@ public class CLI implements UI
             int distance = gameData.getMap().getDistance(playerBlock,blockData);
             return distance <= maxDistance;
         }).map(BlockData::getCoordinates).collect(Collectors.toList());
-        Options<Coordinates> coordinatesOptions = new Option<>(Strings.CHOOSE_THE_BLOCK, false);
+        Options<Coordinates> coordinatesOptions = new Options<>(Strings.CHOOSE_THE_BLOCK, false);
         coordinatesOptions.addOptions(coordinatesList,Coordinates::toString);
         return coordinatesOptions.showCancellable().getValue();
     }
@@ -224,7 +228,6 @@ public class CLI implements UI
     @Override
     public Coordinates chooseBlockFrom(ArrayList<Coordinates> coordinates) throws CanceledActionException
     {
-
         Options<Coordinates> coordinatesOptions = new Options<> (Strings.CHOOSE_BLOCK_FROM, false);
         coordinatesOptions.addOptions(coordinates,Coordinates::toString);
         return coordinatesOptions.showCancellable().getValue();
@@ -265,15 +268,16 @@ public class CLI implements UI
     {
         Options<CardData> weaponsToReloadOptions = new Options<> (Strings.CHOOSE_WEAPON_TO_RELOAD, false);
         weaponsToReloadOptions.addOptions(weapons,CardData::toString);
+        weaponsToReloadOptions.addOption("Annulla", null);
         return weaponsToReloadOptions.showMultipleSelectable().values();
     }
 
     @Override
     public CardData chooseWeaponToReload(ArrayList<CardData> weapons)
     {
-
         Options<CardData> weaponToReloadOptions = new Options<> (Strings.CHOOSE_WEAPON_TO_RELOAD, false);
         weaponToReloadOptions.addOptions(weapons,CardData::toString);
+        weaponToReloadOptions.addOption("Annulla", null);
         return weaponToReloadOptions.show().getValue();
     }
 
@@ -281,8 +285,12 @@ public class CLI implements UI
     public void update(GameData data)
     {
         gameData = data;
-        GameConsole.clear();
-        GameConsole.println(gameData.getMap().getCliMap());
+        if(!firstUpdate)
+        {
+            GameConsole.clear();
+            GameConsole.println(gameData.getMap().getCliMap());
+        }
+        firstUpdate = false;
 
     }
 

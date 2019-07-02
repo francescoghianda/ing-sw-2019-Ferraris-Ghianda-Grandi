@@ -74,7 +74,7 @@ class GameConsole
         return caretY;
     }
 
-    static void setCaretPosition(int x, int y)
+    static synchronized void setCaretPosition(int x, int y)
     {
         out.printf("%c[%d;%df", Ansi.ESC, y, x);
         caretX = x;
@@ -94,18 +94,18 @@ class GameConsole
         setCaretPosition(savedX, savedY);
     }
 
-    static void eraseLine()
+    static synchronized void eraseLine()
     {
         out.printf("%c[K", Ansi.ESC);
     }
 
-    static void printf(String format, Object... objects)
+    static synchronized void printf(String format, Object... objects)
     {
         String s = String.format(format, objects);
         print(s);
     }
 
-    static void print(Object o)
+    static synchronized void print(Object o)
     {
         String s = o.toString();
         String[] lines = s.split("\n");
@@ -114,21 +114,21 @@ class GameConsole
         out.print(s);
     }
 
-    static void printColored(GameColor color, Object o)
+    static synchronized void printColored(GameColor color, Object o)
     {
         out.print(Ansi.convertColor(color));
         print(o);
         out.print(Ansi.RESET);
     }
 
-    static void printlnColored(GameColor color, Object o)
+    static synchronized void printlnColored(GameColor color, Object o)
     {
         out.print(Ansi.convertColor(color));
         println(o);
         out.print(Ansi.RESET);
     }
 
-    static void println(Object o)
+    static synchronized void println(Object o)
     {
         print(o);
         out.print('\n');
@@ -136,7 +136,7 @@ class GameConsole
         caretY++;
     }
 
-    static void clear()
+    static synchronized void clear()
     {
         out.print(Ansi.CLEAR_SCREEN);
         out.flush();

@@ -5,7 +5,6 @@ import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.gui.GUI;
 import it.polimi.se2019.ui.gui.MatchScene;
 import it.polimi.se2019.utils.constants.GameColor;
-import it.polimi.se2019.utils.constants.GameMode;
 import it.polimi.se2019.utils.gui.BloodDropImageFactory;
 import javafx.beans.NamedArg;
 import javafx.fxml.FXML;
@@ -40,9 +39,11 @@ public class BoardView extends StackPane implements Initializable
 
     private static EnumMap<GameColor, Image> normalModeBoardImages;
     private static EnumMap<GameColor, Image> finalFrenzyModeBoardImages;
+    private static EnumMap<GameColor, Image> finalFrenzyActionsImages;
 
     private Image normalModeBoardImage;
     private Image finalFrenzyModeBoardImage;
+    private Image finalFrenzyActionsImage;
 
     private Image skullImage;
     private BloodDropImageFactory bloodFactory;
@@ -79,6 +80,7 @@ public class BoardView extends StackPane implements Initializable
         this.color = color;
         this.normalModeBoardImage = normalModeBoardImages.get(color);
         this.finalFrenzyModeBoardImage = finalFrenzyModeBoardImages.get(color);
+        this.finalFrenzyActionsImage = finalFrenzyActionsImages.get(color);
 
         backgroundImage.setImage(normalModeBoardImage);
 
@@ -104,6 +106,11 @@ public class BoardView extends StackPane implements Initializable
     {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        if(!player.isFinalFrenzyMode() && MatchScene.getInstance().getGameDataProperty().get().getGameMode().isFinalFrenzy())
+        {
+            gc.drawImage(finalFrenzyActionsImage, 0, 0, finalFrenzyActionsImage.getWidth()*scale, finalFrenzyActionsImage.getHeight()*scale);
+        }
 
         paintAmmo(gc);
         paintDamages(gc);
@@ -284,6 +291,13 @@ public class BoardView extends StackPane implements Initializable
             finalFrenzyModeBoardImages.put(GameColor.PURPLE, new Image(BoardView.class.getResourceAsStream(path+"purple/final_frenzy_board.png")));
             finalFrenzyModeBoardImages.put(GameColor.WHITE, new Image(BoardView.class.getResourceAsStream(path+"white/final_frenzy_board.png")));
             finalFrenzyModeBoardImages.put(GameColor.YELLOW, new Image(BoardView.class.getResourceAsStream(path+"yellow/final_frenzy_board.png")));
+
+            finalFrenzyActionsImages = new EnumMap<>(GameColor.class);
+            finalFrenzyActionsImages.put(GameColor.BLUE, new Image(BoardView.class.getResourceAsStream(path+"blue/final_frenzy_actions.png")));
+            finalFrenzyActionsImages.put(GameColor.GREEN, new Image(BoardView.class.getResourceAsStream(path+"green/final_frenzy_actions.png")));
+            finalFrenzyActionsImages.put(GameColor.PURPLE, new Image(BoardView.class.getResourceAsStream(path+"purple/final_frenzy_actions.png")));
+            finalFrenzyActionsImages.put(GameColor.WHITE, new Image(BoardView.class.getResourceAsStream(path+"white/final_frenzy_actions.png")));
+            finalFrenzyActionsImages.put(GameColor.YELLOW, new Image(BoardView.class.getResourceAsStream(path+"yellow/final_frenzy_actions.png")));
         }
     }
 

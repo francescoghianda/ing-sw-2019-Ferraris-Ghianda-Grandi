@@ -18,14 +18,14 @@ public class RoundManager
         roundNumber = 1;
     }
 
-    public Player next()
+    /*public Player next()
     {
         Player nextPlayer = getNextPlayer();
         while (!nextPlayer.getClientConnection().isConnected() || !nextPlayer.getClientConnection().isLogged())nextPlayer = getNextPlayer();
         return nextPlayer;
-    }
+    }*/
 
-    private Player getNextPlayer()
+    public Player next()
     {
         if(playerIndex >= players.size())
         {

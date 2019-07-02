@@ -21,11 +21,9 @@ public class CountPointsAction extends ControllerAction
     @Override
     public void execute()
     {
-        if(!deadPlayer.isDead())return;
-
         Set<Map.Entry<Player, Integer>> entries = deadPlayer.getGameBoard().getReceivedDamage().entrySet();
 
-        if(gameController.getGameMode() == GameMode.NORMAL)deadPlayer.getFirstBloodPlayer().getGameBoard().addPoints(1);
+        if(!deadPlayer.isFinalFrenzyMode())deadPlayer.getFirstBloodPlayer().getGameBoard().addPoints(1);
         int maxPoints = deadPlayer.getGameBoard().getMaxPointsValue(deadPlayer.isFinalFrenzyMode());
         int processed = 0;
 

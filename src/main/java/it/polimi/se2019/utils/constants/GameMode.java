@@ -18,4 +18,9 @@ public enum GameMode implements Serializable
         return playableAction;
     }
 
+    public boolean isFinalFrenzy()
+    {
+        return this == FINAL_FRENZY_BEFORE_FP || this == FINAL_FRENZY_AFTER_FP;
+    }
+
 }

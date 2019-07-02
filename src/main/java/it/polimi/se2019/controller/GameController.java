@@ -15,6 +15,7 @@ import it.polimi.se2019.network.ClientConnection;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.network.message.ConnectionErrorException;
 import it.polimi.se2019.player.*;
+import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.constants.GameMode;
 import it.polimi.se2019.utils.logging.Logger;
 import it.polimi.se2019.utils.timer.Timer;
@@ -42,6 +43,7 @@ public class GameController implements TimerListener
     private List<Death> deaths;
 
     private RoundManager roundManager;
+    private Player lastFinalFrenzyPlayer;
 
     private final Match match;
 
@@ -63,6 +65,12 @@ public class GameController implements TimerListener
     private void nextRound()
     {
         Player currentPlayer = roundManager.next();
+
+        if(!currentPlayer.getClientConnection().isConnected() || !currentPlayer.getClientConnection().isLogged())
+        {
+            if(currentPlayer.equals(lastFinalFrenzyPlayer))return;
+            nextRound();
+        }
 
         if(gameMode == GameMode.FINAL_FRENZY_BEFORE_FP && roundManager.isFirstPlayer(currentPlayer))gameMode = GameMode.FINAL_FRENZY_AFTER_FP;
 
@@ -98,8 +106,8 @@ public class GameController implements TimerListener
         sendBroadcastUpdate();
         if(isFinalFrenzy())currentPlayer.setLastRoundPlayed(true);
         handleDeadPlayers(currentPlayer);
-        if(isFinalFrenzy() && roundManager.isLastPlayer(currentPlayer))return;
-        checkForFinalFrenzy();
+        if(isFinalFrenzy() && currentPlayer.equals(lastFinalFrenzyPlayer))return;
+        checkForFinalFrenzy(currentPlayer);
         nextRound();
 
     }
@@ -111,13 +119,27 @@ public class GameController implements TimerListener
 
     private void endMatch()
     {
+        match.getPlayers().stream().filter(player -> player.getGameBoard().getTotalReceivedDamage() > 0).forEach(player -> new CountPointsAction(this, player).execute());
+
+        new CountKillShotTrackAction(this, deaths).execute();
+
+        List<Player> scoreBoard = getPlayers().stream().sorted(Comparator.comparingInt(player -> player.getGameBoard().getPoints())).collect(Collectors.toList());
+
+
 
     }
 
-    private void checkForFinalFrenzy()
+    public Optional<Player> findPlayerByColor(GameColor color)
     {
-        if(remainingSkulls.get() > 0 || gameMode != GameMode.NORMAL)return;
+        return match.getPlayers().stream().filter(player -> player.getColor() == color).findFirst();
+    }
+
+    private void checkForFinalFrenzy(Player currentPlayer)
+    {
+        if(remainingSkulls.get() > 0 || gameMode.isFinalFrenzy())return;
         gameMode = GameMode.FINAL_FRENZY_BEFORE_FP;
+
+        lastFinalFrenzyPlayer = currentPlayer;
 
         match.getPlayers().forEach(player ->
         {
@@ -248,8 +270,11 @@ public class GameController implements TimerListener
         {
             sendBroadCastMessage(virtualView -> virtualView.showNotification(player.getUsername()+" è stato ucciso da "+currentPlayer.getUsername()));
             new CountPointsAction(this, player).execute();
-            player.getGameBoard().addSkull();
-            remainingSkulls.decrementAndGet();
+            if(!gameMode.isFinalFrenzy())
+            {
+                player.getGameBoard().addSkull();
+                remainingSkulls.decrementAndGet();
+            }
             deaths.add(new Death(currentPlayer.getColor(), player.getColor(), player.isOverkilled()));
         });
 

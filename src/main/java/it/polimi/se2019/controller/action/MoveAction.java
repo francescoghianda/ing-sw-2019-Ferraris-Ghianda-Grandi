@@ -22,6 +22,8 @@ public class MoveAction extends ControllerAction
     @Override
     public void execute()
     {
+        if(block.equals(player.getBlock())) return;
+
         int distance = block.getDistanceFrom(player.getBlock());
 
         List<Block> path = player.getBlock().getRandomPathTo(block).getBlocks();
