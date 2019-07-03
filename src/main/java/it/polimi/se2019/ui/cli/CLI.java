@@ -47,7 +47,7 @@ public class CLI implements UI
     }
 
     @Override
-    public String login()
+    public  String login()
     {
         return new FormattedInput(Strings.GET_USERNAME, FormattedInput.USERNAME_REGEX).show();
     }
@@ -56,20 +56,6 @@ public class CLI implements UI
     public void logged()
     {
         GameConsole.println(Strings.LOGGED);
-    }
-
-    @Override
-    public String selectPlayer()
-    {
-
-        return null;
-    }
-
-    @Override
-    public String selectBlock()
-    {
-
-        return null;
     }
 
     @Override

@@ -179,10 +179,10 @@ public class GameController implements TimerListener
                 Logger.warning("Impossible action: "+chosen+"; "+e.cause()+" - Player: "+currentPlayer);
                 currentPlayer.getView().notifyImpossibleAction();
             }
-            finally
-            {
-                sendBroadcastUpdate();
-            }
+
+
+            sendBroadcastUpdate();
+
 
         }
         return true;

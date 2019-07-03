@@ -174,18 +174,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     {
         sceneManager.setScene(SceneManager.WAIT_SCENE);
     }
-
-    @Override
-    public String selectPlayer()
-    {
-        return null;
-    }
-
-    @Override
-    public String selectBlock()
-    {
-        return null;
-    }
+    
 
     @Override
     public void gameIsStarting()

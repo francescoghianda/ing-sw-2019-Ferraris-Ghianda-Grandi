@@ -20,8 +20,6 @@ public interface UI extends GameEventHandler
     void startUI();
 
     String login();
-    String selectPlayer();
-    String selectBlock();
     void requestFocus();
     void logged();
     void gameIsStarting();
