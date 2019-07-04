@@ -19,11 +19,13 @@ public class SceneManager
     static final int START_MENU_SCENE = 2;
     static final int WAIT_SCENE = 3;
     static final int MATCH_SCENE = 4;
+    static final int SCORE_BOARD_SCENE = 5;
 
     private static Scene loginScene;
     private static Scene startMenuScene;
     private static Scene waitScene;
     private static Scene matchScene;
+    private static Scene scoreBoardScene;
 
     private static SceneManager instance;
     private final Stage stage;
@@ -50,7 +52,9 @@ public class SceneManager
         startMenuScene = new Scene(new StartMenuScene());
         waitScene = new Scene(new WaitScene());
         matchScene = new Scene(MatchScene.getInstance());
+        scoreBoardScene = new Scene(new ScoreBoardScene());
     }
+
 
     ReadOnlyObjectProperty<Scene> onSceneSelectedProperty()
     {
@@ -60,6 +64,11 @@ public class SceneManager
     MatchScene getMatchScene()
     {
         return (MatchScene)matchScene.getRoot();
+    }
+
+    ScoreBoardScene getScoreBoardScene()
+    {
+        return (ScoreBoardScene)scoreBoardScene.getRoot();
     }
 
     public static SceneManager getInstance()
@@ -102,6 +111,9 @@ public class SceneManager
                 break;
             case MATCH_SCENE:
                 selected = matchScene;
+                break;
+            case SCORE_BOARD_SCENE:
+                selected = scoreBoardScene;
                 break;
         }
 

@@ -81,6 +81,7 @@ public class Match
 
     public void startGame()
     {
+        if(state != State.RUNNING && players.size() >= MatchSettings.getInstance().getMinPlayers())
         state = State.RUNNING;
         gameController.startGameTimer();
     }

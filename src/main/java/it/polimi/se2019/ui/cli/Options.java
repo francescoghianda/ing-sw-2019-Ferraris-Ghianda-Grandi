@@ -3,6 +3,7 @@ package it.polimi.se2019.ui.cli;
 
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.TimeOutException;
+import it.polimi.se2019.utils.constants.Characters;
 import it.polimi.se2019.utils.constants.GameMode;
 
 import java.util.ArrayList;
@@ -158,10 +159,10 @@ public final class Options<T>
         builder.append("\t\t\t");
         for(int i = 0; i < maxOptionsLength+8; i++)
         {
-            if(i == 0)builder.append('╔');
-            else builder.append('═');
+            if(i == 0)builder.append(Characters.BoxDrawing.UPPER_LEFT_CORNER);
+            else builder.append(Characters.BoxDrawing.DOUBLE_HORIZONTAL);
         }
-        builder.append('╗').append('\n');
+        builder.append(Characters.BoxDrawing.UPPER_RIGHT_CORNER).append('\n');
     }
 
     private void writeTitle(StringBuilder builder, String title, int maxOptionsLength)
@@ -171,11 +172,11 @@ public final class Options<T>
 
         for(int i = 0; i < maxOptionsLength+8; i++)
         {
-            if(i == 0)builder.append('║');
+            if(i == 0)builder.append(Characters.BoxDrawing.DOUBLE_VERTICAL);
             else if(i < pos || i-pos >= title.length()) builder.append(' ');
             else builder.append(title.charAt(i-pos));
         }
-        builder.append('║').append('\n');
+        builder.append(Characters.BoxDrawing.DOUBLE_VERTICAL).append('\n');
     }
 
     private void writeMidLine(StringBuilder builder, int maxOptionsLength)
@@ -183,11 +184,11 @@ public final class Options<T>
         builder.append("\t\t\t");
         for(int i = 0; i < maxOptionsLength+8; i++)
         {
-            if(i == 0)builder.append('╠');
-            else if(i == 5)builder.append('╦');
-            else builder.append('═');
+            if(i == 0)builder.append(Characters.BoxDrawing.DOUBLE_LEFT_T_CHAR);
+            else if(i == 5)builder.append(Characters.BoxDrawing.DOUBLE_T_CHAR);
+            else builder.append(Characters.BoxDrawing.DOUBLE_HORIZONTAL);
         }
-        builder.append('╣').append('\n');
+        builder.append(Characters.BoxDrawing.DOUBLE_RIGHT_T_CHAR).append('\n');
     }
 
     private void writeLastLine(StringBuilder builder, int maxOptionsLength)
@@ -195,11 +196,11 @@ public final class Options<T>
         builder.append("\t\t\t");
         for(int i = 0; i < maxOptionsLength+8; i++)
         {
-            if(i == 0)builder.append('╚');
-            else if(i == 5)builder.append('╩');
-            else builder.append('═');
+            if(i == 0)builder.append(Characters.BoxDrawing.BOTTOM_LEFT_CORNER);
+            else if(i == 5)builder.append(Characters.BoxDrawing.DOUBLE_REVERSED_T_CHAR);
+            else builder.append(Characters.BoxDrawing.DOUBLE_HORIZONTAL);
         }
-        builder.append('╝').append('\n');
+        builder.append(Characters.BoxDrawing.BOTTOM_RIGHT_CORNER).append('\n');
     }
 
     private void writeOptionLine(StringBuilder builder, String option, int index, int maxOptionsLength)
@@ -207,15 +208,15 @@ public final class Options<T>
         builder.append("\t\t\t");
         for(int i = 0; i < maxOptionsLength+8; i++)
         {
-            if(i == 0)builder.append('║');
+            if(i == 0)builder.append((char)186);
             else if(i == 1 || i == 4 || i == 6)builder.append(' ');
             else if(i == 2)builder.append(index);
             else if(i == 3)builder.append('.');
-            else if(i == 5)builder.append('║');
+            else if(i == 5)builder.append(Characters.BoxDrawing.DOUBLE_VERTICAL);
             else if(i-7 < option.length()) builder.append(option.charAt(i-7));
             else builder.append(' ');
         }
-        builder.append('║').append('\n');
+        builder.append(Characters.BoxDrawing.DOUBLE_VERTICAL).append('\n');
     }
 
     protected void writeOptions()

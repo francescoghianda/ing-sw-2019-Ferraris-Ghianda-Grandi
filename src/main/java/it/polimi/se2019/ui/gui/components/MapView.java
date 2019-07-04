@@ -66,7 +66,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
 
     private ArrayList<MapBlock> mapBlocks;
 
-    private double scale;
+    private volatile double scale;
     private double blockStartX;
     private double blockStartY;
     private double blockSize;
@@ -434,6 +434,7 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
 
         hBox.heightProperty().addListener((observable, oldValue, newValue) ->
                 {
+                    canvas.setWidth(leftImage.getBoundsInParent().getWidth()+rightImage.getBoundsInParent().getWidth());
                     canvas.setHeight(newValue.doubleValue());
                     scale = canvas.getHeight()/leftImage.getImage().getHeight();
                     scaleComputed = true;
@@ -447,9 +448,10 @@ public class MapView extends StackPane implements Initializable, EventHandler<Mo
                     repaint();
                 });
 
+
         pane.maxWidthProperty().bind(canvas.widthProperty());
-        pane.prefWidthProperty().bind(canvas.widthProperty());
-        pane.prefHeightProperty().bind(canvas.heightProperty());
+        //pane.prefWidthProperty().bind(canvas.widthProperty());
+        //pane.prefHeightProperty().bind(canvas.heightProperty());
 
         if(mapNumber != null)
         {

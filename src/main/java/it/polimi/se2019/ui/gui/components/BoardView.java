@@ -133,7 +133,7 @@ public class BoardView extends StackPane implements Initializable
         {
             double xi = x+(width*i)+(space*i);
             gc.clearRect(xi, y, width, height);
-            gc.drawImage(skullImage, xi, y, width, height);
+            if(!MatchScene.getInstance().getGameDataProperty().get().getPlayer().isFinalFrenzyMode())gc.drawImage(skullImage, xi, y, width, height);
         }
 
     }

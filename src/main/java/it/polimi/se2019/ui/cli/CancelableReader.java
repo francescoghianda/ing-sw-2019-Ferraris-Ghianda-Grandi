@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class CancelableReader
 {
     private static List<CancelableReader> readers = new ArrayList<>();
+    private static AtomicInteger activeReader = new AtomicInteger(0);
 
     private BufferedReader br;
     private FutureTask<String> inputTask;
@@ -28,8 +30,14 @@ public final class CancelableReader
         return cancelableReader;
     }
 
+    public static int getActiveReader()
+    {
+        return activeReader.get();
+    }
+
     public String nextLine() throws CanceledInputException
     {
+        activeReader.incrementAndGet();
         inputTask = new FutureTask<>(() -> br.readLine());
 
         Thread inputThread = new Thread(inputTask);
@@ -49,6 +57,7 @@ public final class CancelableReader
         }
         finally
         {
+            activeReader.decrementAndGet();
             inputTask = null;
         }
 

@@ -4,9 +4,12 @@ import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
+import it.polimi.se2019.controller.Match;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
+import it.polimi.se2019.player.GameBoardData;
+import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.ui.cli.Option;
@@ -14,14 +17,18 @@ import it.polimi.se2019.ui.gui.dialogs.CloseDialog;
 import it.polimi.se2019.ui.gui.dialogs.ReloadWeaponsDialog;
 import it.polimi.se2019.ui.gui.notification.NotificationPane;
 import it.polimi.se2019.ui.gui.value.ValueObserver;
+import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.logging.Logger;
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
+import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
+import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tooltip;
 import javafx.scene.media.Media;
@@ -30,12 +37,12 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import sun.plugin2.message.ScrollEventMessage;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
@@ -46,6 +53,8 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     private static Stage window;
     private SceneManager sceneManager;
     private MediaPlayer roundStartSound;
+
+    private SequentialTransition scoreBoardTransition;
 
     public GUI()
     {
@@ -99,14 +108,41 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
         sceneManager = SceneManager.createSceneManager(window, this);
 
         //window.setMinHeight(getScreenHeight()/1.2);
+        sceneManager.onSceneSelectedProperty().addListener((observable, oldValue, newValue) ->
+        {
+            if(newValue == SceneManager.getScene(SceneManager.WAIT_SCENE))
+            {
+                WaitScene waitScene = ((WaitScene)newValue.getRoot());
+                waitScene.showTimer(false);
+                window.setWidth(waitScene.getPrefWidth());
+                window.setHeight(waitScene.getPrefHeight());
+            }
+        });
 
         ChangeListener<Number> sizeChangedListener = (observable, oldValue, newValue) ->
         {
             if(sceneManager.getCurrentScene().equals(SceneManager.getScene(SceneManager.MATCH_SCENE)))window.setMinWidth(window.getHeight()*1.48);
         };
 
-        window.widthProperty().addListener(sizeChangedListener);
+        scoreBoardTransition = new SequentialTransition();
+        FadeTransition fadeOutMatchSceneTransition = new FadeTransition(Duration.millis(400));
+        fadeOutMatchSceneTransition.setNode(MatchScene.getInstance());
+        fadeOutMatchSceneTransition.setFromValue(1);
+        fadeOutMatchSceneTransition.setToValue(0);
 
+        fadeOutMatchSceneTransition.setOnFinished((value) ->
+        {
+            sceneManager.getScoreBoardScene().setOpacity(0);
+            sceneManager.setScene(SceneManager.SCORE_BOARD_SCENE);
+        });
+
+        FadeTransition fadeInScoreBoardScene = new FadeTransition(Duration.millis(400));
+        fadeInScoreBoardScene.setNode(sceneManager.getScoreBoardScene());
+        fadeInScoreBoardScene.setFromValue(0);
+        fadeInScoreBoardScene.setToValue(1);
+        scoreBoardTransition.getChildren().addAll(fadeOutMatchSceneTransition, fadeInScoreBoardScene);
+
+        window.widthProperty().addListener(sizeChangedListener);
         window.heightProperty().addListener(sizeChangedListener);
 
         window.heightProperty().addListener((observable, oldValue, newValue) -> onSizeChange(window.getWidth(), newValue.doubleValue()));
@@ -121,7 +157,22 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
         window.show();
         window.centerOnScreen();
 
+        /////
 
+        /*window.setResizable(true);
+
+        List<PlayerData> playerDataList = new ArrayList<>();
+
+        playerDataList.add(new PlayerData("fra", GameColor.GREEN, null, null, new GameBoardData(0, 0, 0, 0, null, null, 46), 0, 0, false));
+        playerDataList.add(new PlayerData("silvia", GameColor.PURPLE, null, null, new GameBoardData(0, 0, 0, 0, null, null, 17), 0, 0, false));
+        playerDataList.add(new PlayerData("simo", GameColor.YELLOW, null, null, new GameBoardData(0, 0, 0, 0, null, null, 17), 0, 0, false));
+        playerDataList.add(new PlayerData("asd", GameColor.WHITE, null, null, new GameBoardData(0, 0, 0, 0, null, null, 17), 0, 0, false));
+        playerDataList.add(new PlayerData("qwerty", GameColor.BLUE, null, null, new GameBoardData(0, 0, 0, 0, null, null, 17), 0, 0, false));
+
+
+        sceneManager.getScoreBoardScene().show(playerDataList, true);
+
+        sceneManager.setScene(SceneManager.SCORE_BOARD_SCENE);*/
         //gameStarted();
 
     }
@@ -150,6 +201,24 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     }
 
     @Override
+    public void closeConnection()
+    {
+
+    }
+
+    @Override
+    public boolean showScoreBoardAndChooseIfPlayAgain(ArrayList<PlayerData> scoreBoard)
+    {
+        SceneManager.runOnFxThread(() ->
+        {
+            SceneManager.getInstance().getScoreBoardScene().show(scoreBoard, MatchScene.getInstance().getGameDataProperty().get().getPlayer().getUsername().equals(scoreBoard.get(0).getUsername()));
+            scoreBoardTransition.playFromStart();
+        });
+
+        return new ValueObserver<Boolean>().get(sceneManager.getScoreBoardScene().playAgainValue);
+    }
+
+    @Override
     public void update(GameData data)
     {
         sceneManager.getMatchScene().update(data);
@@ -172,7 +241,11 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     @Override
     public void logged()
     {
-        sceneManager.setScene(SceneManager.WAIT_SCENE);
+        SceneManager.runOnFxThread(() ->
+        {
+            sceneManager.setScene(SceneManager.WAIT_SCENE);
+            window.setResizable(false);
+        });
     }
     
 

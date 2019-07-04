@@ -6,6 +6,7 @@ import it.polimi.se2019.map.MapData;
 import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.gui.MatchScene;
 import it.polimi.se2019.utils.constants.GameColor;
+import it.polimi.se2019.utils.gui.PlayerPawnImageFactory;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -18,8 +19,6 @@ import java.util.*;
 
 public class MapBlock extends Rectangle2D implements CardView.OnCardViewClickListener
 {
-    private static final EnumMap<GameColor, Image> playersPawn = loadPlayersPawn();
-
     private final MapView mapView;
     private boolean active;
     private Image ammoImage;
@@ -168,7 +167,7 @@ public class MapBlock extends Rectangle2D implements CardView.OnCardViewClickLis
     {
         for(int i = 0; i < players.size(); i++)
         {
-            Image pawnImage = playersPawn.get(players.get(i).getColor());
+            Image pawnImage = PlayerPawnImageFactory.getPlayerPawn(players.get(i).getColor());
             Rectangle2D rect = playerPositions.get(i);
             gc.drawImage(pawnImage, rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
         }
@@ -215,19 +214,6 @@ public class MapBlock extends Rectangle2D implements CardView.OnCardViewClickLis
             active = contains(new Point2D(event.getX(), event.getY())) && map != null && map.getBlocks()[mapY][mapX] != null;
             if(oldActive != active)mapView.repaintBlock(this);
         }
-    }
-
-    private static EnumMap<GameColor, Image> loadPlayersPawn()
-    {
-        EnumMap<GameColor, Image> playersPawn = new EnumMap<>(GameColor.class);
-
-        playersPawn.put(GameColor.YELLOW, new Image(MapBlock.class.getResourceAsStream("/img/pawns/yellow_pawn.png")));
-        playersPawn.put(GameColor.BLUE, new Image(MapBlock.class.getResourceAsStream("/img/pawns/blue_pawn.png")));
-        playersPawn.put(GameColor.WHITE, new Image(MapBlock.class.getResourceAsStream("/img/pawns/white_pawn.png")));
-        playersPawn.put(GameColor.PURPLE, new Image(MapBlock.class.getResourceAsStream("/img/pawns/purple_pawn.png")));
-        playersPawn.put(GameColor.GREEN, new Image(MapBlock.class.getResourceAsStream("/img/pawns/green_pawn.png")));
-
-        return playersPawn;
     }
 
     @Override

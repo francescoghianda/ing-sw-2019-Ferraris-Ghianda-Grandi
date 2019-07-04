@@ -1,6 +1,10 @@
 package it.polimi.se2019.network;
 
+import it.polimi.se2019.controller.Match;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,13 +12,13 @@ public class ClientsManager
 {
     private static ClientsManager instance;
 
-    private ArrayList<ClientConnection> connectedClients;
-    private ArrayList<User> disconnectedClients;
+    private List<ClientConnection> connectedClients;
+    private List<User> disconnectedClients;
 
     private ClientsManager()
     {
-        connectedClients = new ArrayList<>();
-        disconnectedClients = new ArrayList<>();
+        connectedClients = Collections.synchronizedList(new ArrayList<>());
+        disconnectedClients = Collections.synchronizedList(new ArrayList<>());
     }
 
     public static ClientsManager getInstance()
@@ -23,7 +27,7 @@ public class ClientsManager
         return instance;
     }
 
-    public void registerClient(ClientConnection client)
+    public synchronized void registerClient(ClientConnection client)
     {
         User disconnected;
         if((disconnected = findDisconnectedClient(client.getUser().getUsername())) != null)
@@ -36,26 +40,31 @@ public class ClientsManager
         if(!connectedClients.contains(client))connectedClients.add(client);
     }
 
-    public void unregisterClient(ClientConnection client)
+    public synchronized void unregisterClient(ClientConnection client)
     {
         if(connectedClients.contains(client))
         {
             connectedClients.remove(client);
-            disconnectedClients.add(client.getUser());
+            if(client.getMatch().getState() == Match.State.RUNNING)disconnectedClients.add(client.getUser());
         }
     }
 
-    public List<ClientConnection> getConnectedClients()
+    public synchronized void deleteDisconnectedClients(Match match)
+    {
+        disconnectedClients = disconnectedClients.stream().filter(client -> !client.getMatch().equals(match)).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public synchronized List<ClientConnection> getConnectedClients()
     {
         return this.connectedClients;
     }
 
-    public List<String> getConnectedClientsUsername()
+    public synchronized List<String> getConnectedClientsUsername()
     {
         return getAllUsernameFrom(connectedClients.stream().map(ClientConnection::getUser).collect(Collectors.toList()));
     }
 
-    public List<String> getDisconnectedClientsUsername()
+    public synchronized List<String> getDisconnectedClientsUsername()
     {
         return getAllUsernameFrom(disconnectedClients);
     }

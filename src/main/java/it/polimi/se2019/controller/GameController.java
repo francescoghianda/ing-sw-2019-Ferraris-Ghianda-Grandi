@@ -12,6 +12,8 @@ import it.polimi.se2019.map.Block;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.map.Map;
 import it.polimi.se2019.network.ClientConnection;
+import it.polimi.se2019.network.ClientsManager;
+import it.polimi.se2019.network.User;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.network.message.ConnectionErrorException;
 import it.polimi.se2019.player.*;
@@ -119,12 +121,39 @@ public class GameController implements TimerListener
 
     private void endMatch()
     {
+        match.setState(Match.State.ENDED);
+
+        ClientsManager.getInstance().deleteDisconnectedClients(match);
         match.getPlayers().stream().filter(player -> player.getGameBoard().getTotalReceivedDamage() > 0).forEach(player -> new CountPointsAction(this, player).execute());
-
         new CountKillShotTrackAction(this, deaths).execute();
+        ArrayList<PlayerData> scoreBoard = getPlayers().stream().sorted((p1, p2) -> Integer.compare(p2.getGameBoard().getPoints(), p1.getGameBoard().getPoints())).map(Player::getData).collect(Collectors.toCollection(ArrayList::new));
 
-        List<Player> scoreBoard = getPlayers().stream().sorted(Comparator.comparingInt(player -> player.getGameBoard().getPoints())).collect(Collectors.toList());
+        sendBroadCastMessage(ui -> ui.showNotification("Partita terminata"));
+        sendBroadCastMessage(ui -> ui.showNotification("Vince "+scoreBoard.get(0).getUsername()));
 
+        match.getPlayers().stream().filter(player -> player.getClientConnection().isConnected()).forEach(player ->
+        {
+            Thread thread = new Thread(() ->
+            {
+                boolean playAgain = player.getView().showScoreBoardAndChooseIfPlayAgain(scoreBoard);
+
+                if(playAgain)
+                {
+                    User user = player.getClientConnection().getUser();
+                    user.setMatch(MatchManager.getInstance().getMatch());
+                    user.setPlayer(user.getMatch().createPlayer(player.getClientConnection()));
+                    player.getView().logged();
+                }
+                else
+                {
+                    ClientsManager.getInstance().unregisterClient(player.getClientConnection());
+                    player.getClientConnection().stop();
+                }
+
+            });
+
+            thread.start();
+        });
 
 
     }

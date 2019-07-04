@@ -93,15 +93,15 @@ public class VirtualView implements UI
     }
 
     @Override
-    public String selectPlayer()
+    public void closeConnection()
     {
-        return null;
+        client.sendMessageToClient(new AsyncMessage("close_connection", UI::closeConnection));
     }
 
     @Override
-    public String selectBlock()
+    public boolean showScoreBoardAndChooseIfPlayAgain(ArrayList<PlayerData> scoreBoard)
     {
-        return null;
+        return (boolean) client.getResponseTo(RequestFactory.newActionRequest("end_match", ui -> ui.showScoreBoardAndChooseIfPlayAgain(scoreBoard)), TimeoutTime.INDETERMINATE).getContent();
     }
 
     @Override

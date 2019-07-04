@@ -215,7 +215,7 @@ public class GameBoard implements Serializable
         receivedDamage.forEach((player, integer) -> damages.put(player.getColor(), integer));
         this.markers.forEach(((player, integer) -> markers.put(player.getColor(), integer)));
 
-        return new GameBoardData(redAmmo, blueAmmo, yellowAmmo, skulls, damages, markers);
+        return new GameBoardData(redAmmo, blueAmmo, yellowAmmo, skulls, damages, markers, points);
     }
 
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import it.polimi.se2019.ui.gui.components.ColoredButton?>
+<?import it.polimi.se2019.ui.gui.components.ScoreBoardList?>
+<fx:root type="BorderPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <top>
+        <StackPane>
+            <Label fx:id="titleLabel"/>
+        </StackPane>
+    </top>
+    <center>
+        <ScoreBoardList fx:id="scoreBoardList"/>
+    </center>
+    <bottom>
+        <TilePane fx:id="buttonsTilePane" alignment="CENTER">
+            <ColoredButton fx:id="yesButton" text="Gioca ancora" textFill="white"/>
+            <ColoredButton fx:id="noButton" text="Esci" textFill="white"/>
+        </TilePane>
+    </bottom>
+</fx:root>

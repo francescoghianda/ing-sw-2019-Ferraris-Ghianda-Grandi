@@ -3,8 +3,12 @@ package it.polimi.se2019.utils.map;
 import it.polimi.se2019.card.ammo.AmmoCard;
 import it.polimi.se2019.map.Block;
 import it.polimi.se2019.map.Map;
+import it.polimi.se2019.player.Player;
 import it.polimi.se2019.utils.constants.Ansi;
+import it.polimi.se2019.utils.constants.Characters;
 import it.polimi.se2019.utils.constants.GameColor;
+
+import java.util.List;
 
 import static it.polimi.se2019.map.Block.*;
 
@@ -89,6 +93,8 @@ public class MapDrawer
 
         drawAmmoCard(block, blockCanvas);
 
+        drawPlayers(block, blockCanvas);
+
         for (String[] line : blockCanvas)
         {
             for (String str : line)
@@ -106,8 +112,8 @@ public class MapDrawer
         String colorStr = "";
         if(drawBackground)
         {
-            if(ch != ' ' && ch != '│' && ch != '─' && ch != '┼')colorStr = Ansi.convertColor(color);
-            else if(ch == '│' || ch == '─' || ch == '┼')colorStr = Ansi.combineColor(Ansi.convertColorBackground(color), Ansi.BLACK);
+            if(ch != ' ' && ch != Characters.BoxDrawing.VERTICAL && ch != Characters.BoxDrawing.HORIZONTAL && ch != Characters.BoxDrawing.CROSS)colorStr = Ansi.convertColor(color);
+            else if(ch == Characters.BoxDrawing.VERTICAL || ch == Characters.BoxDrawing.HORIZONTAL || ch == Characters.BoxDrawing.CROSS)colorStr = Ansi.combineColor(Ansi.convertColorBackground(color), Ansi.BLACK);
             else colorStr = Ansi.convertColorBackground(color);
         }
         else
@@ -148,30 +154,40 @@ public class MapDrawer
             int j = 1;
             for(int i = 0; i < ammoCard.getBlueAmmo(); i++)
             {
-                setCharacter(canvas, '♦', i+1, j, Ansi.BLUE, blockColor == GameColor.BLUE ? Ansi.BLACK : Ansi.convertColorBackground(blockColor));
+                setCharacter(canvas, Characters.Symbols.AMMO_SYMBOL, i+1, j, Ansi.BLUE, blockColor == GameColor.BLUE ? Ansi.BLACK : Ansi.convertColorBackground(blockColor));
             }
             if(ammoCard.getBlueAmmo() > 0)j++;
             for(int i = 0; i < ammoCard.getRedAmmo(); i++)
             {
-                setCharacter(canvas, '♦', i+1, j, Ansi.RED, blockColor == GameColor.RED ? Ansi.BLACK : Ansi.convertColorBackground(blockColor));
+                setCharacter(canvas, Characters.Symbols.AMMO_SYMBOL, i+1, j, Ansi.RED, blockColor == GameColor.RED ? Ansi.BLACK : Ansi.convertColorBackground(blockColor));
             }
             if(ammoCard.getRedAmmo() > 0)j++;
             for(int i = 0; i < ammoCard.getYellowAmmo(); i++)
             {
-                setCharacter(canvas, '♦', i+1, j, Ansi.YELLOW, blockColor == GameColor.YELLOW ? Ansi.BLACK : Ansi.convertColorBackground(blockColor));
+                setCharacter(canvas, Characters.Symbols.AMMO_SYMBOL, i+1, j, Ansi.YELLOW, blockColor == GameColor.YELLOW ? Ansi.BLACK : Ansi.convertColorBackground(blockColor));
             }
             if(ammoCard.getYellowAmmo() > 0)j++;
             if(ammoCard.isPickPowerUp())
             {
-                setCharacter(canvas, '★', 1, j, Ansi.BLACK, Ansi.convertColorBackground(blockColor));
+                setCharacter(canvas, Characters.Symbols.POWER_UP_SYMBOL, 1, j, Ansi.BLACK, Ansi.convertColorBackground(blockColor));
             }
         }
     }
 
-    private static final char ROOM_WALL_VERTICAL = '║';
-    private static final char ROOM_WALL_HORIZONTAL = '═';
-    private static final char BLOCK_WALL_VERTICAL = '│';
-    private static final char BLOCK_WALL_HORIZONTAL = '─';
+    private void drawPlayers(Block block, String[][] canvas)
+    {
+        List<Player> players = block.getPlayers();
+        for(int i = 0; i < players.size(); i++)
+        {
+            GameColor playerColor = players.get(i).getColor();
+            setCharacter(canvas, Characters.Symbols.PLAYER_SYMBOL, blockWidth/2+i, blockHeight/2, playerColor);
+        }
+    }
+
+    private static final char ROOM_WALL_VERTICAL = Characters.BoxDrawing.DOUBLE_VERTICAL;
+    private static final char ROOM_WALL_HORIZONTAL = Characters.BoxDrawing.DOUBLE_HORIZONTAL;
+    private static final char BLOCK_WALL_VERTICAL = Characters.BoxDrawing.VERTICAL;
+    private static final char BLOCK_WALL_HORIZONTAL = Characters.BoxDrawing.HORIZONTAL;
 
     private void drawSide(Block block, String[][] canvas, int side, int x, int y)
     {
@@ -190,10 +206,10 @@ public class MapDrawer
 
                 if(block.isDoor(sideBlock) && i >= doorStart && i <= doorEnd)
                 {
-                    if(side == UPPER_SIDE && i == doorStart)setCharacter(canvas, '╝', x+i, y, color);
-                    else if(side == UPPER_SIDE && i == doorEnd)setCharacter(canvas, '╚', x+i, y, color);
-                    else if(side == LOWER_SIDE && i == doorStart)setCharacter(canvas, '╗', x+i, y, color);
-                    else if(side == LOWER_SIDE && i == doorEnd)setCharacter(canvas, '╔', x+i, y, color);
+                    if(side == UPPER_SIDE && i == doorStart)setCharacter(canvas, Characters.BoxDrawing.BOTTOM_RIGHT_CORNER, x+i, y, color);
+                    else if(side == UPPER_SIDE && i == doorEnd)setCharacter(canvas, Characters.BoxDrawing.BOTTOM_LEFT_CORNER, x+i, y, color);
+                    else if(side == LOWER_SIDE && i == doorStart)setCharacter(canvas, Characters.BoxDrawing.UPPER_RIGHT_CORNER, x+i, y, color);
+                    else if(side == LOWER_SIDE && i == doorEnd)setCharacter(canvas, Characters.BoxDrawing.UPPER_LEFT_CORNER, x+i, y, color);
                     else setCharacter(canvas, ' ', x+i, y, color);
                 }
                 else setCharacter(canvas, ch, x+i, y, color);
@@ -211,10 +227,10 @@ public class MapDrawer
 
                 if(block.isDoor(sideBlock) && i >= doorStart && i <= doorEnd)
                 {
-                    if(side == RIGHT_SIDE && i == doorStart)setCharacter(canvas, '╚', x, y+i, color);
-                    else if(side == RIGHT_SIDE && i == doorEnd)setCharacter(canvas, '╔', x, y+i, color);
-                    else if(side == LEFT_SIDE && i == doorStart)setCharacter(canvas, '╝', x, y+i, color);
-                    else if(side == LEFT_SIDE && i == doorEnd)setCharacter(canvas, '╗', x, y+i, color);
+                    if(side == RIGHT_SIDE && i == doorStart)setCharacter(canvas, Characters.BoxDrawing.BOTTOM_LEFT_CORNER, x, y+i, color);
+                    else if(side == RIGHT_SIDE && i == doorEnd)setCharacter(canvas, Characters.BoxDrawing.UPPER_LEFT_CORNER, x, y+i, color);
+                    else if(side == LEFT_SIDE && i == doorStart)setCharacter(canvas, Characters.BoxDrawing.BOTTOM_RIGHT_CORNER, x, y+i, color);
+                    else if(side == LEFT_SIDE && i == doorEnd)setCharacter(canvas, Characters.BoxDrawing.UPPER_RIGHT_CORNER, x, y+i, color);
                     else setCharacter(canvas, ' ', x, y+i, color);
                 }
                 else setCharacter(canvas, ch, x, y+i, color);
@@ -232,28 +248,28 @@ public class MapDrawer
         GameColor color = block.getRoom().getColor();
 
         //FIRST CORNER (UPPER-LEFT)
-        if(!block.isInSameRoom(upperBlock) && !block.isInSameRoom(leftBlock)) setCharacter(canvas, '╔', 0, 0, color);
-        else if(!block.isInSameRoom(upperBlock) && block.isInSameRoom(leftBlock)) setCharacter(canvas, '╤', 0, 0, color);
-        else if(block.isInSameRoom(upperBlock) && block.isInSameRoom(leftBlock) && block.isInSameRoom(upperBlock.getLeftBlock())) setCharacter(canvas, '┼', 0, 0, color);
-        else if(block.isInSameRoom(upperBlock) && !block.isInSameRoom(leftBlock)) setCharacter(canvas, '╟', 0, 0, color);
+        if(!block.isInSameRoom(upperBlock) && !block.isInSameRoom(leftBlock)) setCharacter(canvas, Characters.BoxDrawing.UPPER_LEFT_CORNER, 0, 0, color);
+        else if(!block.isInSameRoom(upperBlock) && block.isInSameRoom(leftBlock)) setCharacter(canvas, Characters.BoxDrawing.T_CHAR, 0, 0, color);
+        else if(block.isInSameRoom(upperBlock) && block.isInSameRoom(leftBlock) && block.isInSameRoom(upperBlock.getLeftBlock())) setCharacter(canvas, Characters.BoxDrawing.CROSS, 0, 0, color);
+        else if(block.isInSameRoom(upperBlock) && !block.isInSameRoom(leftBlock)) setCharacter(canvas, Characters.BoxDrawing.LEFT_T_CHAR, 0, 0, color);
 
         //SECOND CORNER (UPPER-RIGHT)
-        if(!block.isInSameRoom(upperBlock) && !block.isInSameRoom(rightBlock)) setCharacter(canvas, '╗', blockWidth-1, 0, color);
-        else if(!block.isInSameRoom(upperBlock) && block.isInSameRoom(rightBlock))setCharacter(canvas, '╤', blockWidth-1, 0, color);
-        else if(block.isInSameRoom(upperBlock) && block.isInSameRoom(rightBlock) && block.isInSameRoom(upperBlock.getRightBlock()))setCharacter(canvas, '┼', blockWidth-1, 0, color);
-        else if(block.isInSameRoom(upperBlock) && !block.isInSameRoom(rightBlock))setCharacter(canvas, '╢', blockWidth-1, 0, color);
+        if(!block.isInSameRoom(upperBlock) && !block.isInSameRoom(rightBlock)) setCharacter(canvas, Characters.BoxDrawing.UPPER_RIGHT_CORNER, blockWidth-1, 0, color);
+        else if(!block.isInSameRoom(upperBlock) && block.isInSameRoom(rightBlock))setCharacter(canvas, Characters.BoxDrawing.T_CHAR, blockWidth-1, 0, color);
+        else if(block.isInSameRoom(upperBlock) && block.isInSameRoom(rightBlock) && block.isInSameRoom(upperBlock.getRightBlock()))setCharacter(canvas, Characters.BoxDrawing.CROSS, blockWidth-1, 0, color);
+        else if(block.isInSameRoom(upperBlock) && !block.isInSameRoom(rightBlock))setCharacter(canvas, Characters.BoxDrawing.RIGHT_T_CHAR, blockWidth-1, 0, color);
 
         //THIRD CORNER (BOTTOM-LEFT)
-        if(!block.isInSameRoom(bottomBlock) && !block.isInSameRoom(leftBlock)) setCharacter(canvas, '╚', 0, blockHeight-1, color);
-        else if(!block.isInSameRoom(bottomBlock) && block.isInSameRoom(leftBlock)) setCharacter(canvas, '╧', 0, blockHeight-1, color);
-        else if(block.isInSameRoom(bottomBlock) && block.isInSameRoom(leftBlock) && block.isInSameRoom(bottomBlock.getLeftBlock())) setCharacter(canvas, '┼', 0, blockHeight-1, color);
-        else if(block.isInSameRoom(bottomBlock) && !block.isInSameRoom(leftBlock)) setCharacter(canvas, '╟', 0, blockHeight-1, color);
+        if(!block.isInSameRoom(bottomBlock) && !block.isInSameRoom(leftBlock)) setCharacter(canvas, Characters.BoxDrawing.BOTTOM_LEFT_CORNER, 0, blockHeight-1, color);
+        else if(!block.isInSameRoom(bottomBlock) && block.isInSameRoom(leftBlock)) setCharacter(canvas, Characters.BoxDrawing.REVERSED_T_CHAR, 0, blockHeight-1, color);
+        else if(block.isInSameRoom(bottomBlock) && block.isInSameRoom(leftBlock) && block.isInSameRoom(bottomBlock.getLeftBlock())) setCharacter(canvas, Characters.BoxDrawing.CROSS, 0, blockHeight-1, color);
+        else if(block.isInSameRoom(bottomBlock) && !block.isInSameRoom(leftBlock)) setCharacter(canvas, Characters.BoxDrawing.LEFT_T_CHAR, 0, blockHeight-1, color);
 
         //FOURTH CORNER (BOTTOM-RIGHT)
-        if(!block.isInSameRoom(bottomBlock) && !block.isInSameRoom(rightBlock)) setCharacter(canvas, '╝', blockWidth-1, blockHeight-1, color);
-        else if(!block.isInSameRoom(bottomBlock) && block.isInSameRoom(rightBlock)) setCharacter(canvas, '╧', blockWidth-1, blockHeight-1, color);
-        else if(block.isInSameRoom(bottomBlock) && block.isInSameRoom(rightBlock) && block.isInSameRoom(bottomBlock.getRightBlock())) setCharacter(canvas, '┼', blockWidth-1, blockHeight-1, color);
-        else if(block.isInSameRoom(bottomBlock) && !block.isInSameRoom(rightBlock)) setCharacter(canvas, '╢', blockWidth-1, blockHeight-1, color);
+        if(!block.isInSameRoom(bottomBlock) && !block.isInSameRoom(rightBlock)) setCharacter(canvas, Characters.BoxDrawing.BOTTOM_RIGHT_CORNER, blockWidth-1, blockHeight-1, color);
+        else if(!block.isInSameRoom(bottomBlock) && block.isInSameRoom(rightBlock)) setCharacter(canvas, Characters.BoxDrawing.REVERSED_T_CHAR, blockWidth-1, blockHeight-1, color);
+        else if(block.isInSameRoom(bottomBlock) && block.isInSameRoom(rightBlock) && block.isInSameRoom(bottomBlock.getRightBlock())) setCharacter(canvas, Characters.BoxDrawing.CROSS, blockWidth-1, blockHeight-1, color);
+        else if(block.isInSameRoom(bottomBlock) && !block.isInSameRoom(rightBlock)) setCharacter(canvas, Characters.BoxDrawing.RIGHT_T_CHAR, blockWidth-1, blockHeight-1, color);
     }
 
 

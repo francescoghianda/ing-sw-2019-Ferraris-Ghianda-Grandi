@@ -13,10 +13,9 @@ import java.io.PrintStream;
 
 class GameConsole
 {
+    private static boolean isWindows = isWindows();
     private static final PrintStream out = getOut();
     private static final CancelableReader in = CancelableReader.createNew(System.in);
-
-    private static boolean isWindows = isWindows();
 
     private static int caretX;
     private static int caretY;
@@ -37,12 +36,14 @@ class GameConsole
         PrintStream out;
         if(isWindows)
         {
+            Logger.info("Executing chcp command...");
             try
             {
-                ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "chcp", "65001").inheritIO();
+                ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "chcp", "437").inheritIO();
                 pb.start().waitFor();
                 out = new PrintStream(System.out);
                 out = AnsiConsole.wrapPrintStream(out, -1);
+                Logger.info("chcp command executed correctly");
             }
             catch (InterruptedException | IOException e)
             {
@@ -61,6 +62,7 @@ class GameConsole
 
     private static boolean isWindows()
     {
+        Logger.info("OS: "+System.getProperty("os.name"));
         return System.getProperty("os.name").toLowerCase().contains("win");
     }
 
@@ -76,6 +78,7 @@ class GameConsole
 
     static synchronized void setCaretPosition(int x, int y)
     {
+        if(CancelableReader.getActiveReader() > 0)return;
         out.printf("%c[%d;%df", Ansi.ESC, y, x);
         caretX = x;
         caretY = y;
@@ -96,6 +99,7 @@ class GameConsole
 
     static synchronized void eraseLine()
     {
+        if(CancelableReader.getActiveReader() > 0)return;
         out.printf("%c[K", Ansi.ESC);
     }
 
@@ -107,6 +111,7 @@ class GameConsole
 
     static synchronized void print(Object o)
     {
+        if(CancelableReader.getActiveReader() > 0)return;
         String s = o.toString();
         String[] lines = s.split("\n");
         caretY += lines.length;
@@ -116,6 +121,7 @@ class GameConsole
 
     static synchronized void printColored(GameColor color, Object o)
     {
+        if(CancelableReader.getActiveReader() > 0)return;
         out.print(Ansi.convertColor(color));
         print(o);
         out.print(Ansi.RESET);
@@ -123,6 +129,7 @@ class GameConsole
 
     static synchronized void printlnColored(GameColor color, Object o)
     {
+        if(CancelableReader.getActiveReader() > 0)return;
         out.print(Ansi.convertColor(color));
         println(o);
         out.print(Ansi.RESET);
@@ -130,6 +137,7 @@ class GameConsole
 
     static synchronized void println(Object o)
     {
+        if(CancelableReader.getActiveReader() > 0)return;
         print(o);
         out.print('\n');
         caretX = 0;
@@ -138,6 +146,7 @@ class GameConsole
 
     static synchronized void clear()
     {
+        if(CancelableReader.getActiveReader() > 0)return;
         out.print(Ansi.CLEAR_SCREEN);
         out.flush();
 

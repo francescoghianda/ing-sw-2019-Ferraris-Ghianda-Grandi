@@ -13,6 +13,9 @@ public class MessageHandler
 
     public void handle(Message message)
     {
-
+        if(message.getMessage().equals("start_match"))
+        {
+            clientConnection.getUser().getMatch().startGame();
+        }
     }
 }

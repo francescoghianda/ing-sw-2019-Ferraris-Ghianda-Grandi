@@ -11,6 +11,7 @@ import it.polimi.se2019.ui.gui.value.CancelableValue;
 import it.polimi.se2019.ui.gui.value.Value;
 import it.polimi.se2019.utils.logging.Logger;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
@@ -373,6 +374,7 @@ public class MatchScene extends GridPane implements Initializable, CardView.OnCa
             selectedBlock.set(new Coordinates(clicked.getX(), clicked.getY()));
         }
     }
+
 
     @Override
     public void onActionClick(int action)

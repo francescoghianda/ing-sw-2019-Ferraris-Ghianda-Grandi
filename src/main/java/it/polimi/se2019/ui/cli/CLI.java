@@ -7,6 +7,7 @@ import it.polimi.se2019.map.BlockData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
+import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.ui.UI;
@@ -125,8 +126,21 @@ public class CLI implements UI
     }
 
     @Override
-    public void showNotification(String text) {
+    public void showNotification(String text)
+    {
         //TODO
+    }
+
+    @Override
+    public void closeConnection()
+    {
+
+    }
+
+    @Override
+    public boolean showScoreBoardAndChooseIfPlayAgain(ArrayList<PlayerData> scoreBoard)
+    {
+        return false;
     }
 
     @Override

@@ -6,6 +6,7 @@ import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
+import it.polimi.se2019.player.PlayerData;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,7 +34,9 @@ public interface UI extends GameEventHandler
     void timeout();
     void notifyImpossibleAction();
     void showNotification(String text);
+    void closeConnection();
 
+    boolean showScoreBoardAndChooseIfPlayAgain(ArrayList<PlayerData> scoreBoard);
     boolean notEnoughAmmo(boolean askToSellPowerUp);
     String chooseOrCancel(Bundle<String, ArrayList<String>> options) throws CanceledActionException;
     String choose(Bundle<String, ArrayList<String>> options);
