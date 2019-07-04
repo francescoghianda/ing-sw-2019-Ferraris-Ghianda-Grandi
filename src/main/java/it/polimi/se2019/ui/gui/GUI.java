@@ -132,6 +132,7 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
 
         fadeOutMatchSceneTransition.setOnFinished((value) ->
         {
+            MatchScene.getInstance().setOpacity(1);
             sceneManager.getScoreBoardScene().setOpacity(0);
             sceneManager.setScene(SceneManager.SCORE_BOARD_SCENE);
         });

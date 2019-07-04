@@ -770,7 +770,7 @@
             <cardscript>
                 <line>select_player(false, player1, maxd context_player 0)</line>
                 <line>hit(player1, 3)</line>
-                <line>select_block(block1, maxd player1, 2)</line>
+                <line>select_block(block1, maxd player1 2)</line>
                 <line>move(player1, block1)</line>
             </cardscript>
         </alternate_mode>

@@ -1,6 +1,7 @@
 package it.polimi.se2019.controller;
 
 import it.polimi.se2019.card.Card;
+import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.card.ammo.AmmoCard;
 import it.polimi.se2019.card.deck.Deck;
 import it.polimi.se2019.card.deck.DeckFactory;
@@ -253,7 +254,7 @@ public class GameController implements TimerListener
                 controllerAction = new FireAction(this, player);
                 break;
             case USE_POWER_UP:
-                controllerAction = new UsePowerUpAction(this, player, PowerUpCard.findById(((Card)optionalObject).getId()));
+                controllerAction = new UsePowerUpAction(this, player, PowerUpCard.findById(((CardData)optionalObject).getId()));
                 break;
             case RELOAD:
                 controllerAction = new ReloadAction(this, player, ReloadAction.RELOAD_ONE);
