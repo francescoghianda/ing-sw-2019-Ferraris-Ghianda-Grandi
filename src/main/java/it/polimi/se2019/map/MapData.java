@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Tranfers the map's data from server to client
+ */
 public class MapData implements Serializable
 {
     public static final long serialVersionUID = 3L;

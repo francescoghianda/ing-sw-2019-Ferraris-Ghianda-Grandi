@@ -10,6 +10,9 @@ import it.polimi.se2019.player.Player;
 
 import java.util.*;
 
+/**
+ * The executor that executes all the script of the command called by the context player
+ */
 public class Executor implements OnCommandExecutedListener
 {
     private final Player contextPlayer;
@@ -24,6 +27,11 @@ public class Executor implements OnCommandExecutedListener
 
     private boolean cardUsed;
 
+    /**
+     * Constructs a new executor for the context player
+     * @param contextPlayer calls the command that has to be executed by the executor
+     */
+
     public Executor(Player contextPlayer)
     {
         this.contextPlayer = contextPlayer;
@@ -34,12 +42,21 @@ public class Executor implements OnCommandExecutedListener
         reset();
     }
 
+    /**
+     * Constructs the new Executor for the player who wants to execute a command for a weaponcard
+     * @param contextPlayer is the player that calls the command
+     * @param weaponCard is the weaponcard that runs the associated command
+     */
+
     public Executor(Player contextPlayer, WeaponCard weaponCard)
     {
         this(contextPlayer);
         this.weaponCard = weaponCard;
     }
 
+    /**
+     * all the variables of the executor are deleted. (end of the round)
+     */
     public void reset()
     {
         varPlayers.clear();
@@ -76,6 +93,12 @@ public class Executor implements OnCommandExecutedListener
         return Optional.empty();
     }
 
+    /**
+     * It adds a boolean variable to the executor's varibles
+     * @param varName in the name of the new boolean variable
+     * @param bool is the value of the new boolean value
+     * @return
+     */
     public boolean addBoolean(String varName, boolean bool)
     {
         if(varBoolean.containsKey(varName))return false;

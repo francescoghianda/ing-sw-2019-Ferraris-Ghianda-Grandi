@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ *  *filters the plaers using the logic expression and asks the player who is using the weapon to select one of those players
+ */
 public class SelectPlayerCommand extends Command
 {
     private static CommandPattern pattern = new CommandPattern(ParameterTypes.BOOLEAN, ParameterTypes.GENERIC, ParameterTypes.LOGIC_EXPRESSION);

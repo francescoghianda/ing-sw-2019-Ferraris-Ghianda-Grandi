@@ -4,6 +4,9 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Check a string of script and checks if it is valid
+ */
 public class Script
 {
     private static String commandRegex = "[a-z|_]+([(]((([^,]),?)*[a-z0-9\\s])?[)])";
@@ -12,6 +15,10 @@ public class Script
     private List<String> scriptLines;
     private List<ScriptCommand> commands;
 
+    /**
+     * Constructs a new script from which to create commands
+     * @param script
+     */
     public Script(String script)
     {
         scriptLines = new ArrayList<>(Arrays.asList(script.split("\n")));
@@ -19,6 +26,10 @@ public class Script
         commands = new ArrayList<>();
         createCommands();
     }
+
+    /**
+     * Creates the command from the specific script
+     */
 
     private void createCommands()
     {
@@ -29,6 +40,11 @@ public class Script
         }
     }
 
+    /**
+     * creates the effective command using line and lineNumber
+     * @param line
+     * @param lineNumber
+     */
     private void createCommand(String line, int lineNumber)
     {
         char[] chars = line.toCharArray();

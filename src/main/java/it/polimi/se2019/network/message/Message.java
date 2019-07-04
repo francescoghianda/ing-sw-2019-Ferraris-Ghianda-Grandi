@@ -5,6 +5,9 @@ import it.polimi.se2019.network.rmi.client.CallbackInterface;
 import java.io.Serializable;
 import java.util.UUID;
 
+/**
+ * creates a message with an ID and its type(async, request, response)
+ */
 public abstract class Message implements Serializable
 {
     public static final long serialVersionUID = 7L;

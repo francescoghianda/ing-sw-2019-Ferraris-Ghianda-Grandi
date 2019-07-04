@@ -30,6 +30,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+/**
+ * defines the gamecontroller chich includes the definition of the map, the gamemode, the initial timer,
+ * the ammocard deck,  the weapon card deck, the powerupcard deck, the remaining skulls, the deaths , the round manager,
+ * the last final frenzy player and the match
+ */
 
 public class GameController implements TimerListener
 {
@@ -49,6 +54,10 @@ public class GameController implements TimerListener
 
     private final Match match;
 
+    /**
+     * creates decks for the game controller of the specific match in normal gamemode
+     * @param match
+     */
     public GameController(Match match)
     {
         this.match = match;
@@ -64,6 +73,9 @@ public class GameController implements TimerListener
         createDecks();
     }
 
+    /**
+     * Manage the round ,going to the next one
+     */
     private void nextRound()
     {
         Player currentPlayer = roundManager.next();
@@ -114,11 +126,19 @@ public class GameController implements TimerListener
 
     }
 
+    /**
+     *
+     * @return the final frenzy game mode in all the cases (before or after final player)
+     */
+
     private boolean isFinalFrenzy()
     {
         return gameMode == GameMode.FINAL_FRENZY_AFTER_FP || gameMode == GameMode.FINAL_FRENZY_BEFORE_FP;
     }
 
+    /**
+     * defines the end of a match
+     */
     private void endMatch()
     {
         match.setState(Match.State.ENDED);

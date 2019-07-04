@@ -9,8 +9,8 @@ import java.rmi.RemoteException;
 public interface ServerInterface extends Remote
 {
     /**
-     * Register the client in the server
-     * @param rmiClient The callback of the client
+     * Registers the client in the server
+     * @param rmiClient is the callback of the client
      * @throws RemoteException
      */
     void registerClient(CallbackInterface rmiClient) throws RemoteException;

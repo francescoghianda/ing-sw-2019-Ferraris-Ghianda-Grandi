@@ -5,6 +5,9 @@ import it.polimi.se2019.card.cardscript.Executor;
 import java.util.Arrays;
 import java.util.List;
 
+/**class that converts the parameter passed through the cardscript function into a block type variable for the executor
+ *
+ */
 public class EnumParameter extends ParameterType<String>
 {
 

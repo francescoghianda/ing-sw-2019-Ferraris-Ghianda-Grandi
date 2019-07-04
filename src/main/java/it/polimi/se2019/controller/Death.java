@@ -4,6 +4,9 @@ import it.polimi.se2019.utils.constants.GameColor;
 
 import java.io.Serializable;
 
+/**
+ * describes the deaath with its parameters killercolor, deadcolor, overkill
+ */
 public class Death implements Serializable
 {
     private final GameColor killerColor;
@@ -27,6 +30,10 @@ public class Death implements Serializable
         return deadColor;
     }
 
+    /**
+     *
+     * @return overkill if it is overkill
+     */
     public boolean isOverKill()
     {
         return overKill;

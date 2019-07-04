@@ -1,5 +1,9 @@
 package it.polimi.se2019.controller.settings;
 
+/**
+ * it defines the settings including the name, a default value and a value
+ * @param <T>
+ */
 public class Setting<T>
 {
     private final String name;

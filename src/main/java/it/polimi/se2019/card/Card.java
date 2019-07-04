@@ -2,6 +2,9 @@ package it.polimi.se2019.card;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * defines the characteristics of a card, including its name, the description and its identificator
+ */
 public abstract class Card
 {
 	private String name;
@@ -58,6 +61,10 @@ public abstract class Card
 		return enabled.get();
 	}
 
+	/**
+	 *
+	 * @return the original generic id of a powerupcard that has got a clone
+	 */
 	public final String getIdIgnoreClone()
 	{
 		if(id.startsWith("PUC"))
@@ -66,6 +73,7 @@ public abstract class Card
 		}
 		return this.id;
 	}
+
 
 	public final CardData getCardData()
 	{

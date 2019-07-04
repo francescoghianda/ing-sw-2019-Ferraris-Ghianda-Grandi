@@ -1,8 +1,16 @@
 package it.polimi.se2019.card.cardscript.command;
 
+/**
+ * Defines the exception of the command
+ */
 public class CommandExecutionException extends Exception
 {
     private final CommandError error;
+
+    /**
+     *
+     * @param error
+     */
 
     public CommandExecutionException(CommandError error)
     {
@@ -10,6 +18,10 @@ public class CommandExecutionException extends Exception
         this.error = error;
     }
 
+    /**
+     *
+     * @return
+     */
     public CommandError getError()
     {
         return error;

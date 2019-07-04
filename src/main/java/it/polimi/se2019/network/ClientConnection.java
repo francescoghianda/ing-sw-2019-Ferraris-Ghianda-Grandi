@@ -11,19 +11,19 @@ import it.polimi.se2019.player.VirtualView;
 public interface ClientConnection
 {
     /**
-     *  Send a message to all the clients connected, except this
-     * @param message The message to send
+     *  Sends a message to all the clients connected, except this one
+     * @param message is the message to send
      */
     void notifyOtherClients(AsyncMessage message);
 
     /**
-     *  Send a message to the client
-     * @param message The message to send
+     *  Sends a message to the client
+     * @param message is the message to send
      */
     void sendMessageToClient(AsyncMessage message);
 
     /**
-     * Send a message to the client and wait for a response
+     * Sends a message to the client and wait for a response
      * @param request The message to send
      * @return The response message
      */
@@ -32,7 +32,7 @@ public interface ClientConnection
     Response getResponseTo(ActionRequest request, TimeoutTime timeoutTime) throws ConnectionErrorException, TimeOutException;
 
     /**
-     * Close the connection with the client
+     * Closes the connection with the client
      */
     void stop();
     void setLogged(boolean logged, boolean reconnected);

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * implements the manager of the match
+ */
 public class MatchManager
 {
     private static MatchManager instance;
@@ -21,6 +24,10 @@ public class MatchManager
         return instance;
     }
 
+    /**
+     * creates a new match adding a new one from a list
+     * @return the match created
+     */
     private Match createNewMatch()
     {
         Match match = new Match();

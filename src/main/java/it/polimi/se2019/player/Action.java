@@ -2,6 +2,9 @@ package it.polimi.se2019.player;
 
 import java.io.Serializable;
 
+/**
+ * defines the possible actions that a player can do
+ */
 public enum Action implements Serializable
 {
 
@@ -11,11 +14,19 @@ public enum Action implements Serializable
 
 	private boolean executable;
 
+	/**
+	 * method that checks if teh specific action is executable or not
+	 * @param executable
+	 */
 	Action(boolean executable)
 	{
 		this.executable = executable;
 	}
 
+	/**
+	 *
+	 * @return a boolean value based on the check of the executable of an action
+	 */
 	public boolean isExecutable()
 	{
 		return executable;

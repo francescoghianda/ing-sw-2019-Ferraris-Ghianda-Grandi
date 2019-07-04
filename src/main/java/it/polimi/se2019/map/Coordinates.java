@@ -2,6 +2,9 @@ package it.polimi.se2019.map;
 
 import java.io.Serializable;
 
+/**
+ * Defines the cartesian coordinates in order to calculate manatthan distance
+ */
 public final class Coordinates implements Serializable
 {
     public static final long serialVersionUID = 4L;

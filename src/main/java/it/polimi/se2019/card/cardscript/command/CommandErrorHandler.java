@@ -4,8 +4,18 @@ import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.player.ImpossibleActionException;
 import it.polimi.se2019.utils.logging.Logger;
 
+/**
+ * Interface that defines how the error should be handled. It contains some internal default possibilities
+ */
+
 public interface CommandErrorHandler
 {
+    /**
+     * Describes the default modes to handle the error
+     * @param error refers to the error that has to be handled
+     * @throws CanceledActionException
+     * @throws ImpossibleActionException
+     */
     void handle(CommandError error) throws CanceledActionException, ImpossibleActionException;
 
     CommandErrorHandler CONTINUE = CommandErrorHandler::printContinue;

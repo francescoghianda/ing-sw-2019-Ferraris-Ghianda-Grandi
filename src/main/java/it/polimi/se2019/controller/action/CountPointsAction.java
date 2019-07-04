@@ -7,6 +7,9 @@ import it.polimi.se2019.utils.constants.GameMode;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * it counts the amount of points of a deadplayer
+ */
 public class CountPointsAction extends ControllerAction
 {
 

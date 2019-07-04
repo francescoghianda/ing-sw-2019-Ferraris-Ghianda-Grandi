@@ -7,6 +7,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * containes all the cards(weaponcards, ammocards and powerupcards) (is a subclass of Card)
+ * @param <T>
+ */
 public class Deck<T extends Card>
 {
 	private List<T> cards;
@@ -22,6 +26,10 @@ public class Deck<T extends Card>
 		this.cards = new ArrayList<>(cards);
 	}
 
+	/**
+	 * add a card to deck
+	 * @param card
+	 */
 	public void addCard(T card)
 	{
 		cards.add(card);
@@ -45,16 +53,27 @@ public class Deck<T extends Card>
 		return card;
 	}
 
+	/**
+	 * It shuffles specific cards
+	 */
 	public void shuffle()
 	{
 		Collections.shuffle(cards);
 	}
 
+	/**
+	 *
+	 * @return the amount of cards contained in the deck
+	 */
 	public int size()
 	{
 		return cards.size();
 	}
 
+	/**
+	 *checks if deck is empty or not
+	 * @return a boolean value based on the check's result
+	 */
 	public boolean isEmpty()
 	{
 		return cards.isEmpty();

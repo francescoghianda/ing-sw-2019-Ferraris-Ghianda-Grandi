@@ -14,6 +14,9 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Socket;
 
+/**
+ * defines a client connected via socket connection
+ */
 public class SocketClient implements Runnable, NetworkClient
 {
     private Socket socket;
@@ -115,6 +118,12 @@ public class SocketClient implements Runnable, NetworkClient
         }
     }
 
+    /**
+     * creates the connection with teh server
+     * @param serverIP is the ip of the server to connect to
+     * @param serverPort The port of the server to connect to
+     * @return a boolean value based on the success of the connection
+     */
     public boolean connect(String serverIP, int serverPort)
     {
         if(connectedToServer)
@@ -144,6 +153,10 @@ public class SocketClient implements Runnable, NetworkClient
         sendMessageToServer(message);
     }
 
+    /**
+     * sends a message from client to server
+     * @param message
+     */
     private synchronized void sendMessageToServer(Message message)
     {
         try

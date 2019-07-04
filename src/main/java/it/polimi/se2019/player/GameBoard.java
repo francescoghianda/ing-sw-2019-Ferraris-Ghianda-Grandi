@@ -24,7 +24,7 @@ public class GameBoard implements Serializable
     private Cost lastPay;
 
     /**
-     * gameboard
+     * gameboard that istances received damages and markers
      */
     public GameBoard()
     {
@@ -110,8 +110,8 @@ public class GameBoard implements Serializable
 
     /**
      * adds the received damage to the gameboard of this player
-     * @param player the player who hit this player
-     * @param damage received damage
+     * @param player the player who hits this player
+     * @param damage the received damage
      */
     public void addDamage(Player player, int damage)
     {
@@ -190,6 +190,11 @@ public class GameBoard implements Serializable
         return redAmmo >= cost.getRedAmmo() && blueAmmo >= cost.getBlueAmmo() && yellowAmmo >= cost.getYellowAmmo();
     }
 
+    /**
+     * it defines the payment for a ammocard, if it is possible
+     * @param cost is the cost of the ammocard
+     * @throws NotEnoughAmmoException
+     */
     public void pay(Cost cost) throws NotEnoughAmmoException
     {
         if(!canPay(cost))throw new NotEnoughAmmoException();
@@ -199,6 +204,9 @@ public class GameBoard implements Serializable
         yellowAmmo -= cost.getYellowAmmo();
     }
 
+    /**
+     * if a player pays for a ammocard and then the action is canceled, the payment is reversed
+     */
     public void reverseLastPay()
     {
         if(lastPay == null)return;

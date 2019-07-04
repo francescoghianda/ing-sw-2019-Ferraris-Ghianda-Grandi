@@ -7,8 +7,6 @@ import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.player.Player;
 import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.utils.constants.Ansi;
-import org.omg.PortableInterceptor.DISCARDING;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +14,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+/**
+ * defines a block with its sides, doors, room, ammocard, weaponcards, spawnpoint, possible paths, players and coordinates
+ */
 public class Block implements Serializable
 {
 	public static final int UPPER_SIDE = 0;
@@ -39,6 +40,13 @@ public class Block implements Serializable
 
 	private boolean drawBackground = false;
 
+	/**
+	 * constructs a new block defining its parameters
+	 * @param spawnPoint is a boolean value that determines if the block is spawn point
+	 * @param x indicates the first cartesian coordinate of the block
+	 * @param y indicates the second cartesian coordinate of the block
+	 * @param room specifies the room of the block
+	 */
 	public Block(boolean spawnPoint, int x, int y, Room room)
 	{
 		doors = new Block[4];
@@ -51,16 +59,31 @@ public class Block implements Serializable
 
 	}
 
+	/**
+	 * it adds the paths that lead to the specific block
+	 * @param block is the block to reach
+	 * @param paths are the paths to add
+	 */
 	public void addPathsTo(Block block, List<Path> paths)
 	{
 		this.paths.put(block, paths);
 	}
 
+	/**
+	 * it gets all the paths that a player can do to reach the block
+	 * @param block is the block to reach
+	 * @return the list of the possible paths to that block
+	 */
 	public List<Path> getAllPathsTo(Block block)
 	{
 		return this.paths.getOrDefault(block, new ArrayList<>());
 	}
 
+	/**
+	 * it gets a random path to a specific blockk
+	 * @param block is the block to reach
+	 * @return
+	 */
 	public Path getRandomPathTo(Block block)
 	{
 		List<Path> paths = getAllPathsTo(block);
@@ -107,6 +130,11 @@ public class Block implements Serializable
 		return coordinates;
 	}
 
+	/**
+	 * it first checks if the number of  weapon cards is equal or less than 3, in order to add a weapon card
+	 * @param weaponCard
+	 * @return true if the weapon card is added
+	 */
 	public boolean addWeaponCard(WeaponCard weaponCard)
 	{
 		if(weaponCards.size() >= 3)return false;
@@ -120,6 +148,11 @@ public class Block implements Serializable
 		return !weaponCards.isEmpty();
 	}
 
+	/**
+	 * it replaces a weapon card
+	 * @param weaponCard1 is the weapon card to remove in order to be replaced
+	 * @param weaponCard2 is the weapon card that will replace another one
+	 */
 	public void replaceWeaponCard(WeaponCard weaponCard1, WeaponCard weaponCard2)
 	{
 		if(!weaponCards.contains(weaponCard1))return;
@@ -145,7 +178,7 @@ public class Block implements Serializable
 
 	/**
 	 *
-	 * @return return true if the block contains any door
+	 * @return true if the block contains any door
 	 */
 	public boolean hasDoor()
 	{
@@ -297,7 +330,7 @@ public class Block implements Serializable
 	}
 
 	/**
-	 * return controls if the block is near to this block
+	 * return checks if the block is near to this block
 	 * @param block the block near to this block
 	 * @return return true if the block is near to thi block, false if not
 	 */
@@ -317,10 +350,10 @@ public class Block implements Serializable
 	}
 
 	/**
-	 * controls if the blocks are near and they are connected with a door
-	 * @param block block connected with this block with a door
-	 * @return return true if the block is near to this one and there is a door, return false if the block is near
-	 * to ths block but there's not a door that connect them
+	 * checks if the blocks are close and connected with a door
+	 * @param block block connected with this one through a door
+	 * @return  true if the block is near to this one and there is a door, return false if the block is near
+	 * to this block but there's not a door between them
 	 */
 	public boolean isConnected(Block block)
 	{

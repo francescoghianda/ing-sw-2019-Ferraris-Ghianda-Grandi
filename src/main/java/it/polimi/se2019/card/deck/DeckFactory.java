@@ -6,6 +6,9 @@ import it.polimi.se2019.card.weapon.WeaponCard;
 import it.polimi.se2019.utils.xml.NotValidXMLException;
 import it.polimi.se2019.utils.xml.XMLDeckReader;
 
+/**
+ * Creates decks for different types of card
+ */
 public class DeckFactory
 {
 	private XMLDeckReader deckReader;
@@ -20,15 +23,28 @@ public class DeckFactory
 		 return new DeckFactory(filePath);
 	}
 
+	/**
+	 * created a deck of ammocards
+	 * @return
+	 */
 	public Deck<AmmoCard> createAmmoDeck()
 	{
 		return new Deck<>(deckReader.parseAmmoCards());
 	}
 
+	/**
+	 *
+	 * created a deck of weaponcards
+	 * @return
+	 */
+
 	public Deck<WeaponCard> createWeaponDeck()
 	{
 		return new Deck<>(deckReader.parseWeaponCards());
 	}
+/**
+ * created a deck of powerupCards
+ */
 
 	public Deck<PowerUpCard> createPowerUpDeck()
 	{

@@ -6,6 +6,11 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.Random;
 
+/**
+ * defines the machsettings and all the properties, the amount of skulls, the max number of players
+ * the min number of players, th start timer (in seconds), the response timer(in seconds) and the map
+ * number
+ */
 public class MatchSettings
 {
     private static MatchSettings instance;
@@ -30,6 +35,10 @@ public class MatchSettings
         return instance;
     }
 
+    /**
+     * it loads settings from a file, costructs a new skullnumber; a new MacPlayers, a new MinPlayer, the amount
+     * of seconds of the timer, the amount of seconds for the timer of the response and a
+     */
     private void loadSettings()
     {
         try

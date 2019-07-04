@@ -8,6 +8,9 @@ import it.polimi.se2019.utils.logging.Logger;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Defines the logic expression to filter players/blocks
+ */
 public class LogicExpression
 {
     private static final int MIN_DISTANCE = 0;
@@ -18,6 +21,11 @@ public class LogicExpression
 
     private Executor executor;
 
+    /**
+     * Constructs a new LogicExpression
+     * @param expression is the specific string that defines the logic expression
+     * @throws CardScriptErrorException when the expression is not well formed
+     */
     public LogicExpression(String expression)
     {
         this.expression = expression.trim();
@@ -27,6 +35,15 @@ public class LogicExpression
         if(containsSubExpression()) extractSubExpressions();
     }
 
+    /**
+     * Receives a player/a block
+     * @param executor is the executor of the command
+     * @param object refers to a player or a block
+     * @return true if it is valid according to the expression
+     * @throws LogicExpressionEvaluationException
+     */
+
+
     public boolean evaluate(Executor executor, Object object) throws LogicExpressionEvaluationException
     {
         this.executor = executor;
@@ -34,6 +51,12 @@ public class LogicExpression
         return evaluateOrElements(orElements, object);
     }
 
+    /** Evaluetes the OR parts of the logic expression
+     * @param orElements are the OR elements of the logic expression
+     * @param object is the player/block to be evaluated
+     * @return true if one OR element return true
+     * @throws LogicExpressionEvaluationException
+     */
     private boolean evaluateOrElements(String[] orElements, Object object) throws LogicExpressionEvaluationException
     {
         for(String orElement : orElements)
@@ -44,6 +67,13 @@ public class LogicExpression
         return false;
     }
 
+    /**
+     * Evalutes the AND parts of the logic expression
+     * @param andElements are the AND elements of the logic expression
+     * @param object is the player/block to be evaluated
+     * @@return true if all AND elements return true
+     * @throws LogicExpressionEvaluationException
+     */
     private boolean evaluateAndElements(String[] andElements, Object object) throws LogicExpressionEvaluationException
     {
         for(String andElement : andElements)
@@ -52,6 +82,16 @@ public class LogicExpression
         }
         return true;
     }
+
+    /**
+     * For each element, it checks if it is a negative(not)expression, if it is a sub-expression and then it
+     * executes all the possible command of the logic expression and evalutes the block or the player of that specific command
+     * of the command expression
+     * @param element is the element of the logic expression
+     * @param obj is the player/block to be evaluated
+     * @return
+     * @throws LogicExpressionEvaluationException
+     */
 
     private boolean evaluateElement(String element, Object obj) throws LogicExpressionEvaluationException
     {
@@ -128,6 +168,13 @@ public class LogicExpression
         return result;
     }
 
+    /**
+     * return a boolean value based on the visibility of a player (p1) or a block (b1) from a (context)player
+     * @param player is the player on which to check visibility. If null, return false
+     * @param p1 is the player on which to check if it visible by the Player (context), if null, get the block.
+     * @param b1 is the block on which to check if it visible by the specific player
+     * @return a boolean value based on the result of the check( true if player/block is visible by the specific player)
+     */
     private boolean isVisibleBy(Player player, Player p1, Block b1)
     {
         if(player == null)return false;
@@ -135,12 +182,26 @@ public class LogicExpression
         return player.getVisiblePlayers().contains(p1);
     }
 
+    /**
+     * checks if two specific blocks are in the same room
+      * @param block1 is the first block to evaluate. If null, return false
+     * @param block2 is the second block to evaluate.
+     * @return true if the block1's room is the same of block2's room
+     */
     private boolean isInSameRoomOf(Block block1, Block block2)
     {
         if(block2 == null)return false;
         return block1.getRoom().equals(block2.getRoom());
     }
 
+    /**
+
+     * receives the name of a variable already defined and returns
+     * the block that is associated to that variable(contained in the executor)
+     * @param varName is the name of the variable
+     * @return the block associated to that variable
+     * @throws LogicExpressionEvaluationException
+     */
     private Block getBlockFromVariable(String varName) throws LogicExpressionEvaluationException
     {
         Block block;
@@ -154,6 +215,13 @@ public class LogicExpression
         return block;
     }
 
+    /**
+     * checks if the the direction of the block is in the same direction compared to the context player's block
+     * @param block the block on which to evaluate the direction
+     * @param direction direction to be evaluated
+     * @return true if the block is in the same direction compared to the context player's block
+     * @throws LogicExpressionEvaluationException
+     */
     private boolean isInDirection(Block block, String direction) throws LogicExpressionEvaluationException
     {
         try
@@ -168,6 +236,13 @@ public class LogicExpression
         }
     }
 
+    /**
+     * checks if the direction from a block is the same direction of another block.
+     * @param block1 is the first block to evaluate
+     * @param block2 is the second block to evaluate
+     * @return
+     */
+
     private boolean isInSameDirectionOf(Block block1, Block block2)
     {
         if(block2 == null)return false;
@@ -178,6 +253,11 @@ public class LogicExpression
         return direction1 != Direction.NaD && direction1 == direction2;
     }
 
+    /**
+     * checks if the block is on a straight line from the context player's block
+     * @param block is the block to evaluate
+     * @return true if the block is on a straight line from the context player's block
+     */
     private boolean isInStraightLine(Block block)
     {
         Player contextPlayer = executor.getContextPlayer();
@@ -199,6 +279,12 @@ public class LogicExpression
         return new LogicExpressionEvaluationException();
     }
 
+    /**
+     * check the composition of the string
+     * @param str is the string to evaluate
+     * @return true if the string consists of characters between 0 and 9
+     */
+
     private boolean isDigit(String str)
     {
         if(str == null || str.isEmpty())return false;
@@ -206,6 +292,15 @@ public class LogicExpression
         return true;
     }
 
+    /**
+     * Check the distance between two blocks.
+     * @param block1 is the first block to evaluate
+     * @param block2 is the second block for calculate the distance
+     * @param distance is the value of the calculated distance between the blocks
+     * @param maxOrMin is a boolean value which indicates if the distance between the two block is the maximum (or minimum) distance
+     * @return true if the distance is <= max.distance or >= min.distance
+     * @throws LogicExpressionEvaluationException
+     */
     private boolean isAtDistance(Block block1, Block block2, String distance, int maxOrMin) throws LogicExpressionEvaluationException
     {
         if(block2 == null)return false;
@@ -215,16 +310,29 @@ public class LogicExpression
         return maxOrMin == MAX_DISTANCE ? block1.getManhattanDistanceFrom(block2) <= dist : block1.getManhattanDistanceFrom(block2) >= dist;
     }
 
+    /**
+     *
+     * @param varName
+     * @return true if the executor contains the player associated to that varname
+     */
     private boolean isPlayer(String varName)
     {
         return executor.containsPlayer(varName);
     }
 
+    /**
+     *
+     * @param varName
+     * @return true if the executor contains the block associated to that varname
+     */
     private boolean isBlock(String varName)
     {
         return executor.containsBlock(varName);
     }
 
+    /**
+     * Deletes external bracket from string of the logic expression
+     */
     private void removeExternalBrackets()
     {
         if(expression.startsWith("(") && expression.endsWith(")"))
@@ -233,6 +341,9 @@ public class LogicExpression
         }
     }
 
+    /**
+     * deletes the subexpression from the string of the logic expression
+     */
     private void extractSubExpressions()
     {
         char[] chars = expression.toCharArray();
@@ -269,6 +380,9 @@ public class LogicExpression
         return expression.contains("(");
     }
 
+    /**
+     * It checks if the logic expression is well-parenthesized. Return a boolean value based on the result of the check
+     */
     private void checkBrackets()
     {
         String error = "The expression is bad parenthesized";
@@ -292,6 +406,14 @@ public class LogicExpression
         if(count != 0)throw new CardScriptErrorException(error);
     }
 
+    /**
+     * Filters the list using the logic expression passed as the parameter
+     * @param list is the list that has to be filtered
+     * @param logicExpression is the logic expression used to filter the list
+     * @param executor executes the command
+     * @param <T> the generic type of the list
+     * @return the filtered list
+     */
     public static <T> List<T> filter(List<T> list, LogicExpression logicExpression, Executor executor)
     {
         return list.stream().filter(player -> {

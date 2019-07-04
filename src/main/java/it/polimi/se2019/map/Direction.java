@@ -1,5 +1,8 @@
 package it.polimi.se2019.map;
 
+/**
+ * defines all the possible directions of a map
+ */
 public enum Direction
 {
     NORTH, SOUTH, EAST, WEST, NORTH_EAST, NORTH_WEST, SOUTH_EAST, SOUTH_WEST, NaD;

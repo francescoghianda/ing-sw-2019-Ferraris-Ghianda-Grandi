@@ -2,6 +2,9 @@ package it.polimi.se2019.card;
 
 import java.io.Serializable;
 
+/**
+ * Containes all the data of a Card
+ */
 public final class CardData implements Serializable
 {
     public static final long serialVersionUID = 5L;

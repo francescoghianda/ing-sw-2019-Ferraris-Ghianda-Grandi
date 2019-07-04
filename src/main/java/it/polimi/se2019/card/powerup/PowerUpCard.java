@@ -12,6 +12,10 @@ import it.polimi.se2019.utils.constants.GameColor;
 import java.io.IOException;
 import java.util.HashMap;
 
+/**
+ * Defines a powerupcard. It is a sublcass of card, it needs the specification of parameters like ID, script, color,
+ * use, scriptExectuor, and a boolean value that indicates if it is used or not.
+ */
 public class PowerUpCard extends Card
 {
 	private static final HashMap<String, PowerUpCard> cards = new HashMap<>();
@@ -28,11 +32,21 @@ public class PowerUpCard extends Card
 		super();
 	}
 
+	/**
+	 * adds a specific powerup card
+	 * @param id is the id of the powerup card that has to be added
+	 * @param card
+	 */
 	public static void addCard(String id, PowerUpCard card)
 	{
 		cards.putIfAbsent(id, card);
 	}
 
+	/**
+	 * search a powerupcard by its ID
+	 * @param id
+	 * @return the id of the card
+	 */
 	public static PowerUpCard findById(String id)
 	{
 		return cards.get(id);
@@ -43,6 +57,13 @@ public class PowerUpCard extends Card
 		return use;
 	}
 
+	/**
+	 * applies the effect of the powerup card
+	 * @param player
+	 * @param gameController
+	 * @throws CanceledActionException
+	 * @throws ImpossibleActionException
+	 */
 	public void apply(Player player, GameController gameController) throws CanceledActionException, ImpossibleActionException
 	{
 		if(scriptExecutor == null || !scriptExecutor.getContextPlayer().equals(player))createScriptExecutor(player);
@@ -56,6 +77,9 @@ public class PowerUpCard extends Card
 		}
 	}
 
+	/**
+	 * the used powerupcard is not available now
+	 */
 	public void reset()
 	{
 		used = false;

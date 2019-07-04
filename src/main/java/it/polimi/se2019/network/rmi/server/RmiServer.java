@@ -27,7 +27,7 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
     private List<RmiClientConnection> clients;
 
     /**
-     * Create a RMI server
+     * Creates an RMI server
      * @throws RemoteException
      */
     public  RmiServer() throws RemoteException

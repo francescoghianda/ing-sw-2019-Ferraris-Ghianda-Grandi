@@ -2,6 +2,9 @@ package it.polimi.se2019.card.cardscript.command;
 
 import it.polimi.se2019.card.cardscript.Executor;
 
+/**
+ * The command that reset all the damaged players from a specific (context) player
+ */
 public class ResetDamagedCommand extends Command
 {
 

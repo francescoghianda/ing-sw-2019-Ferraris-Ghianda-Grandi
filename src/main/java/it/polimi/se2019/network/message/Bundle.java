@@ -2,6 +2,11 @@ package it.polimi.se2019.network.message;
 
 import java.io.Serializable;
 
+/**
+ * Transfer 2 objects together in a message
+ * @param <T1>
+ * @param <T2>
+ */
 public class Bundle<T1 extends Serializable, T2 extends Serializable> implements Serializable
 {
     public static final long serialVersionUID = 8L;

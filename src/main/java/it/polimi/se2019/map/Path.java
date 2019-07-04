@@ -3,6 +3,9 @@ package it.polimi.se2019.map;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * defines a path trough the internal block touched from the path
+ */
 public class Path
 {
     private ArrayList<Block> blocks;

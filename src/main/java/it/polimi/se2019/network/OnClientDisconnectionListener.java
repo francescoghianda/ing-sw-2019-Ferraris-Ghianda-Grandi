@@ -4,7 +4,7 @@ public interface OnClientDisconnectionListener
 {
     /**
      * The method is invoked when a client lost connection
-     * @param disconnectedClient The client that has lost connection
+     * @param disconnectedClient The client that has lost the  connection
      */
     void onClientDisconnection(ClientConnection disconnectedClient);
 }

@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ *filters the blocks using the logic expression and asks the player to select one of those blocks
+ */
 public class SelectBlockCommand extends Command
 {
     private static CommandPattern pattern = new CommandPattern(ParameterTypes.GENERIC, ParameterTypes.LOGIC_EXPRESSION);
@@ -18,6 +21,11 @@ public class SelectBlockCommand extends Command
     private String varName;
     private LogicExpression logicExpression;
 
+    /**
+     * Constructs a new SelectBlockCommand
+     * @param executor is the executor that will execute the command
+     * @param parameters are the parameters of the specific command
+     */
     public SelectBlockCommand(Executor executor, String[] parameters)
     {
         super(executor, parameters, pattern);

@@ -1,5 +1,8 @@
 package it.polimi.se2019.player;
 
+/**
+ * launched when an action is not allowed. It also defines the cause of the impossibility
+ */
 public class ImpossibleActionException extends Exception
 {
 

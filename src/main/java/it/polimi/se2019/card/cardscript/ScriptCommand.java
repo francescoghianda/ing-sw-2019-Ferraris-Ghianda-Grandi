@@ -5,12 +5,21 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Contains the string of the command
+ */
 public class ScriptCommand
 {
     private final String command;
     private final List<String> parameters;
     private final int scriptLineNumber;
 
+    /**
+     * Containes the command, the parameters and the lineNumber of the script command
+     * @param command
+     * @param parameters
+     * @param scriptLineNumber
+     */
     public ScriptCommand(String command, String[] parameters, int scriptLineNumber)
     {
         this.command = command;

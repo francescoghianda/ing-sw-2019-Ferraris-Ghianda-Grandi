@@ -16,6 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * defines the characteristics of a weaponcard, including the use mode, the cost, its effects and two boolean values that
+ * indicates when the card is load and used
+ */
 public class WeaponCard extends Card
 {
 	private static final HashMap<String, WeaponCard> cards = new HashMap<>();
@@ -67,6 +71,9 @@ public class WeaponCard extends Card
 		return this.load;
 	}
 
+	/**
+	 * reload a weaponcard
+	 */
 	public void reload()
 	{
 		setLoad(true);
@@ -74,6 +81,9 @@ public class WeaponCard extends Card
 		optionalEffects.values().forEach(OptionalEffect::resetEnable);
 	}
 
+	/**
+	 * reset the weaponcard after its usage, but it doesn't unload the weaponcard
+	 */
 	public void reset()
 	{
 		executor.reset();
@@ -81,6 +91,13 @@ public class WeaponCard extends Card
 		optionalEffects.forEach((s, effect) -> effect.resetEnable());
 	}
 
+	/**
+	 * defines the use "fire" of a weapon card
+	 * @param player is the player who is using the weapon card and wants to fire
+	 * @param gameController
+	 * @throws ImpossibleActionException
+	 * @throws CanceledActionException
+	 */
 	public void fire(Player player, GameController gameController)throws ImpossibleActionException, CanceledActionException
 	{
 		if(!load)throw new ImpossibleActionException(ImpossibleActionException.Cause.WEAPON_NOT_LOADED);
@@ -96,6 +113,14 @@ public class WeaponCard extends Card
 		}
 	}
 
+	/**
+	 * defines the use of an optionale effect of a weaponcard
+	 * @param player is the player who is using the weaponcard
+	 * @param effect is the optional effect that the player want to use
+	 * @param gameController
+	 * @throws ImpossibleActionException
+	 * @throws CanceledActionException
+	 */
 	public void useOptionalEffect(Player player, OptionalEffect effect, GameController gameController)throws ImpossibleActionException, CanceledActionException
 	{
 		if(!load)throw new ImpossibleActionException(ImpossibleActionException.Cause.WEAPON_NOT_LOADED);
@@ -122,15 +147,24 @@ public class WeaponCard extends Card
 		}
 	}
 
+	/**
+	 * sets the fire mode of the weapon card
+	 * @param fireMode
+	 */
 	public void setFireMode(Mode fireMode)
 	{
 		if(fireMode == Mode.ALTERNATE_FIRE && !hasAlternateFireMode)return;
 		this.fireMode = fireMode;
 	}
 
+	/**
+	 *
+	 * @return true if tehh weaponcard is used
+	 */
 	public boolean isUsed()
 	{
 		return used;
+
 	}
 
 	private void createScriptExecutor(Player player)

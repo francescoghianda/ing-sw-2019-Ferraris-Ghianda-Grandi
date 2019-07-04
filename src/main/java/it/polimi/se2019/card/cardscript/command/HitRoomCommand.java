@@ -8,6 +8,9 @@ import it.polimi.se2019.player.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Hits all the players into the room of the specific block
+ */
 public class HitRoomCommand extends Command
 {
     private static CommandPattern pattern = new CommandPattern(ParameterTypes.PLAYER_OR_BLOCK, ParameterTypes.DIGIT);

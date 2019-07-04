@@ -7,6 +7,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * It tranfers the data of a block from server to client
+ */
 public class BlockData implements Serializable
 {
     public static final long serialVersionUID = 2L;
@@ -20,6 +23,16 @@ public class BlockData implements Serializable
     private final HashMap<Coordinates, Integer> distances;
     private final ArrayList<PlayerData> players;
 
+    /**
+     *
+     * @param x
+     * @param y
+     * @param spawnPoint
+     * @param ammoCardId
+     * @param weaponCards
+     * @param distances
+     * @param players
+     */
     public BlockData(int x, int y, boolean spawnPoint, String ammoCardId, ArrayList<CardData> weaponCards, HashMap<Coordinates, Integer> distances, ArrayList<PlayerData> players)
     {
         this.x = x;

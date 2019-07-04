@@ -17,7 +17,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
- * A RMI client
+ * defines the RMI client
  */
 public class RmiClient implements CallbackInterface, NetworkClient, Serializable
 {
@@ -34,7 +34,7 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     private transient boolean running;
 
     /**
-     * Create a RMI client
+     * Creates an RMI client
      * @param ui The user interface for show the model
      */
     public RmiClient(UI ui)

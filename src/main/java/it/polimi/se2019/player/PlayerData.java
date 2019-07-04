@@ -9,6 +9,9 @@ import it.polimi.se2019.utils.constants.GameColor;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * keep the data of a player
+ */
 public class PlayerData implements Serializable
 {
     public static final long serialVersionUID = 9L;

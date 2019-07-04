@@ -1,5 +1,8 @@
 package it.polimi.se2019.network.message;
 
+/**
+ * creates a request to send with a request message
+ */
 public class RequestFactory
 {
 

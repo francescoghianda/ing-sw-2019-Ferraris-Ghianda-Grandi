@@ -5,6 +5,9 @@ import it.polimi.se2019.ui.UI;
 
 import java.io.Serializable;
 
+/**
+ * defines an async message (message that doesn't have a response
+ */
 public class AsyncMessage extends Message implements Serializable
 {
     private ActionConsumer consumer;

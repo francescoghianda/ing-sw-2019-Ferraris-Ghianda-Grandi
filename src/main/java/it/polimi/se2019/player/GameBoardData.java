@@ -5,6 +5,9 @@ import it.polimi.se2019.utils.constants.GameColor;
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 
+/**
+ * defines and keep the data of a gameboard when they have to be sent
+ */
 public class GameBoardData implements Serializable
 {
     public static final long serialVersionUID = 10L;

@@ -4,6 +4,9 @@ import it.polimi.se2019.card.cardscript.Executor;
 import it.polimi.se2019.card.cardscript.command.parameter.ParameterTypes;
 import it.polimi.se2019.player.Player;
 
+/**
+ * Receive a player from the parameters of the command and returns the block of that player
+ */
 public class GetBlockOfCommand extends Command
 {
     private static CommandPattern pattern = new CommandPattern(ParameterTypes.GENERIC, ParameterTypes.PLAYER);

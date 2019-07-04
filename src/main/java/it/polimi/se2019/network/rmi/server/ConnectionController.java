@@ -6,7 +6,7 @@ import it.polimi.se2019.network.OnClientDisconnectionListener;
 import java.rmi.RemoteException;
 
 /**
- * Thread to verify that the client RMI remain connected
+ * Thread which checks if the  RMI client remains connected
  */
 public class ConnectionController implements Runnable
 {
@@ -22,7 +22,7 @@ public class ConnectionController implements Runnable
     }
 
     /**
-     * Start the connection controller thread\
+     * Starts the connection controller
      */
     void start()
     {
@@ -41,7 +41,7 @@ public class ConnectionController implements Runnable
     }
 
     /**
-     * Stop the connection controller thread
+     * Stops the connection controller
      */
     void stop()
     {

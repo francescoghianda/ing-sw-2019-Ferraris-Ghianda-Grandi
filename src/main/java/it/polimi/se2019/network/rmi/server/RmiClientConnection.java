@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
 import java.util.concurrent.*;
 
 /**
- * Class that manage the connection with the client and his data
+ * Class that manages the connection with the client and his data
  */
 public class RmiClientConnection implements ClientConnection
 {
@@ -31,7 +31,7 @@ public class RmiClientConnection implements ClientConnection
     private MessageHandler messageHandler;
 
     /**
-     * Create a new connection with the client
+     * Creates a new connection with the client
      * @param callback The callback of the client
      * @param server The current RMI server
      */
@@ -155,6 +155,10 @@ public class RmiClientConnection implements ClientConnection
         return response;
     }
 
+    /**
+     * handles the message with the rmi client
+     * @param message
+     */
     public void handleMessage(Message message)
     {
         Thread messageThread = new Thread(()-> messageHandler.handle(message));

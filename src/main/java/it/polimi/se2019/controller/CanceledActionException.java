@@ -1,5 +1,9 @@
 package it.polimi.se2019.controller;
 
+/**
+ * expcetion when an action is deleted. It at first establishes the cause of that problem (with an enum value which can be Earaaaror.canceled_by_user
+ *
+ */
 public class CanceledActionException extends Exception
 {
     public enum Cause

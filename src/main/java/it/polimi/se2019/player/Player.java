@@ -18,7 +18,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
- * creates a player
+ * creates a player defining all its parameters like color, a boolean value based on its role(first player or not)
+ * its weapons, its powerups, its starting block, the gameboard of its starting block, the actions, teh gamecontroller of the player
+ * teh connection , teh damages (players that are damaged froom that player, and specific round
  */
 public class Player
 {

@@ -7,7 +7,9 @@ import it.polimi.se2019.utils.constants.GameMode;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Includes all the data of the current game
+ */
 public class GameData implements Serializable
 {
     private static final long serialVersionUID = -2016341428516036292L;
@@ -25,6 +27,17 @@ public class GameData implements Serializable
 
     private List<PlayerData> usernameList;
 
+    /**
+     * constructs a new Gamedata
+     * @param map
+     * @param player
+     * @param remainingSkulls
+     * @param deaths
+     * @param powerUpDeckSize
+     * @param weaponDeckSize
+     * @param gameMode
+     * @param matchData
+     */
     public GameData(MapData map, PlayerData player, int remainingSkulls, ArrayList<Death> deaths, int powerUpDeckSize, int weaponDeckSize, GameMode gameMode, MatchData matchData)
     {
         this.map = map;
@@ -82,6 +95,10 @@ public class GameData implements Serializable
         return gameMode;
     }
 
+    /**
+     *
+     * @return the username list of players' s data of the specific game
+     */
     public List<PlayerData> getPlayers()
     {
         if(usernameList == null)

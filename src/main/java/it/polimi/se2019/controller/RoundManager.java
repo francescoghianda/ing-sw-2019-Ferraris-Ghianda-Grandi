@@ -5,6 +5,10 @@ import it.polimi.se2019.utils.list.ObservableList;
 
 import java.util.List;
 
+/**
+ * Manages the round indicated by its players, an index, and index the player and a number for the round
+ *
+ */
 public class RoundManager
 {
     private ObservableList<Player> players;
@@ -24,6 +28,11 @@ public class RoundManager
         while (!nextPlayer.getClientConnection().isConnected() || !nextPlayer.getClientConnection().isLogged())nextPlayer = getNextPlayer();
         return nextPlayer;
     }*/
+
+    /**
+     *
+     * @return
+     */
 
     public Player next()
     {
@@ -45,10 +54,20 @@ public class RoundManager
         return this.roundNumber;
     }
 
+    /**
+     * checks if the round is the first one
+     * @return
+     */
     public boolean isFirstRound()
     {
         return roundNumber == 1;
     }
+
+    /**
+     * checks if the player is the first one of that round
+     * @param player
+     * @return
+     */
 
     public boolean isFirstPlayer(Player player)
     {

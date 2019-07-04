@@ -17,6 +17,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * It doesn't generates a graphic. It creates the messages to send to the client in order to allow the server
+ * to call methods of UI interface on the client
+ *
+ */
 public class VirtualView implements UI
 {
     private final ClientConnection client;

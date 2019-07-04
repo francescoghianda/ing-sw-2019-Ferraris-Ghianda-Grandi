@@ -3,6 +3,9 @@ package it.polimi.se2019.network;
 import it.polimi.se2019.controller.Match;
 import it.polimi.se2019.player.Player;
 
+/**
+ * creates an user defining its name, the associated player and the match
+ */
 public class User
 {
     private String username;

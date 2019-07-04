@@ -12,6 +12,9 @@ import java.util.List;
 
 import static it.polimi.se2019.map.Block.*;
 
+/**
+ * defines the mapdrawer specifing the width and the height of the blocks in the map
+ */
 public class MapDrawer
 {
     private int blockWidth;
@@ -42,6 +45,11 @@ public class MapDrawer
         return builder.toString();
     }
 
+    /**
+     * ?
+     * @param map
+     * @return
+     */
     public String drawMap(Map map)
     {
         StringBuilder stringBuilder = new StringBuilder();
@@ -143,6 +151,11 @@ public class MapDrawer
         canvas[y][x] += Ansi.RESET;
     }
 
+    /**
+     *
+     * @param block
+     * @param canvas
+     */
     private void drawAmmoCard(Block block, String[][] canvas)
     {
         //block.setAmmoCard(new AmmoCard(2, 2, 1, true, "4"));
@@ -238,6 +251,11 @@ public class MapDrawer
         }
     }
 
+    /**
+     * draws the corners of a block
+     * @param block the block in which the drawer has to draw the corners
+     * @param canvas
+     */
     private void drawCorners(Block block, String[][] canvas)
     {
         Block upperBlock = block.getUpperBlock();

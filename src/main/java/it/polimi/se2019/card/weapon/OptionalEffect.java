@@ -2,6 +2,9 @@ package it.polimi.se2019.card.weapon;
 
 import it.polimi.se2019.card.cost.Cost;
 
+/**
+ * Defines the optional effects of a WeaponCard
+ */
 public class OptionalEffect
 {
     private final String name;
@@ -35,6 +38,9 @@ public class OptionalEffect
         this.enabled = enabled;
     }
 
+    /**
+     * reset the "enable" parameter after the use of that special effect
+     */
     public void resetEnable()
     {
         this.enabled = enableReset;

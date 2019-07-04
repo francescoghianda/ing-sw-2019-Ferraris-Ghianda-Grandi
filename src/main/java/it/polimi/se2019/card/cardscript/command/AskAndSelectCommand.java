@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * the class that select a player or a block if the response of question is "yes"
+ */
 public class AskAndSelectCommand extends Command
 {
     private static final String PLAYER_MODE = "player";
@@ -27,6 +30,11 @@ public class AskAndSelectCommand extends Command
     private String mode;
     private String logicExpression;
 
+    /**
+     * Constructs a new command
+     * @param executor is the executor which will execute the command
+     * @param parameters are the parameters of the command that has to be executed
+     */
     public AskAndSelectCommand(Executor executor, String[] parameters)
     {
         super(executor, parameters, pattern);
@@ -79,6 +87,10 @@ public class AskAndSelectCommand extends Command
         return command.execute();
     }
 
+    /**
+     * It checks if there is the possibility to select a player or a block according to the rules of logic expressions
+     * @return true if there is at least a selectable player/block
+     */
     private boolean isSelectionPossible()
     {
         LogicExpression expression = new LogicExpression(logicExpression);

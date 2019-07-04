@@ -1,5 +1,8 @@
 package it.polimi.se2019.network.message;
 
+/**
+ * defines a timeout time (in seconds) 
+ */
 public class TimeoutTime
 {
     public static final TimeoutTime INDETERMINATE = new TimeoutTime(-1);

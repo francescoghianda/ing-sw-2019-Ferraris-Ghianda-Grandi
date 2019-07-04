@@ -33,7 +33,7 @@ public class ActionsGroup
 
 	/**
 	 * creates a group of actions
-	 * @param gameMode it defines the mode of the game related to the group of actions
+	 * @param gameMode defines the mode of the game related to the group of actions
 	 * @param damageToActivate damages that lead to a spec. group of actions
 	 * @param actions actions that can be included in the group
 	 */

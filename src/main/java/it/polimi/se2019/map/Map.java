@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+/**
+ * defines a map with its rooms, the matrix, its number
+ */
 public class Map implements Serializable
 {
 	private ArrayList<Room> rooms;
@@ -42,7 +45,7 @@ public class Map implements Serializable
 
 	/**
 	 * initializes the rooms with a random selection
-	 * @return return the rooms generated
+	 * @return the generated rooms
 	 */
 	private Map initMap(int mapNumber)
 	{
@@ -70,7 +73,7 @@ public class Map implements Serializable
 	}
 
 	/**
-	 * calculate the paths for all blocks
+	 * calculates the paths for all blocks
 	 */
 	private void createPaths()
 	{

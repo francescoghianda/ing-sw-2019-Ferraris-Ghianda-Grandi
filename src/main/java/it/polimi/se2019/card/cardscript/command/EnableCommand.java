@@ -4,6 +4,9 @@ import it.polimi.se2019.card.cardscript.Executor;
 import it.polimi.se2019.card.cardscript.command.parameter.ParameterTypes;
 import it.polimi.se2019.card.weapon.OptionalEffect;
 
+/**
+ * It enables the effect of the weapon passed as the parameter of the command
+ */
 public class EnableCommand extends Command
 {
     private static CommandPattern pattern = new CommandPattern(ParameterTypes.GENERIC);

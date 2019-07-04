@@ -4,6 +4,9 @@ import it.polimi.se2019.ui.UI;
 
 import java.io.Serializable;
 
+/**
+ * defines a request message
+ */
 public class ActionRequest extends Message
 {
     private final ActionFunction function;

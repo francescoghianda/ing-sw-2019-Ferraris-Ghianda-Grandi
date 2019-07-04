@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 
+/**
+ * Creates the server in order to allow the clients to connect with it
+ */
 public class SocketServer implements NetworkServer, Runnable, OnClientDisconnectionListener
 {
     private ServerSocket serverSocket;
@@ -18,6 +21,9 @@ public class SocketServer implements NetworkServer, Runnable, OnClientDisconnect
     private boolean running;
     private ClientsManager clientsManager;
 
+    /**
+     * Constructs a new server
+     */
     public SocketServer()
     {
         this.serverThread = new Thread(this);

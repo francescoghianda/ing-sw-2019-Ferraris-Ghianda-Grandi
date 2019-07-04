@@ -33,8 +33,8 @@ public class Strings
     public static final String IMPOSSIBLE_ACTION = StringLoader.getString("action_not_allowed");
     public static final String CHOOSE_BLOCK = StringLoader.getString("choose_block");
     public static final String SELECT_A_POWERUP = StringLoader.getString("select_a_powerup_card") ;
-    public static final String CHOOSE_THE_BLOCK = StringLoader.getString("Choose_a_block");
-    public static final String CHOOSE_BLOCK_FROM = StringLoader.getString("Choose_block_from");
-    public static final String SELECT_A_WEAPON =  StringLoader.getString("Choose_powerup");;
-    public static final String CHOOSE_WEAPON_TO_RELOAD = StringLoader.getString("Choose_weapon_to_reload");;;
+    public static final String CHOOSE_THE_BLOCK = StringLoader.getString("choose_block");
+    public static final String CHOOSE_BLOCK_FROM = StringLoader.getString("choose_block_from");
+    public static final String SELECT_A_WEAPON =  StringLoader.getString("choose_powerup");;
+    public static final String CHOOSE_WEAPON_TO_RELOAD = StringLoader.getString("choose_weapon_to_reload");;;
 }

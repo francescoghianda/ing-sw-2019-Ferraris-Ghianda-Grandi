@@ -8,6 +8,10 @@ import it.polimi.se2019.player.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * It receive a block or a player. If it receives a block, it gives a damage to all the players into that block.
+ * If it receives a player,it gives him a quantity of damage equal to the value expressed in the "DIGIT" parameter
+ */
 public class HitCommand extends Command
 {
     private static CommandPattern pattern = new CommandPattern(ParameterTypes.PLAYER_OR_BLOCK, ParameterTypes.DIGIT);

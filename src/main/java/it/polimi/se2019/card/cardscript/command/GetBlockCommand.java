@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Receive a logic expression that has to be associated with just one block. If the logic expression is
+ * associated with more than one block, select the first one
+ */
 public class GetBlockCommand extends Command
 {
     private static CommandPattern pattern = new CommandPattern(ParameterTypes.GENERIC, ParameterTypes.LOGIC_EXPRESSION);

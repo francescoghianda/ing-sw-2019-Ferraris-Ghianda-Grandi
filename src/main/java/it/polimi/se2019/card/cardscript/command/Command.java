@@ -4,6 +4,9 @@ import it.polimi.se2019.card.cardscript.CardScriptErrorException;
 import it.polimi.se2019.card.cardscript.Executor;
 import it.polimi.se2019.card.cardscript.OnCommandExecutedListener;
 
+/**
+ * the superclass for all the commands of cardscript
+ */
 public abstract class Command
 {
     protected final String[] parameters;
@@ -16,6 +19,12 @@ public abstract class Command
 
     private int lineNumber;
 
+    /**
+     * Constructs a new command
+     * @param executor indicates the executor of the command
+     * @param parameters refers to the parameters of the command
+     * @param pattern defines which parameters have to be passed to the command
+     */
     public Command(Executor executor, String[] parameters, CommandPattern pattern)
     {
         if(!pattern.matches(executor, parameters))throw new CardScriptErrorException("Invalid parameters!");
@@ -31,6 +40,11 @@ public abstract class Command
         return this;
     }
 
+    /**
+     * Executes the command and invokes the event onCommandExecuted
+     * @return the result of the exec of the command, if the command has been executed
+     * @throws CommandExecutionException
+     */
     public boolean execute() throws CommandExecutionException
     {
         result = exec();

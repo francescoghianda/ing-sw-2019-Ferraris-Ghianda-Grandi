@@ -16,6 +16,9 @@ import java.io.*;
 import java.net.Socket;
 import java.sql.Time;
 
+/**
+ * manages the connection with a specific client
+ */
 public class SocketClientConnection implements Runnable, ClientConnection
 {
     private Thread userThread;
@@ -240,6 +243,11 @@ public class SocketClientConnection implements Runnable, ClientConnection
         requestThread = null;
     }
 
+    /**
+     * creates a times when a request is sent (for each request, a timer starts)
+     * @param requestMessage
+     * @param timeoutSeconds
+     */
     private synchronized void startTimer(String requestMessage, int timeoutSeconds)
     {
         String timerName = getUser().getUsername()+"-"+requestMessage+"-timer";
@@ -259,6 +267,9 @@ public class SocketClientConnection implements Runnable, ClientConnection
         requestTimeOutTimer.start();
     }
 
+    /**
+     * check if the connection is interrupted
+     */
     private void lostConnection()
     {
         stop();

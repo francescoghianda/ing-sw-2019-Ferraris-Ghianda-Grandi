@@ -4,6 +4,9 @@ package it.polimi.se2019.map;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * it searches for paths that connects a block to another
+ */
 public class PathFinder
 {
     private final Block startBlock;
@@ -25,6 +28,11 @@ public class PathFinder
         return minPaths.get(new Random().nextInt(minPaths.size()));
     }
 
+    /**
+     * searches for all the paths that lead to a specific block from another block
+     * @param endBlock
+     * @return
+     */
     public List<Path> getAllPathsTo(Block endBlock)
     {
         this.endBlock = endBlock;
@@ -50,6 +58,11 @@ public class PathFinder
         return paths;
     }
 
+    /**
+     * it filters the list of the paths keeping the valid paths with the minimum length
+     * @param paths
+     * @return the found paths
+     */
     private List<Path> getMinValidPath(List<Path> paths)
     {
         paths = paths.stream().filter(Path::isValid).sorted(Comparator.comparingInt(Path::getLength)).collect(Collectors.toList());
@@ -60,6 +73,8 @@ public class PathFinder
         }
         return paths;
     }
+
+
 
     private List<Path> findPaths(Block block, Path path)
     {

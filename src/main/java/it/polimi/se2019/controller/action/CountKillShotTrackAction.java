@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * It containes a list of deaths and a max point and it counts the number of killshot
+ */
 public class CountKillShotTrackAction extends ControllerAction
 {
     private static final int MAX_POINTS = 8;

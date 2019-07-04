@@ -5,7 +5,7 @@ import it.polimi.se2019.ui.UI;
 public interface NetworkClient
 {
     /**
-     * Search and create a connection with a server
+     * Searches for a connection and creates a connection with the server
      * @param serverIp The ip of the server
      * @param serverPort The port of the server
      * @return true in case of succeeded connection
@@ -19,7 +19,7 @@ public interface NetworkClient
     UI getUI();
 
     /**
-     * Close the connection with the server
+     * Closes the connection with the server
      */
     void stop();
 }

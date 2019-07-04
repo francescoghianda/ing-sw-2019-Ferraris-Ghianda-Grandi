@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Defines the current match , which has a state, a gamecontroller, a list of gamecolor,  a list of players,
+ * a random value and an identificator
+ */
 public class Match
 {
     private static AtomicInteger idsGenerator = new AtomicInteger(0);
@@ -31,6 +35,10 @@ public class Match
     private Random random;
 
     private int matchId;
+
+    /**
+     * constructs a new match
+     */
 
     public Match()
     {
@@ -55,6 +63,11 @@ public class Match
         state = State.WAITING_FOR_PLAYERS;
     }
 
+    /**
+     * creates a player for that match if the color is available
+     * @param server
+     * @return the player created
+     */
     public Player createPlayer(ClientConnection server)
     {
         if(availablePlayerColors.isEmpty())throw new TooManyPlayerException();
@@ -79,6 +92,9 @@ public class Match
         return players;
     }
 
+    /**
+     *it starts the game
+     */
     public void startGame()
     {
         if(state != State.RUNNING && players.size() >= MatchSettings.getInstance().getMinPlayers())

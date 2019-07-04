@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
 public interface CallbackInterface extends Serializable, Remote
 {
     /**
-     * Execute the message received from the server
+     * Executes the message received from the server
      * @param message The message received
      * @throws RemoteException
      */
@@ -18,7 +18,7 @@ public interface CallbackInterface extends Serializable, Remote
     boolean isConnected() throws RemoteException;
 
     /**
-     * Execute the message received from the server and return a response message
+     * Executes the message received from the server and return a response message
      * @param request The message received
      * @return The response message
      * @throws RemoteException
