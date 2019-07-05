@@ -4,13 +4,16 @@ import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.Coordinates;
+import it.polimi.se2019.network.OnServerDisconnectionListener;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
 import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.GameEvent;
+import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.ui.gui.dialogs.CloseDialog;
 import it.polimi.se2019.ui.gui.dialogs.ChooseWeaponsDialog;
+import it.polimi.se2019.ui.gui.dialogs.MessageDialog;
 import it.polimi.se2019.ui.gui.notification.NotificationPane;
 import it.polimi.se2019.ui.gui.value.ValueObserver;
 import it.polimi.se2019.utils.logging.Logger;
@@ -23,8 +26,12 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.Effect;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Screen;
@@ -40,7 +47,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-public class GUI extends Application implements UI, EventHandler<WindowEvent>
+public class GUI extends Application implements UI, EventHandler<WindowEvent>, OnServerDisconnectionListener
 {
     private static final String TITLE = "Adrenalina";
 
@@ -519,4 +526,19 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
         sceneManager.getMatchScene().setSize(width, height);
     }
 
+    @Override
+    public void onServerDisconnection()
+    {
+        SceneManager.runOnFxThread(() ->
+        {
+            GaussianBlur blur = new GaussianBlur(10);
+            ColorAdjust colorAdjust = new ColorAdjust();
+            colorAdjust.setSaturation(-1);
+            blur.setInput(colorAdjust);
+            window.getScene().getRoot().setEffect(blur);
+            MessageDialog dialog = new MessageDialog("Hai perso la connessione col server!");
+            dialog.showAndWait();
+            System.exit(0);
+        });
+    }
 }

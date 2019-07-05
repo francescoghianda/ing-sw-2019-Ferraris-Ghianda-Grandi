@@ -3,6 +3,7 @@ package it.polimi.se2019.network.rmi.client;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.TimeOutException;
 import it.polimi.se2019.network.NetworkClient;
+import it.polimi.se2019.network.OnServerDisconnectionListener;
 import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.network.rmi.server.RmiServer;
 import it.polimi.se2019.network.rmi.server.ServerInterface;
@@ -15,18 +16,19 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * defines the RMI client
  */
 public class RmiClient implements CallbackInterface, NetworkClient, Serializable
 {
+    private static final long serialVersionUID = 891993895460488695L;
     private transient ServerInterface server;
     private transient CallbackInterface stub;
-    private transient volatile boolean getIncomeMessage;
-    private transient volatile boolean incomeMessageReceived;
-    private transient volatile boolean waitResponse;
-
+    private List<OnServerDisconnectionListener> listenerList;
+    private Thread connectionControllerThread;
     private boolean logged;
 
     private final transient UI ui;
@@ -41,6 +43,27 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     {
         super();
         this.ui = ui;
+        connectionControllerThread = new Thread(this::connectionControllerMethod);
+        connectionControllerThread.setName("Connection controller thread");
+        connectionControllerThread.setDaemon(true);
+        listenerList = new ArrayList<>();
+    }
+
+    private void connectionControllerMethod()
+    {
+        while (running)
+        {
+            try
+            {
+                server.isConnected();
+                Thread.sleep(700);
+            }
+            catch (RemoteException | InterruptedException e)
+            {
+                stop();
+                listenerList.forEach(OnServerDisconnectionListener::onServerDisconnection);
+            }
+        }
     }
 
     /**
@@ -150,6 +173,7 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
             server = (ServerInterface) serverRegistry.lookup(RmiServer.SERVER_NAME);
             server.registerClient(stub);
             running = true;
+            connectionControllerThread.start();
         }
         catch (NotBoundException | RemoteException e)
         {
@@ -157,6 +181,12 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void addOnServerDisconnectionListener(OnServerDisconnectionListener listener)
+    {
+        this.listenerList.add(listener);
     }
 
     @Override

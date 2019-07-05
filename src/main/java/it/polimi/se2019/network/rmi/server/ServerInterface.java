@@ -15,4 +15,5 @@ public interface ServerInterface extends Remote
      */
     void registerClient(CallbackInterface rmiClient) throws RemoteException;
     void sendMessageToServer(Message message, CallbackInterface sender) throws RemoteException;
+    boolean isConnected() throws RemoteException;
 }

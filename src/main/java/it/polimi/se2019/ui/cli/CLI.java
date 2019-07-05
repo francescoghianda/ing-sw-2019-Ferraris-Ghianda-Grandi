@@ -5,6 +5,7 @@ import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
 import it.polimi.se2019.map.BlockData;
 import it.polimi.se2019.map.Coordinates;
+import it.polimi.se2019.network.OnServerDisconnectionListener;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
 import it.polimi.se2019.player.PlayerData;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 /**
  *
  */
-public class CLI implements UI
+public class CLI implements UI, OnServerDisconnectionListener
 {
     private NetworkInterface client;
     private GameData gameData;
@@ -47,6 +48,7 @@ public class CLI implements UI
         int serverPort = Integer.parseInt(new FormattedInput(Strings.GET_SERVER_PORT, FormattedInput.NUMERIC_REGEX, s -> NetworkUtils.isValidPort(Integer.parseInt(s))).show());
         GameConsole.println(Strings.CONNECTING);
         client.connect(serverIp, serverPort, serverModeOption.getValue());
+        client.addOnServerDeisconnectionListener(this);
     }
 
     @Override
@@ -349,5 +351,12 @@ public class CLI implements UI
                 return "Usa power-up";
         }
         return "";
+    }
+
+    @Override
+    public void onServerDisconnection()
+    {
+        GameConsole.println("Hai perso la connesione col server!");
+        System.exit(0);
     }
 }

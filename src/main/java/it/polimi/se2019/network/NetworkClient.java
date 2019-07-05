@@ -12,6 +12,8 @@ public interface NetworkClient
      */
     boolean connect(String serverIp, int serverPort);
 
+    void addOnServerDisconnectionListener(OnServerDisconnectionListener listener);
+
     String getUsername();
 
     void setLogged(boolean logged);

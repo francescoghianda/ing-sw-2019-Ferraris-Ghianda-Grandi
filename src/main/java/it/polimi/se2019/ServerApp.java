@@ -35,7 +35,7 @@ public class ServerApp
 
     public ServerApp()
     {
-        System.setProperty("java.rmi.server.hostname", "192.168.1.2");
+        System.setProperty("java.rmi.server.hostname", "127.0.0.1");
     }
 
     public static void main(String[] args) throws IOException

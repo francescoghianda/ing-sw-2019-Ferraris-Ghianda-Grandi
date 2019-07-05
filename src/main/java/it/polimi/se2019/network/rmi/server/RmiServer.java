@@ -20,10 +20,10 @@ import java.util.Optional;
 
 public class RmiServer extends UnicastRemoteObject implements NetworkServer, ServerInterface, OnClientDisconnectionListener
 {
+    private static final long serialVersionUID = 2774919396480794255L;
     public static final String SERVER_NAME = "Server";
     private transient boolean running;
     private transient ClientsManager clientsManager;
-
     private List<RmiClientConnection> clients;
 
     /**
@@ -36,6 +36,7 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
         clients = new ArrayList<>();
         clientsManager = ClientsManager.getInstance();
     }
+
 
     @Override
     public void startServer(int port)
@@ -72,6 +73,12 @@ public class RmiServer extends UnicastRemoteObject implements NetworkServer, Ser
     {
         Optional<RmiClientConnection> clientConnection = clients.stream().filter(client -> client.getCallback().equals(sender)).findFirst();
         clientConnection.ifPresent(rmiClientConnection -> rmiClientConnection.handleMessage(message));
+    }
+
+    @Override
+    public boolean isConnected() throws RemoteException
+    {
+        return true;
     }
 
     @Override

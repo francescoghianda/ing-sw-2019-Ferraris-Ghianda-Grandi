@@ -1,6 +1,7 @@
 package it.polimi.se2019.ui;
 
 import it.polimi.se2019.network.NetworkClient;
+import it.polimi.se2019.network.OnServerDisconnectionListener;
 import it.polimi.se2019.network.rmi.client.RmiClient;
 import it.polimi.se2019.network.socket.client.SocketClient;
 
@@ -28,5 +29,10 @@ public class NetworkInterface
         if (connectionMode == RMI_MODE) client = new RmiClient(ui);
         else client = new SocketClient(ui);
         if(!client.connect(serverIp, serverPort))ui.connectionRefused();
+    }
+
+    public void addOnServerDeisconnectionListener(OnServerDisconnectionListener listener)
+    {
+        if(client != null)client.addOnServerDisconnectionListener(listener);
     }
 }

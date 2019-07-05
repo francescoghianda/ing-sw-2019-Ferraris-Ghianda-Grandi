@@ -32,16 +32,19 @@ public class SceneManager
 
     private NetworkInterface client;
 
-    private SceneManager(Stage stage, UI ui)
+    private GUI gui;
+
+    private SceneManager(Stage stage, GUI gui)
     {
         this.stage = stage;
-        this.client = new NetworkInterface(ui);
+        this.gui = gui;
+        this.client = new NetworkInterface(gui);
         this.onSceneSelectedProperty = new SimpleObjectProperty<>();
     }
 
-    static SceneManager createSceneManager(Stage stage, UI ui)
+    static SceneManager createSceneManager(Stage stage, GUI gui)
     {
-        instance = new SceneManager(stage, ui);
+        instance = new SceneManager(stage, gui);
         initScene();
         return instance;
     }
@@ -137,7 +140,11 @@ public class SceneManager
 
     public void connect(String ip, int port, int mode)
     {
-        Thread thread = new Thread(() -> client.connect(ip, port, mode));
+        Thread thread = new Thread(() ->
+        {
+            client.connect(ip, port, mode);
+            client.addOnServerDeisconnectionListener(gui);
+        });
         thread.start();
     }
 

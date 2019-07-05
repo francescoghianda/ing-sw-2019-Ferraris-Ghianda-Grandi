@@ -3,6 +3,7 @@ package it.polimi.se2019.network.socket.client;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.TimeOutException;
 import it.polimi.se2019.network.NetworkClient;
+import it.polimi.se2019.network.OnServerDisconnectionListener;
 import it.polimi.se2019.network.message.*;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.utils.logging.Logger;
@@ -13,6 +14,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * defines a client connected via socket connection
@@ -27,12 +30,17 @@ public class SocketClient implements Runnable, NetworkClient
     private boolean connectedToServer;
     private boolean logged;
     private UI ui;
+    private List<OnServerDisconnectionListener> listenerList;
 
     public SocketClient(UI ui)
     {
         this.ui = ui;
         thread = new Thread(this);
+
+        listenerList = new ArrayList<>();
     }
+
+
 
     /**
      * start the reading thread
@@ -121,6 +129,7 @@ public class SocketClient implements Runnable, NetworkClient
         {
             Logger.exception(e);
             stop();
+            listenerList.forEach(OnServerDisconnectionListener::onServerDisconnection);
         }
     }
 
@@ -152,6 +161,12 @@ public class SocketClient implements Runnable, NetworkClient
         }
         start();
         return true;
+    }
+
+    @Override
+    public void addOnServerDisconnectionListener(OnServerDisconnectionListener listener)
+    {
+        listenerList.add(listener);
     }
 
     /**
