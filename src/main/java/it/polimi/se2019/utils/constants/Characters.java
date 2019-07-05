@@ -1,5 +1,8 @@
 package it.polimi.se2019.utils.constants;
 
+/**
+ * definition of characters and symbols
+ */
 public final class Characters
 {
     private Characters(){}

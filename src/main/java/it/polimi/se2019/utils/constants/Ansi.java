@@ -1,5 +1,8 @@
 package it.polimi.se2019.utils.constants;
 
+/**
+ * ANSI codes for all the parameters used to describe cards, players and so on
+ */
 public class Ansi
 {
     public static final char ESC = '\u001b';

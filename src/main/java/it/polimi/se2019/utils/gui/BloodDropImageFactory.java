@@ -9,6 +9,9 @@ import javafx.scene.paint.Color;
 
 import java.util.EnumMap;
 
+/**
+ * creates the blood drop image on the gameboard
+ */
 public class BloodDropImageFactory
 {
     private static BloodDropImageFactory instance;
