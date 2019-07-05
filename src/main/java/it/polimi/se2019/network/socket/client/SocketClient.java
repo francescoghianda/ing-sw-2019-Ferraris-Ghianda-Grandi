@@ -34,11 +34,17 @@ public class SocketClient implements Runnable, NetworkClient
         thread = new Thread(this);
     }
 
+    /**
+     * start the reading thread
+     */
     private void start()
     {
         if(!running)thread.start();
     }
 
+    /**
+     * close the socket and stop the reading thread
+     */
     @Override
     public void stop()
     {
@@ -148,6 +154,10 @@ public class SocketClient implements Runnable, NetworkClient
         return true;
     }
 
+    /**
+     * sends an async message to the server
+     * @param message the message that will be send
+     */
     public void sendAsyncMessageToServer(AsyncMessage message)
     {
         sendMessageToServer(message);
@@ -155,7 +165,7 @@ public class SocketClient implements Runnable, NetworkClient
 
     /**
      * sends a message from client to server
-     * @param message
+     * @param message the message that will be send
      */
     private synchronized void sendMessageToServer(Message message)
     {
@@ -174,12 +184,6 @@ public class SocketClient implements Runnable, NetworkClient
     public String getUsername()
     {
         return ui.login();
-    }
-
-    @Override
-    public void invalidNickname()
-    {
-
     }
 
     @Override

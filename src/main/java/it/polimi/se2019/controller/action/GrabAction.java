@@ -1,6 +1,5 @@
 package it.polimi.se2019.controller.action;
 
-import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.card.powerup.PowerUpCard;
 import it.polimi.se2019.card.weapon.WeaponCard;
@@ -21,6 +20,10 @@ public class GrabAction extends ControllerAction
         this.player = player;
     }
 
+    /**
+     * Execute the action associated with the grab action of the game
+     * @throws CanceledActionException
+     */
     @Override
     public void execute() throws CanceledActionException
     {
@@ -41,6 +44,7 @@ public class GrabAction extends ControllerAction
                         weaponCard.reload();
                         player.addWeaponCard(weaponCard);
                         playerBlock.replaceWeaponCard(weaponCard, substituteWeapon);
+                        substituteWeapon.reload();
                     }
                     catch (CanceledActionException e)
                     {
@@ -74,7 +78,7 @@ public class GrabAction extends ControllerAction
 
     private WeaponCard selectWeaponFromPlayer() throws CanceledActionException
     {
-        CardData chosen = player.getView().chooseWeaponFromPlayer();
+        CardData chosen = player.getView().chooseWeaponToSwap();
         return WeaponCard.findCardById(chosen.getId());
     }
 

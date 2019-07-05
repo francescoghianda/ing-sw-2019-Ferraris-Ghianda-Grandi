@@ -43,6 +43,10 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
         this.ui = ui;
     }
 
+    /**
+     * send a message to the server
+     * @param message the message that will be send
+     */
     public void sendMessageToServer(Message message)
     {
         try
@@ -117,12 +121,6 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
     }
 
     @Override
-    public void invalidNickname()
-    {
-        //TODO
-    }
-
-    @Override
     public void setLogged(boolean logged)
     {
         this.logged = logged;
@@ -135,7 +133,12 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
         return ui;
     }
 
-
+    /**
+     * Open a connection with the server and register the client
+     * @param serverIp The ip of the server
+     * @param serverPort The port of the server
+     * @return true if the connection is established correctly
+     */
     @Override
     public boolean connect(String serverIp, int serverPort)
     {

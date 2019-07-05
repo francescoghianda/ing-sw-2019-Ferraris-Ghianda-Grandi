@@ -9,7 +9,7 @@ public class MatchData implements Serializable
 {
     private static final long serialVersionUID = 1055710234212493850L;
 
-    private final int matchId;
+    private final long matchId;
     private final Match.State matchState;
     private final int playersNumber;
 
@@ -19,14 +19,14 @@ public class MatchData implements Serializable
      * @param matchState
      * @param playersNumber
      */
-    public MatchData(int matchId, Match.State matchState, int playersNumber)
+    public MatchData(long matchId, Match.State matchState, int playersNumber)
     {
         this.matchId = matchId;
         this.matchState = matchState;
         this.playersNumber = playersNumber;
     }
 
-    public int getMatchId()
+    public long getMatchId()
     {
         return matchId;
     }

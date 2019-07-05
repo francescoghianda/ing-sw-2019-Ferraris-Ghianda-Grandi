@@ -201,6 +201,10 @@ public class Executor implements OnCommandExecutedListener
                 return new AskAndSelectCommand(this, parameters);
             case "enable":
                 return new EnableCommand(this, parameters);
+            case "pay":
+                return new PayCommand(this, parameters);
+            case "add_power":
+                return new AddPowerCommand(this, parameters);
             case "askif":
                 return new AskIfCommand(this, parameters);
             case "get_block":

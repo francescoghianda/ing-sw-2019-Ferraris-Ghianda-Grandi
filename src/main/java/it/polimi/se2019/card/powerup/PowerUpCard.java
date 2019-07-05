@@ -90,6 +90,16 @@ public class PowerUpCard extends Card
 		return used;
 	}
 
+	public boolean isViewFinder()
+	{
+		return getName().equalsIgnoreCase("mirino");
+	}
+
+	public boolean isTagBackGrenade()
+	{
+		return getName().equalsIgnoreCase("granata venom");
+	}
+
 	private void createScriptExecutor(Player player)
 	{
 		//scriptExecutor = CardScriptExecutor.getPowerUpScriptExecutor(player, this);

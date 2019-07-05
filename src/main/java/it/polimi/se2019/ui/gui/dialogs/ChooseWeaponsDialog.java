@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ReloadWeaponsDialog extends Dialog<ArrayList<CardData>> implements Initializable, CardView.OnCardViewClickListener
+public class ChooseWeaponsDialog extends Dialog<ArrayList<CardData>> implements Initializable, CardView.OnCardViewClickListener
 {
     public static final int SINGLE_SELECTION_MODE = 0;
     public static final int MULTIPLE_SELECTION_MODE = 1;
@@ -43,9 +43,14 @@ public class ReloadWeaponsDialog extends Dialog<ArrayList<CardData>> implements 
 
     private int selectionMode;
 
-    public ReloadWeaponsDialog(List<CardData> cards, int selectionMode)
+    private String title;
+    private String buttonText;
+
+    public ChooseWeaponsDialog(List<CardData> cards, int selectionMode, String title, String buttonText)
     {
         this.selectionMode = selectionMode;
+        this.title = title;
+        this.buttonText = buttonText;
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ReloadWeaponsDialog.fxml"));
         loader.setController(this);
@@ -87,7 +92,7 @@ public class ReloadWeaponsDialog extends Dialog<ArrayList<CardData>> implements 
         Image backgroundImage = new Image(getClass().getResourceAsStream("/img/texture2.png"));
         getDialogPane().setBackground(new Background(new BackgroundImage(backgroundImage, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT)));
 
-        if(selectionMode == SINGLE_SELECTION_MODE) cardPane.setTitle("Seleziona l'arma che vuoi ricaricare");
+        cardPane.setTitle(title);
 
         setResult(new ArrayList<>());
     }
@@ -103,7 +108,7 @@ public class ReloadWeaponsDialog extends Dialog<ArrayList<CardData>> implements 
 
         if(!cardPane.getSelectedCards().isEmpty())
         {
-            okButton.setText("Ricarica");
+            okButton.setText(buttonText);
             okButton.setColor(GameColor.GREEN);
         }
         else

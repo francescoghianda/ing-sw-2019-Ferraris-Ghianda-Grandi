@@ -1,23 +1,18 @@
 package it.polimi.se2019.ui.gui;
 
-import it.polimi.se2019.card.Card;
 import it.polimi.se2019.card.CardData;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.GameData;
-import it.polimi.se2019.controller.Match;
 import it.polimi.se2019.map.Coordinates;
 import it.polimi.se2019.network.message.Bundle;
 import it.polimi.se2019.player.Action;
-import it.polimi.se2019.player.GameBoardData;
 import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.UI;
-import it.polimi.se2019.ui.cli.Option;
 import it.polimi.se2019.ui.gui.dialogs.CloseDialog;
-import it.polimi.se2019.ui.gui.dialogs.ReloadWeaponsDialog;
+import it.polimi.se2019.ui.gui.dialogs.ChooseWeaponsDialog;
 import it.polimi.se2019.ui.gui.notification.NotificationPane;
 import it.polimi.se2019.ui.gui.value.ValueObserver;
-import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.logging.Logger;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
@@ -28,7 +23,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tooltip;
 import javafx.scene.media.Media;
@@ -157,24 +151,6 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
 
         window.show();
         window.centerOnScreen();
-
-        /////
-
-        /*window.setResizable(true);
-
-        List<PlayerData> playerDataList = new ArrayList<>();
-
-        playerDataList.add(new PlayerData("fra", GameColor.GREEN, null, null, new GameBoardData(0, 0, 0, 0, null, null, 46), 0, 0, false));
-        playerDataList.add(new PlayerData("silvia", GameColor.PURPLE, null, null, new GameBoardData(0, 0, 0, 0, null, null, 17), 0, 0, false));
-        playerDataList.add(new PlayerData("simo", GameColor.YELLOW, null, null, new GameBoardData(0, 0, 0, 0, null, null, 17), 0, 0, false));
-        playerDataList.add(new PlayerData("asd", GameColor.WHITE, null, null, new GameBoardData(0, 0, 0, 0, null, null, 17), 0, 0, false));
-        playerDataList.add(new PlayerData("qwerty", GameColor.BLUE, null, null, new GameBoardData(0, 0, 0, 0, null, null, 17), 0, 0, false));
-
-
-        sceneManager.getScoreBoardScene().show(playerDataList, true);
-
-        sceneManager.setScene(SceneManager.SCORE_BOARD_SCENE);*/
-        //gameStarted();
 
     }
 
@@ -420,15 +396,44 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
     @Override
     public ArrayList<CardData> chooseWeaponsToReload(ArrayList<CardData> weapons)
     {
-        return chooseWeaponsToReload(weapons, ReloadWeaponsDialog.MULTIPLE_SELECTION_MODE);
+        return chooseWeaponsToReload(weapons, ChooseWeaponsDialog.MULTIPLE_SELECTION_MODE);
     }
 
     @Override
     public CardData chooseWeaponToReload(ArrayList<CardData> weapons)
     {
-        ArrayList<CardData> chosen = chooseWeaponsToReload(weapons, ReloadWeaponsDialog.SINGLE_SELECTION_MODE);
+        ArrayList<CardData> chosen = chooseWeaponsToReload(weapons, ChooseWeaponsDialog.SINGLE_SELECTION_MODE);
         if(chosen != null)return chosen.get(0);
         return null;
+    }
+
+    @Override
+    public CardData chooseWeaponToSwap() throws CanceledActionException
+    {
+        Task<Optional<ArrayList<CardData>>> task = new Task<Optional<ArrayList<CardData>>>()
+        {
+            @Override
+            protected Optional<ArrayList<CardData>> call()
+            {
+                List<CardData> weapons = MatchScene.getInstance().getGameDataProperty().get().getPlayer().getWeapons();
+                ChooseWeaponsDialog dialog = new ChooseWeaponsDialog(weapons, ChooseWeaponsDialog.SINGLE_SELECTION_MODE, "Seleziona l'arma che vuoi scambiare", "Scambia");
+                return dialog.showAndWait();
+            }
+        };
+        SceneManager.runOnFxThread(task);
+
+        try
+        {
+            Optional<ArrayList<CardData>> optional = task.get();
+            ArrayList<CardData> selected = optional.orElseThrow(() -> new CanceledActionException(CanceledActionException.Cause.CANCELED_BY_USER));
+            if(selected.isEmpty())throw new CanceledActionException(CanceledActionException.Cause.CANCELED_BY_USER);
+            return selected.get(0);
+        }
+        catch (InterruptedException | ExecutionException e)
+        {
+            e.printStackTrace();
+            throw new CanceledActionException(CanceledActionException.Cause.ERROR);
+        }
     }
 
     private ArrayList<CardData> chooseWeaponsToReload(ArrayList<CardData> weapons, int selectionMode)
@@ -438,7 +443,8 @@ public class GUI extends Application implements UI, EventHandler<WindowEvent>
             @Override
             protected Optional<ArrayList<CardData>> call()
             {
-                ReloadWeaponsDialog dialog = new ReloadWeaponsDialog(weapons, selectionMode);
+                String title = selectionMode == ChooseWeaponsDialog.SINGLE_SELECTION_MODE ? "Seleziona un'arma da ricaricare" : "Seleziona le armi che vuoi ricaricare";
+                ChooseWeaponsDialog dialog = new ChooseWeaponsDialog(weapons, selectionMode, title, "Ricarica");
                 return dialog.showAndWait();
             }
         };

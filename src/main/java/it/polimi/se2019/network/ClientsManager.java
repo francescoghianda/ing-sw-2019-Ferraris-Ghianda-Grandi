@@ -3,6 +3,7 @@ package it.polimi.se2019.network;
 import it.polimi.se2019.controller.Match;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,22 +11,30 @@ public class ClientsManager
 {
     private static ClientsManager instance;
 
-    private ArrayList<ClientConnection> connectedClients;
-    private ArrayList<User> disconnectedClients;
+    private List<ClientConnection> connectedClients;
+    private List<User> disconnectedClients;
 
     private ClientsManager()
     {
-        connectedClients = new ArrayList<>();
-        disconnectedClients = new ArrayList<>();
+        connectedClients = Collections.synchronizedList( new ArrayList<>());
+        disconnectedClients = Collections.synchronizedList(new ArrayList<>());
     }
 
+    /**
+     * if not prensent, crate a new intance of ClientsManager
+     * @return the instance of clients manager
+     */
     public static ClientsManager getInstance()
     {
         if(instance == null)instance = new ClientsManager();
         return instance;
     }
 
-    public void registerClient(ClientConnection client)
+    /**
+     * register a new client
+     * @param client the new ClientConnection to be registered
+     */
+    public synchronized void registerClient(ClientConnection client)
     {
         User disconnected;
         if((disconnected = findDisconnectedClient(client.getUser().getUsername())) != null)
@@ -38,12 +47,17 @@ public class ClientsManager
         if(!connectedClients.contains(client))connectedClients.add(client);
     }
 
-    public void unregisterClient(ClientConnection client)
+    /**
+     * unregister a client
+     * if the client is in a match that is currently running, the data of the client will be saved
+     * @param client the client that lost the connection
+     */
+    public synchronized void unregisterClient(ClientConnection client)
     {
         if(connectedClients.contains(client))
         {
             connectedClients.remove(client);
-            disconnectedClients.add(client.getUser());
+            if(client.getMatch().getState() == Match.State.RUNNING)disconnectedClients.add(client.getUser());
         }
     }
 
@@ -52,17 +66,17 @@ public class ClientsManager
         disconnectedClients = disconnectedClients.stream().filter(client -> !client.getMatch().equals(match)).collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public List<ClientConnection> getConnectedClients()
+    public synchronized List<ClientConnection> getConnectedClients()
     {
         return this.connectedClients;
     }
 
-    public List<String> getConnectedClientsUsername()
+    public synchronized List<String> getConnectedClientsUsername()
     {
         return getAllUsernameFrom(connectedClients.stream().map(ClientConnection::getUser).collect(Collectors.toList()));
     }
 
-    public List<String> getDisconnectedClientsUsername()
+    public synchronized List<String> getDisconnectedClientsUsername()
     {
         return getAllUsernameFrom(disconnectedClients);
     }
@@ -72,12 +86,12 @@ public class ClientsManager
         connectedClients.forEach(ClientConnection::stop);
     }
 
-    private List<String> getAllUsernameFrom(List<User> users)
+    private synchronized List<String> getAllUsernameFrom(List<User> users)
     {
         return users.stream().map(User::getUsername).collect(Collectors.toList());
     }
 
-    private User findDisconnectedClient(String username)
+    private synchronized User findDisconnectedClient(String username)
     {
         for(User user : disconnectedClients)
         {

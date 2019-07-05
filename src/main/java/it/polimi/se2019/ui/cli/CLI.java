@@ -11,11 +11,13 @@ import it.polimi.se2019.player.PlayerData;
 import it.polimi.se2019.ui.GameEvent;
 import it.polimi.se2019.ui.NetworkInterface;
 import it.polimi.se2019.ui.UI;
+import it.polimi.se2019.utils.constants.GameColor;
 import it.polimi.se2019.utils.network.NetworkUtils;
 import it.polimi.se2019.utils.string.Strings;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -128,7 +130,7 @@ public class CLI implements UI
     @Override
     public void showNotification(String text)
     {
-        //TODO
+        GameConsole.println(text);
     }
 
     @Override
@@ -140,21 +142,49 @@ public class CLI implements UI
     @Override
     public boolean showScoreBoardAndChooseIfPlayAgain(ArrayList<PlayerData> scoreBoard)
     {
-        return false;
+        if(gameData.getPlayer().getUsername().equals(scoreBoard.get(0).getUsername()))
+        {
+            GameConsole.printlnColored(GameColor.GREEN, "Hai vinto!");
+        }
+        else
+        {
+            GameConsole.printlnColored(GameColor.RED, "Hai perso");
+        }
+
+        GameConsole.println("Classifica:");
+        GameConsole.println("");
+        int i = 0;
+        for(PlayerData playerData : scoreBoard)
+        {
+            GameConsole.println(i+") "+playerData.getUsername()+" con "+playerData.getGameBoard().getPoints()+" punti");
+            i++;
+        }
+
+        return ask("Vuoi giocare ancora? ", true);
+    }
+
+    private boolean ask(String question, boolean firstDefault)
+    {
+        Options<String> options = new Options<>(question, firstDefault);
+        options.addOption("Si").addOption("No");
+        String answer = options.show().getOption();
+        return answer.equals("Si");
     }
 
     @Override
     public boolean notEnoughAmmo(boolean askToSellPowerUp)
     {
+        GameConsole.println("Non hai abbastanza munizioni");
+        if(!askToSellPowerUp)return false;
 
-        return false;
+        return ask("Vuoi vendere un power-up?", false);
     }
 
     @Override
     public String chooseOrCancel(Bundle<String, ArrayList<String>> bundle) throws CanceledActionException
     {
         Options<Void> options = new Options<>(bundle.getFirst(), true);
-        bundle.getSecond().forEach(option -> options.addOption(option));
+        bundle.getSecond().forEach(options::addOption);
         return options.showCancellable().getOption();
     }
 
@@ -162,10 +192,9 @@ public class CLI implements UI
     public String choose(Bundle<String, ArrayList<String>> bundle)
     {
         Options<Void> options = new Options<>(bundle.getFirst(),false);
-        bundle.getSecond().forEach(option -> options.addOption(option));
+        bundle.getSecond().forEach(options::addOption);
         return options.show().getOption();
     }
-
 
     @Override
     public String chooseSpawnPoint(CardData option1, CardData option2)
@@ -180,10 +209,7 @@ public class CLI implements UI
     {
         Options<Action> actionOptions = new Options<>(Strings.CHOOSE_ACTION, true);
 
-        for (Action action : possibleActions)
-        {
-            actionOptions.addOption(action.toString().toLowerCase(), action);
-        }
+        actionOptions.addOptions(Arrays.asList(possibleActions), this::actionToString);
 
         actionOptions.addOption("Termina azione", Action.END_ACTION);
         actionOptions.addOption("Termina turno", Action.END_ROUND);
@@ -194,14 +220,7 @@ public class CLI implements UI
         if (chosenAction == Action.USE_POWER_UP)
         {
             Options<CardData> powerUpOptions = new Options<>(Strings.SELECT_A_POWERUP, false);
-            int i = 0;
-
-            for (CardData card1 : gameData.getPlayer().getPowerUps())
-            {
-                powerUpOptions.addOption(card1.toString(), card1);
-                i++;
-            }
-
+            powerUpOptions.addOptions(gameData.getPlayer().getPowerUps(), CardData::toString);
             card = powerUpOptions.show().getValue();
         }
 
@@ -282,6 +301,16 @@ public class CLI implements UI
     }
 
     @Override
+    public CardData chooseWeaponToSwap() throws CanceledActionException
+    {
+        ArrayList<CardData> weapons = gameData.getPlayer().getWeapons();
+
+        Options<CardData> options = new Options<>("Seleziona l'arma che vuoi scambiare: ", false);
+        options.addOptions(weapons, CardData::toString);
+        return options.showCancellable().getValue();
+    }
+
+    @Override
     public void update(GameData data)
     {
         gameData = data;
@@ -301,5 +330,24 @@ public class CLI implements UI
         {
             GameConsole.println(Strings.IS_YOUR_ROUND);
         }
+    }
+
+
+    private String actionToString(Action action)
+    {
+        switch (action)
+        {
+            case FIRE:
+                return "Spara";
+            case MOVE:
+                return "Muoviti";
+            case GRAB:
+                return "Raccogli";
+            case RELOAD:
+                return "Ricarica";
+            case USE_POWER_UP:
+                return "Usa power-up";
+        }
+        return "";
     }
 }

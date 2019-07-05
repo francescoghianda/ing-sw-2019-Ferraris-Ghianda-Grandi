@@ -12,10 +12,14 @@ public interface NetworkClient
      */
     boolean connect(String serverIp, int serverPort);
 
-
     String getUsername();
-    void invalidNickname();
+
     void setLogged(boolean logged);
+
+    /**
+     *
+     * @return the UI of the client
+     */
     UI getUI();
 
     /**

@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +35,7 @@ public class Player
 	private GameController gameController;
 	private List<Player> damagedPlayers;
 	private ClientConnection clientConnection;
+	private AtomicInteger power;
 	private AtomicBoolean finalFrenzyMode;
 
 	private AtomicBoolean firstRoundPlayed;
@@ -60,6 +62,36 @@ public class Player
 		this.color = color;
 		this.clientConnection = clientConnection;
 		this.gameController = gameController;
+	}
+
+	public void setPower(int power)
+	{
+		this.power.set(power);
+	}
+
+	public int getPower()
+	{
+		return power.get();
+	}
+
+	public List<PowerUpCard> getViewFinders()
+	{
+		return powerUps.stream().filter(PowerUpCard::isViewFinder).collect(Collectors.toList());
+	}
+
+	public List<PowerUpCard> getTagBackGrenades()
+	{
+		return powerUps.stream().filter(PowerUpCard::isTagBackGrenade).collect(Collectors.toList());
+	}
+
+	public List<PowerUpCard> getOnFirePowerUps()
+	{
+		return powerUps.stream().filter(powerUpCard -> powerUpCard.getUse() == PowerUpCard.Use.ON_FIRE).collect(Collectors.toList());
+	}
+
+	public List<PowerUpCard> getOnDamagePowerUps()
+	{
+		return powerUps.stream().filter(powerUpCard -> powerUpCard.getUse() == PowerUpCard.Use.ON_DAMAGE).collect(Collectors.toList());
 	}
 
 	public void setFinalFrenzyMode(boolean finalFrenzyMode)

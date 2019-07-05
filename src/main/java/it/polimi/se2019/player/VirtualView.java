@@ -252,6 +252,12 @@ public class VirtualView implements UI
     }
 
     @Override
+    public CardData chooseWeaponToSwap() throws CanceledActionException
+    {
+        return (CardData) client.getResponseTo(RequestFactory.newCancellableActionRequest("choose_weapon_to_swap", UI::chooseWeaponToSwap), timeoutTime).getContent();
+    }
+
+    @Override
     public void requestFocus()
     {
         client.sendMessageToClient(new AsyncMessage("request_focus", UI::requestFocus));

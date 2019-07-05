@@ -240,6 +240,7 @@ public final class Options<T>
      */
     private Option<T> findOption(String response)
     {
+        response = response.trim();
         if(isInteger(response) && Integer.parseInt(response) < options.size())return options.get(Integer.parseInt(response));
 
         for(Option<T> option : options)

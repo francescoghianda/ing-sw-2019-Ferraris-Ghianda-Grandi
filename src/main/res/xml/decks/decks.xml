@@ -494,8 +494,8 @@
                         <blue>1</blue>
                     </cost>
                     <cardscript>
-                        <line>select_block(block2, maxd context_player 2)</line>
-                        <line>move(context_player, block2)</line>
+                        <line>select_block(block3, maxd context_player 2)</line>
+                        <line>move(context_player, block3)</line>
                     </cardscript>
                 </optional_effect>
                 <optional_effect name="testata_a_frammentazione">
@@ -650,7 +650,7 @@
         <alternate_mode>
             <cost></cost>
             <cardscript>
-                <line>select_player(false, player1, maxd context_player1 &amp; mind context_player 1)</line>
+                <line>select_player(false, player1, maxd context_player 1 &amp; mind context_player 1)</line>
                 <line>hit(player1, 2)</line>
             </cardscript>
         </alternate_mode>
@@ -802,9 +802,8 @@
                 <line>Nota: non puoi usare questo potenziamento per dare 1 danno a un bersaglio che sta solo ricevendo marchi.</line>
             </description>
             <cardscript>
-                <line>pay x 1</line>
-                <line>select_player(damaged)->playerX</line>
-                <line>hit playerX 1</line>
+                <line>pay(any, 1)</line>
+                <line>add_power(context_player, 1)</line>
             </cardscript>
         </power_up_card>
 
@@ -816,7 +815,7 @@
                 <line>giocatore che puoi vedere. Dai 1 marchio a quel giocatore.</line>
             </description>
             <cardscript>
-                <line></line>
+                <line>hit(playerX, 1)</line>
             </cardscript>
         </power_up_card>
 

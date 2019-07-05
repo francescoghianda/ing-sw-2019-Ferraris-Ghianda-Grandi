@@ -85,6 +85,7 @@ public class GameController implements TimerListener
         {
             if(currentPlayer.equals(lastFinalFrenzyPlayer))return;
             nextRound();
+            return;
         }
 
         if(gameMode == GameMode.FINAL_FRENZY_BEFORE_FP && roundManager.isFirstPlayer(currentPlayer))gameMode = GameMode.FINAL_FRENZY_AFTER_FP;
@@ -123,13 +124,14 @@ public class GameController implements TimerListener
         handleDeadPlayers(currentPlayer);
         if(isFinalFrenzy() && currentPlayer.equals(lastFinalFrenzyPlayer))return;
         checkForFinalFrenzy(currentPlayer);
+        if(match.connectedPlayerSize() <= 0 || match.connectedPlayerSize() < MatchSettings.getInstance().getMinPlayers())return;
         nextRound();
 
     }
 
     /**
      *
-     * @return the final frenzy game mode in all the cases (before or after final player)
+     * @return true if the match gameMode is final frenzy
      */
 
     private boolean isFinalFrenzy()
@@ -138,11 +140,12 @@ public class GameController implements TimerListener
     }
 
     /**
-     * defines the end of a match
+     * Terminate the match
      */
     private void endMatch()
     {
         match.setState(Match.State.ENDED);
+        Logger.info("The match "+match.getMatchId()+" is ended");
 
         ClientsManager.getInstance().deleteDisconnectedClients(match);
         match.getPlayers().stream().filter(player -> player.getGameBoard().getTotalReceivedDamage() > 0).forEach(player -> new CountPointsAction(this, player).execute());
@@ -179,6 +182,11 @@ public class GameController implements TimerListener
 
     }
 
+    /**
+     *
+     * @param color the color of the player who wants to search
+     * @return return an Optional containing the player of that color if exist, otherwise an empty Optional
+     */
     public Optional<Player> findPlayerByColor(GameColor color)
     {
         return match.getPlayers().stream().filter(player -> player.getColor() == color).findFirst();
@@ -267,6 +275,10 @@ public class GameController implements TimerListener
         if(controllerAction != null)controllerAction.execute();
     }
 
+    /**
+     * Spawn the player for the first time
+     * @param player the player to be spawned
+     */
     private void firstRound(Player player)
     {
         PowerUpCard option1 = powerUpCardDeck.getFirstCard();
@@ -291,6 +303,9 @@ public class GameController implements TimerListener
 
     }
 
+    /**
+     * Check for each block of the map, if there is a card missing and insert a new card from the deck
+     */
     private void refillMap()
     {
         List<Block> blocks = map.getAllBlocks();
@@ -356,6 +371,11 @@ public class GameController implements TimerListener
         }
     }
 
+    /**
+     *
+     * @param username the username of the player who wants to search
+     * @return return an Optional containing the player with that username if exist, otherwise an empty Optional
+     */
     public Optional<Player> findPlayerByUsername(String username)
     {
         for(Player player : match.getPlayers())
@@ -372,10 +392,13 @@ public class GameController implements TimerListener
         notifyOtherClients(client.getUser().getPlayer(), virtualView -> virtualView.showNotification(client.getUser().getUsername()+" si è riconnesso"));
     }
 
+    /**
+     * Create and start a timer for the start of the match
+     */
     void startGameTimer()
     {
-        Timer.destroyTimer("startCountdown");
-        Timer timer = Timer.createTimer("startCountdown", startTimerSeconds);
+        Timer.destroyTimer("starting_game_timer");
+        Timer timer = Timer.createTimer("starting_game_timer", startTimerSeconds);
         timer.addTimerListener(this);
         timer.start();
     }
@@ -386,6 +409,7 @@ public class GameController implements TimerListener
         weaponCardDeck.shuffle();
         powerUpCardDeck.shuffle();
     }
+
 
     private void selectStartingPlayer()
     {
@@ -465,7 +489,7 @@ public class GameController implements TimerListener
         match.getPlayers().forEach(this::sendUpdate);
     }
 
-    private void notifyOtherClients(Player player, Consumer<VirtualView> consumer)
+    public void notifyOtherClients(Player player, Consumer<VirtualView> consumer)
     {
         match.getPlayers().forEach(client ->
         {

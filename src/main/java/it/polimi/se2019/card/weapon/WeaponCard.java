@@ -33,15 +33,15 @@ public class WeaponCard extends Card
 	private Cost reloadCost;
 	private Cost alternateModeCost;
 
-	private transient String basicModeScript;
-	private transient String alternateModeScript;
+	private Script basicModeScript;
+	private Script alternateModeScript;
 
-	private transient HashMap<String, OptionalEffect> optionalEffects;
+	private HashMap<String, OptionalEffect> optionalEffects;
 
 	private volatile boolean load;
 	private volatile boolean used;
 
-	private transient Executor executor;
+	private Executor executor;
 
 	public WeaponCard()
 	{
@@ -105,7 +105,7 @@ public class WeaponCard extends Card
 
 		try
 		{
-			executor.executeScript(new Script(fireMode.equals(Mode.BASIC) ? basicModeScript : alternateModeScript), gameController);
+			executor.executeScript(fireMode.equals(Mode.BASIC) ? basicModeScript : alternateModeScript, gameController);
 		}
 		finally
 		{
@@ -245,12 +245,12 @@ public class WeaponCard extends Card
 
 	public void setBasicModeScript(String basicModeScript)
 	{
-		this.basicModeScript = basicModeScript;
+		this.basicModeScript = new Script(basicModeScript);
 	}
 
 	public void setAlternateModeScript(String alternateModeScript)
 	{
-		this.alternateModeScript = alternateModeScript;
+		this.alternateModeScript = new Script(alternateModeScript);
 		hasAlternateFireMode = true;
 	}
 

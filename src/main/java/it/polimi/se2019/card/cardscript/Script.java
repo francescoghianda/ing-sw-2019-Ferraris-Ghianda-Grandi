@@ -17,7 +17,7 @@ public class Script
 
     /**
      * Constructs a new script from which to create commands
-     * @param script
+     * @param script contains the script not parsed
      */
     public Script(String script)
     {
@@ -30,7 +30,6 @@ public class Script
     /**
      * Creates the command from the specific script
      */
-
     private void createCommands()
     {
         for(int i = 0; i < scriptLines.size(); i++)
@@ -41,9 +40,9 @@ public class Script
     }
 
     /**
-     * creates the effective command using line and lineNumber
-     * @param line
-     * @param lineNumber
+     * Create a new ScriptCommand object parsing the String line
+     * @param line the String that contains the raw command
+     * @param lineNumber the line number of the command in the original script
      */
     private void createCommand(String line, int lineNumber)
     {
@@ -56,6 +55,9 @@ public class Script
             command.append(chars[i]);
         }
         String[] parameters = line.substring(i+1, line.length()-1).split(",");
+
+        if(parameters.length == 1 && parameters[0].isEmpty())parameters = new String[0];
+
         commands.add(new ScriptCommand(command.toString(), parameters, lineNumber));
     }
 
