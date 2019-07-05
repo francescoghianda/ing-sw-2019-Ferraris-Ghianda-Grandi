@@ -33,7 +33,7 @@ public class RmiClient implements CallbackInterface, NetworkClient, Serializable
 
     private final transient UI ui;
 
-    private transient boolean running;
+    private transient volatile boolean running;
 
     /**
      * Creates an RMI client

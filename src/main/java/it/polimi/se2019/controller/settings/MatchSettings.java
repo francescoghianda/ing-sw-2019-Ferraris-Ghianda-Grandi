@@ -1,7 +1,10 @@
 package it.polimi.se2019.controller.settings;
 
+import it.polimi.se2019.utils.file.ExternalFile;
 import it.polimi.se2019.utils.logging.Logger;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Random;
@@ -43,9 +46,20 @@ public class MatchSettings
     {
         try
         {
-            Logger.info("Loading settings from file...");
+            File externalSettingsFile = ExternalFile.getExternalFile("settings"+ File.separator+"match_settings.properties");
+
             properties = new Properties();
-            properties.load(MatchSettings.class.getResourceAsStream("/properties/match_settings.properties"));
+
+            if(externalSettingsFile.exists())
+            {
+                Logger.info("Loading settings from external file...");
+                properties.load(new FileReader(externalSettingsFile));
+            }
+            else
+            {
+                Logger.info("Loading settings from internal file...");
+                properties.load(MatchSettings.class.getResourceAsStream("/properties/match_settings.properties"));
+            }
 
             skullNumber = new Setting<>("skull_number", 8);
             loadInteger(skullNumber);

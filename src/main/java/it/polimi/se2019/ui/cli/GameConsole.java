@@ -42,7 +42,7 @@ class GameConsole
             Logger.info("Executing chcp command...");
             try
             {
-                ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "chcp", "437").inheritIO();
+                ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "chcp", "65001").inheritIO();
                 pb.start().waitFor();
                 out = new PrintStream(System.out);
                 out = AnsiConsole.wrapPrintStream(out, -1);
@@ -65,7 +65,7 @@ class GameConsole
 
     private static boolean isWindows()
     {
-        Logger.info("OS: "+System.getProperty("os.name"));
+        //Logger.info("OS: "+System.getProperty("os.name"));
         return System.getProperty("os.name").toLowerCase().contains("win");
     }
 

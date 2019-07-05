@@ -6,6 +6,7 @@ import it.polimi.se2019.network.socket.server.SocketServer;
 import it.polimi.se2019.ui.cli.FormattedInput;
 import it.polimi.se2019.ui.cli.Option;
 import it.polimi.se2019.ui.cli.Options;
+import it.polimi.se2019.utils.file.ExternalFile;
 import it.polimi.se2019.utils.string.Strings;
 import it.polimi.se2019.utils.constants.Ansi;
 import it.polimi.se2019.utils.logging.LogMessage;
@@ -35,7 +36,7 @@ public class ServerApp
 
     public ServerApp()
     {
-        System.setProperty("java.rmi.server.hostname", "127.0.0.1");
+        ExternalFile.readIpFile();
     }
 
     public static void main(String[] args) throws IOException
@@ -86,11 +87,11 @@ public class ServerApp
     private void startServerCli() throws IOException
     {
         Properties settings = new Properties();
-        File settingsFile = new File("settings/serverSettings.xml");
+        File settingsFile = ExternalFile.getExternalFile("settings"+File.separator+"serverSettings.xml");
 
-        String socketPortStr = "";
-        String rmiPortStr = "";
-        String modeStr = "";
+        String socketPortStr;
+        String rmiPortStr;
+        String modeStr;
 
         if(!settingsFile.exists())
         {
@@ -185,7 +186,7 @@ public class ServerApp
                 }
                 if(serverMode.getValue() == BOTH_SERVER_MODE)settings.setProperty("mode", "b");
 
-                settings.storeToXML(new FileOutputStream("settings/serverSettings.xml"), "mode = s | r | b");
+                settings.storeToXML(new FileOutputStream(ExternalFile.getExternalFile("settings"+File.separator+"serverSettings.xml")), "mode = s | r | b");
             }
         }
 

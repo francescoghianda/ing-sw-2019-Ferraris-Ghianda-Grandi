@@ -219,6 +219,8 @@ public class CLI implements UI, OnServerDisconnectionListener
 
         actionOptions.addOptions(Arrays.asList(possibleActions), this::actionToString);
 
+
+        actionOptions.addOption("Usa power-up", Action.USE_POWER_UP);
         actionOptions.addOption("Termina azione", Action.END_ACTION);
         actionOptions.addOption("Termina turno", Action.END_ROUND);
 
@@ -326,9 +328,29 @@ public class CLI implements UI, OnServerDisconnectionListener
         {
             GameConsole.clear();
             GameConsole.println(gameData.getMap().getCliMap());
+            printGameBoard();
         }
         firstUpdate = false;
 
+    }
+
+    private void printGameBoard()
+    {
+        GameConsole.print("I tuoi danni: ");
+        gameData.getPlayer().getGameBoard().getDamages().entrySet().forEach(entry ->
+        {
+            for(int i = 0; i < entry.getValue(); i++)GameConsole.printColored(entry.getKey(), "■ ");
+        });
+
+        GameConsole.println("");
+
+        GameConsole.print("I tuoi marchi: ");
+        gameData.getPlayer().getGameBoard().getMarkers().entrySet().forEach(entry ->
+        {
+            for(int i = 0; i < entry.getValue(); i++)GameConsole.printColored(entry.getKey(), "■ ");
+        });
+
+        GameConsole.println("");
     }
 
     @Override
