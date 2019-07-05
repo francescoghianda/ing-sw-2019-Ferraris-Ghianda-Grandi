@@ -10,6 +10,9 @@ import org.fusesource.jansi.AnsiConsole;
 import java.io.IOException;
 import java.io.PrintStream;
 
+/**
+ * defines the console for the game
+ */
 
 class GameConsole
 {

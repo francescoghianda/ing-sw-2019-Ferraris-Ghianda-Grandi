@@ -6,7 +6,7 @@ import it.polimi.se2019.network.rmi.client.RmiClient;
 import it.polimi.se2019.network.socket.client.SocketClient;
 
 /**
- * defines the interface
+ * defines the interface for the networ side , specifying the connection mode options
  */
 public class NetworkInterface
 {

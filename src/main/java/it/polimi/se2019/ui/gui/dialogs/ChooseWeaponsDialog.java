@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * let to choose the selection mode for a weapon card
+ */
 public class ChooseWeaponsDialog extends Dialog<ArrayList<CardData>> implements Initializable, CardView.OnCardViewClickListener
 {
     public static final int SINGLE_SELECTION_MODE = 0;

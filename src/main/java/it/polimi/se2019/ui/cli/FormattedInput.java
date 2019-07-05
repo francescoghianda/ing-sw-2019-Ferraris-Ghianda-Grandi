@@ -7,7 +7,7 @@ import java.sql.Time;
 import java.util.function.Predicate;
 
 /**
- * receive a question , a regular expression/a predicate
+ * receive a question , a regular expression/ a predicate
  */
 public class FormattedInput
 {
@@ -25,9 +25,10 @@ public class FormattedInput
     private boolean usePredicate;
 
     /**
-     *
-     * @param question
-     * @param regex
+     * Constructs the formatted input setting values for the question, the regular expression, the usage of the predicate
+     * and the regular expression, and initializes the reader
+     * @param question is the question asked before getting the input
+     * @param regex is the regular expression that has to be satisfied
      */
     public FormattedInput(String question, String regex)
     {
@@ -40,8 +41,8 @@ public class FormattedInput
 
     /**
      *
-     * @param question
-     * @param predicate
+     * @param question is the question asked before getting the input
+     * @param predicate is the predicate that has to ben satisfied
      */
     public FormattedInput(String question, Predicate<String> predicate)
     {

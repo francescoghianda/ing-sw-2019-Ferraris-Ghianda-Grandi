@@ -10,6 +10,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Containes the basic components of the gui
+ *
+ */
 public abstract class BasicComponent extends Pane implements Initializable, EventHandler<MouseEvent>
 {
     private final FXMLLoader fxmlLoader;

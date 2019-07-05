@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public class App 
+public class App
 {
 
     private boolean startInGUI;
@@ -25,12 +25,14 @@ public class App
 
         if(System.console() == null || startInGUI)
         {
-            ui = new GUI();
+           ui = new GUI();
         }
         else
         {
             ui = new CLI();
         }
+
+
 
         ui.startUI();
     }

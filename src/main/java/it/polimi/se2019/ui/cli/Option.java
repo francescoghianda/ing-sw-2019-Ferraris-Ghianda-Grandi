@@ -1,5 +1,9 @@
 package it.polimi.se2019.ui.cli;
 
+/**
+ * defines the option of generic parameter T
+ * @param <T>
+ */
 public class Option<T>
 {
     private String option;

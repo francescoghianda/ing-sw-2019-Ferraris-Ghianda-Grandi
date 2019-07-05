@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- *
+ *Defines the CLI for the game
  */
 public class CLI implements UI, OnServerDisconnectionListener
 {
@@ -165,6 +165,12 @@ public class CLI implements UI, OnServerDisconnectionListener
         return ask("Vuoi giocare ancora? ", true);
     }
 
+    /**
+     * boolean method
+     * @param question is the question which receives the answer
+     * @param firstDefault is the value set as default
+     * @return a boolean value based on the answer of the request
+     */
     private boolean ask(String question, boolean firstDefault)
     {
         Options<String> options = new Options<>(question, firstDefault);

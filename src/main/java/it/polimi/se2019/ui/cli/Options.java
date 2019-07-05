@@ -23,7 +23,11 @@ public final class Options<T>
     private Option<T> cancelOption;
     private AtomicInteger abbreviationNumber;
 
-
+    /**
+     * constructs new options. It has got in input the question string and the boolean value First Default
+     * @param question
+     * @param firstDefault
+     */
     public Options(String question, boolean firstDefault)
     {
         this.options = new ArrayList<>();
@@ -38,6 +42,10 @@ public final class Options<T>
         return this;
     }
 
+    /**
+     * it adds the option that let to cancel an action
+     * @return
+     */
     private Options<T> addCancelOption()
     {
         cancelOption = new Option<>("Annulla", options.size());
@@ -45,18 +53,37 @@ public final class Options<T>
         return this;
     }
 
+    /**
+     *   it adds an option, standard value is set NULL
+     **/
+
+
     public Options<T> addOption(String option)
     {
         options.add(new Option<>(option, options.size()));
         return this;
     }
 
+    /**
+     * it also add an option, with a specific value
+     * @param option is the option that has to be added
+     * @param value
+     * @return
+     */
     public Options<T> addOption(String option, T value)
     {
         options.add(new Option<>(option, options.size(), value));
         return this;
     }
 
+    /**
+     * adds an option for each element of the list, where as value it uses the same object contained
+     * in the list. To generate the option string it uses a function that receives
+     * the object
+     * @param values
+     * @param optionToStringFunction
+     * @return a string
+     */
     public Options<T> addOptions(List<T> values, Function<T, String> optionToStringFunction)
     {
         abbreviationNumber.set(0);
@@ -64,6 +91,12 @@ public final class Options<T>
         return this;
     }
 
+    /**
+     * prints the box with the options, prints the question, allows the player to answer and when
+     * the player give an answer with a valid option, the Option object
+     * returns both the option and the "value" object
+     * @return
+     */
     private Option<T> showOptions()
     {
         if(options.isEmpty())return null;
@@ -136,6 +169,13 @@ public final class Options<T>
         return showOptions();
     }
 
+    /**
+     * adds a "cancel" option at the end of the present options.
+     * if the player chooses the " option", the CanceledActionException exception is thrown
+     * @return
+     * @throws TimeOutException
+     * @throws CanceledActionException
+     */
     public Option<T> showCancellable() throws TimeOutException, CanceledActionException
     {
         addCancelOption();
@@ -154,6 +194,11 @@ public final class Options<T>
         return options.stream().map(Option::getOption).mapToInt(String::length).max().orElse(0);
     }
 
+    /**
+     * omposes the box with the options, in this case, the first line
+     * @param builder
+     * @param maxOptionsLength
+     */
     private void writeFistLine(StringBuilder builder, int maxOptionsLength)
     {
         builder.append("\t\t\t");
@@ -164,6 +209,13 @@ public final class Options<T>
         }
         builder.append(Characters.BoxDrawing.UPPER_RIGHT_CORNER).append('\n');
     }
+
+    /**
+     * writes the title of the box with the options, the string with "Options"
+     * @param builder
+     * @param title
+     * @param maxOptionsLength
+     */
 
     private void writeTitle(StringBuilder builder, String title, int maxOptionsLength)
     {
@@ -179,6 +231,12 @@ public final class Options<T>
         builder.append(Characters.BoxDrawing.DOUBLE_VERTICAL).append('\n');
     }
 
+    /**
+     * writes the line that divides the title from the options
+     * @param builder
+     * @param maxOptionsLength
+     */
+
     private void writeMidLine(StringBuilder builder, int maxOptionsLength)
     {
         builder.append("\t\t\t");
@@ -191,6 +249,11 @@ public final class Options<T>
         builder.append(Characters.BoxDrawing.DOUBLE_RIGHT_T_CHAR).append('\n');
     }
 
+    /**
+     * close the box with the last line
+     * @param builder
+     * @param maxOptionsLength
+     */
     private void writeLastLine(StringBuilder builder, int maxOptionsLength)
     {
         builder.append("\t\t\t");
@@ -203,6 +266,13 @@ public final class Options<T>
         builder.append(Characters.BoxDrawing.BOTTOM_RIGHT_CORNER).append('\n');
     }
 
+    /**
+     * writes the line with the options
+     * @param builder
+     * @param option
+     * @param index
+     * @param maxOptionsLength
+     */
     private void writeOptionLine(StringBuilder builder, String option, int index, int maxOptionsLength)
     {
         builder.append("\t\t\t");
@@ -219,6 +289,9 @@ public final class Options<T>
         builder.append(Characters.BoxDrawing.DOUBLE_VERTICAL).append('\n');
     }
 
+    /**
+     * uses all the methods defined before to build the entire box
+     */
     protected void writeOptions()
     {
         int maxOptionsLength = getMaxOptionLength();

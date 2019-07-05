@@ -1,5 +1,8 @@
 package it.polimi.se2019.ui;
 
+/**
+ * manages an event during the game
+ */
 public class GameEvent
 {
     public static final int IS_YOUR_ROUND = 0;

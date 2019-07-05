@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+/**
+ * creates the pane that let to choose
+ */
 public class ChoosePane extends AnchorPane implements Initializable
 {
 
@@ -100,6 +103,10 @@ public class ChoosePane extends AnchorPane implements Initializable
         tilePane.getChildren().add(optionButton);
     }
 
+    /**
+     * adds the botton that let to cancel an action
+     * @param value
+     */
     public void addCancelButton(CancelableValue value)
     {
         ColoredButton cancelButton = new ColoredButton("Annulla", color);

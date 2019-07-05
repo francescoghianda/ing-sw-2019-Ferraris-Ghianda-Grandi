@@ -22,6 +22,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * defines the board view
+ */
 public class BoardView extends StackPane implements Initializable
 {
     @FXML

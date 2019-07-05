@@ -67,6 +67,7 @@
             <name>Mitragliatrice</name>
             <description>
                 <line>effetto base: Scegli 1 o 2 bersagli che puoi vedere e dai 1 danno a entrambi. nota: Se hai dato entrambi i punti aggiuntivi di danno, devono</line>
+                <line></line>
                 <line>essere dati a 2 bersagli diversi. Se puoi vedere solo 2 bersagli, dai 2 danni a entrambi se usi entrambi gli effetti opzionali. Se usi l'effetto base solo su 1 bersaglio, puoi comunque usare il tripode di supporto per dare 1 danno aggiuntivo</line>
             </description>
 
@@ -286,6 +287,7 @@
                 <line>modalità base: Scegli una stanza che puoi vedere, ma</line>
                 <line>non la stanza in cui ti trovi. Dai 1 danno a ognuno in quella</line>
                 <line>stanza.</line>
+                <line></line>
                 <line>modalità fuoco confortevole: Scegli un quadrato distante</line>
                 <line>esattamente 1 movimento. Dai 1 danno e 1 marchio a</line>
                 <line>ognuno in quel quadrato.</line>
@@ -552,7 +554,9 @@
             <name>Spada Fotonica</name>
             <description>
                 <line>effetto base: Dai 2 danni a 1 bersaglio nel quadrato in cui sei tu.</line>
+                <line></line>
                 <line>passo d'ombra: Muovi di 1 quadrato prima o dopo l'effetto base/mod sminuzzare.</line>
+                <line></line>
                 <line>mod sminuzzare: Dai 2 danni a un bersaglio diverso nel quadrato in cui sei.</line>
             </description>
             <buy_cost>
@@ -594,9 +598,9 @@
         <name>ZX-2</name>
         <description>
             <line>modalità base: Dai 1 danno e 2 marchi a 1 bersaglio che puoi vedere.</line>
-            <line>modalità scanner: Scegli fino a 3 bersagli che puoi vedere e </line>
-            <line>dai 1 marchio a ciascuno.</line>
-            <line>Nota: Ricorda che i 3 bersagli possono anche essere in 3 stanze diverse.</line>
+            <line></line>
+            <line>modalità scanner: Scegli fino a 3 bersagli che puoi vedere e dai 1 marchio a ciascuno.
+                Nota: Ricorda che i 3 bersagli possono anche essere in 3 stanze diverse.</line>
         </description>
         <buy_cost>
             <yellow>1</yellow>
@@ -706,8 +710,9 @@
     <weapon_card id="8">
         <name>Onda d'urto</name>
         <description>
-            <line>modalità base: Scegli fino a 3 bersagli su quadrati diversi, ognuno ad 1 movimento esatto.</line>
-            <line>Dai 1 danno a ogni bersaglio.</line>
+            <line>modalità base: Scegli fino a 3 bersagli su quadrati diversi, ognuno ad 1 movimento esatto.
+                Dai 1 danno a ogni bersaglio.</line>
+            <line></line>
             <line>modalità tsunami: Dai 1 danno a tutti i bersagli distanti 1 movimento.</line>
         </description>
         <buy_cost>
@@ -746,10 +751,10 @@
     <weapon_card id="2">
         <name>Martello ionico</name>
         <description>
-            <line>modalità base: Dai 2 danni a 1 bersaglio nel tuo quadrato.</line>
-            <line>modalità polverizzare: Dai 3 danni a 1 bersaglio nel tuo quadrato e</line>
-            <line>muovilo di 0, 1 o 2 quadrati in una direzione.</line>
-            <line>Nota: I movimenti passano attraverso le porte, non per le pareti.</line>
+            <line>modalità base: Dai 2 danni a 1 bersaglio nel tuo quadrato
+                polverizzare: Dai 3 danni a 1 bersaglio nel tuo quadrato e
+                muovilo di 0, 1 o 2 quadrati in una direzione.
+                Nota: I movimenti passano attraverso le porte, non per le pareti.</line>
         </description>
         <buy_cost>
             <yellow>1</yellow>

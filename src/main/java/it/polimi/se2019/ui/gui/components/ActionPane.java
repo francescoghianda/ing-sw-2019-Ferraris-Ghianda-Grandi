@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * defines the action pane specifing the parameters associated with actions like MOVE, GRAB, FIRE, RELOAD, END_ROUND, END_ACTION
+ */
 public class ActionPane extends VBox implements Initializable
 {
     public static final int MOVE_ACTION = 0;
@@ -86,6 +89,9 @@ public class ActionPane extends VBox implements Initializable
         endActionButton.setColor(color);
     }
 
+    /**
+     * let to disable all the buttons when required
+     */
     public void disableAll()
     {
         moveButton.setDisable(true);
