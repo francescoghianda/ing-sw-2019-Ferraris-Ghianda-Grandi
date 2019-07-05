@@ -320,9 +320,29 @@ public class CLI implements UI, OnServerDisconnectionListener
         {
             GameConsole.clear();
             GameConsole.println(gameData.getMap().getCliMap());
+            printGameBoard();
         }
         firstUpdate = false;
 
+    }
+
+    private void printGameBoard()
+    {
+        GameConsole.print("I tuoi danni: ");
+        gameData.getPlayer().getGameBoard().getDamages().entrySet().forEach(entry ->
+        {
+            for(int i = 0; i < entry.getValue(); i++)GameConsole.printColored(entry.getKey(), "■ ");
+        });
+
+        GameConsole.println("");
+
+        GameConsole.print("I tuoi marchi: ");
+        gameData.getPlayer().getGameBoard().getMarkers().entrySet().forEach(entry ->
+        {
+            for(int i = 0; i < entry.getValue(); i++)GameConsole.printColored(entry.getKey(), "■ ");
+        });
+
+        GameConsole.println("");
     }
 
     @Override

@@ -4,7 +4,6 @@ package it.polimi.se2019.ui.cli;
 import it.polimi.se2019.controller.CanceledActionException;
 import it.polimi.se2019.controller.TimeOutException;
 import it.polimi.se2019.utils.constants.Characters;
-import it.polimi.se2019.utils.constants.GameMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,14 +72,14 @@ public final class Options<T>
         Option<T> selected;
         String response;
 
-        GameConsole.print(question);
-
-        GameConsole.saveCaretPosition();
+        //GameConsole.print(question);
+        //GameConsole.saveCaretPosition();
 
         do
         {
-            GameConsole.restoreCaretPosition();
-            GameConsole.eraseLine();
+            GameConsole.print(question);
+            //GameConsole.restoreCaretPosition();
+           //GameConsole.eraseLine();
 
             response = GameConsole.nextLine().trim();
 
@@ -101,16 +100,17 @@ public final class Options<T>
 
         writeOptions();
 
-        GameConsole.print(question);
-        GameConsole.saveCaretPosition();
+        //GameConsole.print(question);
+        //GameConsole.saveCaretPosition();
 
         String response;
         List<Option<T>> selected;
 
         do
         {
-            GameConsole.restoreCaretPosition();
-            GameConsole.eraseLine();
+            GameConsole.print(question);
+            //GameConsole.restoreCaretPosition();
+            //GameConsole.eraseLine();
 
             response = GameConsole.nextLine().trim();
 
@@ -154,7 +154,7 @@ public final class Options<T>
         return options.stream().map(Option::getOption).mapToInt(String::length).max().orElse(0);
     }
 
-    private void writeFistLine(StringBuilder builder, int maxOptionsLength)
+    private void writeFirstLine(StringBuilder builder, int maxOptionsLength)
     {
         builder.append("\t\t\t");
         for(int i = 0; i < maxOptionsLength+8; i++)
@@ -208,7 +208,7 @@ public final class Options<T>
         builder.append("\t\t\t");
         for(int i = 0; i < maxOptionsLength+8; i++)
         {
-            if(i == 0)builder.append((char)186);
+            if(i == 0)builder.append(Characters.BoxDrawing.DOUBLE_VERTICAL);
             else if(i == 1 || i == 4 || i == 6)builder.append(' ');
             else if(i == 2)builder.append(index);
             else if(i == 3)builder.append('.');
@@ -224,7 +224,7 @@ public final class Options<T>
         int maxOptionsLength = getMaxOptionLength();
         StringBuilder builder = new StringBuilder();
 
-        writeFistLine(builder, maxOptionsLength);
+        writeFirstLine(builder, maxOptionsLength);
         writeTitle(builder, "Opzioni", maxOptionsLength);
         writeMidLine(builder, maxOptionsLength);
         options.forEach(option -> writeOptionLine(builder, option.getOption(), option.getIndex(), maxOptionsLength));

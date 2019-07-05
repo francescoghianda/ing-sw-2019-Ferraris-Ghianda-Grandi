@@ -80,7 +80,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>it.polimi.se2019.App</mainClass>
+                            <mainClass>it.polimi.se2019.ServerApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

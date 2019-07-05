@@ -62,7 +62,7 @@ class GameConsole
 
     private static boolean isWindows()
     {
-        Logger.info("OS: "+System.getProperty("os.name"));
+        //Logger.info("OS: "+System.getProperty("os.name"));
         return System.getProperty("os.name").toLowerCase().contains("win");
     }
 

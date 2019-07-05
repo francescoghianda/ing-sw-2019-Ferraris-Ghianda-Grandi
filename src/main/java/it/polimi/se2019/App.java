@@ -3,11 +3,7 @@ package it.polimi.se2019;
 import it.polimi.se2019.ui.cli.CLI;
 import it.polimi.se2019.ui.UI;
 import it.polimi.se2019.ui.gui.GUI;
-import it.polimi.se2019.utils.constants.Characters;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import it.polimi.se2019.utils.file.ExternalFile;
 
 public class App 
 {
@@ -53,7 +49,7 @@ public class App
 
     public static void main(String[] args)
     {
-        System.setProperty("java.rmi.server.hostname", "127.0.0.1");
+        ExternalFile.readIpFile();
         new App(args).start();
     }
 
