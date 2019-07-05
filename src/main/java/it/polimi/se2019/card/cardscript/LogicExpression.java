@@ -71,7 +71,7 @@ public class LogicExpression
      * Evalutes the AND parts of the logic expression
      * @param andElements are the AND elements of the logic expression
      * @param object is the player/block to be evaluated
-     * @@return true if all AND elements return true
+     * @return true if all AND elements return true
      * @throws LogicExpressionEvaluationException
      */
     private boolean evaluateAndElements(String[] andElements, Object object) throws LogicExpressionEvaluationException
@@ -298,7 +298,7 @@ public class LogicExpression
      * @param block2 is the second block for calculate the distance
      * @param distance is the value of the calculated distance between the blocks
      * @param maxOrMin is a boolean value which indicates if the distance between the two block is the maximum (or minimum) distance
-     * @return true if the distance is <= max.distance or >= min.distance
+     * @return true if the distance is greater or equal max.distance or min.distance
      * @throws LogicExpressionEvaluationException
      */
     private boolean isAtDistance(Block block1, Block block2, String distance, int maxOrMin) throws LogicExpressionEvaluationException
