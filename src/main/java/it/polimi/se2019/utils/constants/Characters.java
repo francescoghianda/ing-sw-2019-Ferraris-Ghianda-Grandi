@@ -31,7 +31,7 @@ public final class Characters
     {
         private Symbols(){}
 
-        public static final char AMMO_SYMBOL = '◈';
+        public static final char AMMO_SYMBOL = '■';
         public static final char POWER_UP_SYMBOL = '▲';
         public static final char PLAYER_SYMBOL = '☻';
     }

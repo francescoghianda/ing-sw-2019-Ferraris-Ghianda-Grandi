@@ -213,6 +213,8 @@ public class CLI implements UI, OnServerDisconnectionListener
 
         actionOptions.addOptions(Arrays.asList(possibleActions), this::actionToString);
 
+
+        actionOptions.addOption("Usa power-up", Action.USE_POWER_UP);
         actionOptions.addOption("Termina azione", Action.END_ACTION);
         actionOptions.addOption("Termina turno", Action.END_ROUND);
 
